@@ -1,0 +1,16 @@
+build:cl --copt /std:c++17
+build:cl --copt /W4
+build:cl --linkopt /SUBSYSTEM:CONSOLE
+build:cl --linkopt shell32.lib
+
+build:clang-cl --copt /clang:-m64
+build:clang-cl --copt /clang:-std=c++17
+build:clang-cl --copt /clang:-Weverything
+build:clang-cl --copt /clang:--system-header-prefix=cxxopts
+build:clang-cl --copt /clang:--system-header-prefix=rang
+
+build:clang --copt -m64
+build:clang --copt -std=c++17
+build:clang --copt -Weverything
+build:clang --copt --system-header-prefix=cxxopts
+build:clang --copt --system-header-prefix=rang
