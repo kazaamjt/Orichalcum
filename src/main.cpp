@@ -1,6 +1,6 @@
-#include "lib\compiler.hpp"
+#include "lib/compiler.hpp"
 
 int main(int argc, char *argv[]) {
 	OrichalcumLib::Compiler compiler;
-	return compiler.run();
+	return 0;
 }
