@@ -1,21 +1,31 @@
 #pragma once
 #include <exception>
 #include <string>
+#include <vector>
+
+#include "Lexer.hpp"
 
 namespace OrichalcumLib {
 
 struct FailedToReadFile: public std::exception {
-	std::string filename;
+	std::string file;
 
-	FailedToReadFile(const std::string filename);
+	FailedToReadFile(const std::string filename): file(filename) { }
 	const char * what() const throw () {
-		return "Failed to open the file ";
+		std::string error = "Failed to open " + file;
+		return error.c_str();
 	}
 };
 
 class Compiler {
 public:
 	std::string compile(const std::string &file);
+
+	std::vector<Lexer> lexers;
+
+private:
+	
+
 };
 
 } // namespace Orichalcum
