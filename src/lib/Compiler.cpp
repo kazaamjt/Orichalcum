@@ -1,7 +1,6 @@
 #include "Compiler.hpp"
 
 #include <fstream>
-#include <iostream>
 
 namespace OrichalcumLib {
 
@@ -14,7 +13,6 @@ std::string Compiler::compile(const std::string &file) {
 	char byte = 0;
 	std::vector<char> bytes;
 	while (input.get(byte)) {
-		std::cout << byte << std::endl;
 		bytes.push_back(byte);
 	}
 	input.close();

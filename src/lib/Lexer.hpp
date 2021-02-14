@@ -6,7 +6,7 @@ namespace OrichalcumLib {
 
 enum class TokenType {
 	EOF_TOKEN,
-	INDENTATION,
+	INDENT,
 
 	FLOAT,
 	INTEGER,
@@ -25,6 +25,8 @@ struct Index{
 
 	int line;
 	int col;
+
+	void set(int line, int col);
 };
 
 struct Token {

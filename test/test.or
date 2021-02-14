@@ -1,1 +1,2 @@
-test
+def test(col: int, line: int) -> None:
+	pass
