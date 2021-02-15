@@ -14,6 +14,7 @@ enum class TokenType {
 	CLASS,
 	DEF,
 	RETURN,
+	RETURN_SIGN,
 	IDENTIFIER,
 
 	UNKNOWN
@@ -42,6 +43,7 @@ class Lexer {
 public:
 	Lexer();
 	void load(const std::vector<char> &bytes);
+	void load(const std::string &file);
 
 	Token get_next_token();
 

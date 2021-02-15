@@ -1,5 +1,8 @@
 #include "Lexer.hpp"
 
+#include <fstream>
+#include <iostream>
+
 namespace OrichalcumLib {
 
 Token::Token(Index _index, TokenType _type, const std::string &_content=""):
@@ -18,6 +21,20 @@ Lexer::Lexer():
 
 void Lexer::load(const std::vector<char> &_bytes) {
 	bytes = _bytes;
+}
+
+void Lexer::load(const std::string &file) {
+		std::ifstream input(file);
+	if (!input.is_open()) {
+		std::cout << "ERROR: Failed to read file " << file << std::endl;
+	}
+
+	char byte = 0;
+	while (input.get(byte)) {
+		bytes.push_back(byte);
+	}
+	input.close();
+	bytes.push_back(EOF);
 }
 
 char Lexer::next_char() {
@@ -45,9 +62,9 @@ Token Lexer::get_next_token() {
 		index.set(line, col);
 		while (isspace(current)) {
 			indent_token += current;
+			current = next_char();
 		}
 		if (indent_token.length() > 0) {
-			current = next_char();
 			return Token(index, TokenType::INDENT, indent_token);
 		}
 	}
@@ -55,10 +72,10 @@ Token Lexer::get_next_token() {
 	while (isspace(current)) {
 		current = next_char();
 	}
+	index.set(line, col);
 
 	if (isalpha(current)) {
 		std::string identifier = "";
-		index.set(line, col);
 		while (isalnum(current)) {
 			identifier += current;
 			current = next_char();
@@ -79,7 +96,6 @@ Token Lexer::get_next_token() {
 
 	if (isdigit(current)) {
 		std::string number;
-		index.set(line, col);
 		while (isdigit(current)) {
 			number += current;
 			current = next_char();
@@ -99,13 +115,22 @@ Token Lexer::get_next_token() {
 		return Token(index, TokenType::INTEGER, number);
 	}
 
+	if (current == '-') {
+		current = next_char();
+		if (current == '>') {
+			current = next_char();
+			return Token(index, TokenType::RETURN_SIGN, "->");
+		}
+		return Token(index, TokenType::UNKNOWN, "-");
+	}
+
 	if (current == EOF) {
-		return Token(Index(line, col), TokenType::EOF_TOKEN);
+		return Token(index, TokenType::EOF_TOKEN, "EOF");
 	}
 
 	std::string unknown(1, current);
 	current = next_char();
-	return Token(Index(line, col), TokenType::UNKNOWN, unknown);
+	return Token(index, TokenType::UNKNOWN, unknown);
 }
 
 } // namespace OrichalcumLib

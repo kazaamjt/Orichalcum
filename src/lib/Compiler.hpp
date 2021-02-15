@@ -7,19 +7,11 @@
 
 namespace OrichalcumLib {
 
-struct FailedToReadFile: public std::exception {
-	std::string file;
-
-	FailedToReadFile(const std::string filename): file(filename) { }
-	const char * what() const throw () {
-		std::string error = "Failed to open " + file;
-		return error.c_str();
-	}
-};
-
 class Compiler {
 public:
-	std::string compile(const std::string &file);
+	void compile(const std::string &file);
+	// TODO:
+	// void compile(const std::vector<char> &bytes);
 
 	std::vector<Lexer> lexers;
 
