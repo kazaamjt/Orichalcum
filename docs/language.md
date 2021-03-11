@@ -2,7 +2,7 @@
 
 This document is being constructed as I go.  
 I will write topics ordered by when I tackle them.  
-I'll reorder things in the future. Maybe.  
+I might reorder things in the future. Maybe.  
 
 ## The lexer
 
