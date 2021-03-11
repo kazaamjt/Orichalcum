@@ -74,9 +74,9 @@ Token Lexer::get_next_token() {
 	}
 	index.set(line, col);
 
-	if (isalpha(current)) {
+	if (isalpha(current) || current == '_') {
 		std::string identifier = "";
-		while (isalnum(current)) {
+		while (isalnum(current) || current == '_') {
 			identifier += current;
 			current = next_char();
 		}
