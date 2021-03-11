@@ -5,25 +5,23 @@
 
 namespace OrichalcumLib {
 
+Token::Token():
+	index(Index(0,0)), type(TokenType::EMPTY), content("") { }
+
 Token::Token(Index _index, TokenType _type, const std::string &_content=""):
 	index(_index), type(_type), content(_content) { }
 
 Index::Index(int _line, int _col):
-	line(_line + 1), col(_col + 1) { }
+	line(_line), col(_col) { }
 
 void Index::set(int _line, int _col) {
-	line = _line + 1;
-	col = _col + 1;
+	line = _line;
+	col = _col;
 }
 
-Lexer::Lexer():
-	line(1), col(1) { }
-
-void Lexer::load(const std::vector<char> &_bytes) {
-	bytes = _bytes;
-}
-
-void Lexer::load(const std::string &file) {
+Lexer::Lexer(const std::string &file):
+	line(0), col(-1)
+{
 	std::ifstream input(file);
 	if (!input.is_open()) {
 		throw FailedToRead("ERROR: Failed to read file" , file);
@@ -44,7 +42,7 @@ char Lexer::next_char() {
 	i++;
 	if (next == '\n') {
 		line++;
-		col = 0;
+		col = -1;
 	}
 
 	return next;
@@ -192,44 +190,46 @@ Token Lexer::get_next_token() {
 }
 
 Token Lexer::scan_identifier(const std::string &identifier, Index index) {
-	if (identifier == "and") return Token(index, TokenType::AND);
-	if (identifier == "as") return Token(index, TokenType::AS);
-	if (identifier == "assert") return Token(index, TokenType::ASSERT);
-	if (identifier == "async") return Token(index, TokenType::ASYNC);
-	if (identifier == "await") return Token(index, TokenType::AWAIT);
-	if (identifier == "break") return Token(index, TokenType::BREAK);
-	if (identifier == "continue") return Token(index, TokenType::CONTINUE);
-	if (identifier == "class") return Token(index, TokenType::CLASS);
-	if (identifier == "def") return Token(index, TokenType::DEF);
-	if (identifier == "del") return Token(index, TokenType::DEL);
-	if (identifier == "elif") return Token(index, TokenType::ELIF);
-	if (identifier == "else") return Token(index, TokenType::ELSE);
-	if (identifier == "except") return Token(index, TokenType::EXCEPT);
-	if (identifier == "False") return Token(index, TokenType::FALSE);
-	if (identifier == "finally") return Token(index, TokenType::FINALLY);
-	if (identifier == "for") return Token(index, TokenType::FOR);
-	if (identifier == "from") return Token(index, TokenType::FROM);
-	if (identifier == "global") return Token(index, TokenType::GLOBAL);
-	if (identifier == "if") return Token(index, TokenType::IF);
-	if (identifier == "import") return Token(index, TokenType::IMPORT);
-	if (identifier == "in") return Token(index, TokenType::IN);
-	if (identifier == "is") return Token(index, TokenType::IS);
-	if (identifier == "lambda") return Token(index, TokenType::LAMBDA);
-	if (identifier == "none") return Token(index, TokenType::NONE);
-	if (identifier == "nonlocal") return Token(index, TokenType::NONLOCAL);
-	if (identifier == "not") return Token(index, TokenType::NOT);
-	if (identifier == "or") return Token(index, TokenType::OR);
-	if (identifier == "pass") return Token(index, TokenType::PASS);
-	if (identifier == "raise") return Token(index, TokenType::RAISE);
-	if (identifier == "return") return Token(index, TokenType::RETURN);
-	if (identifier == "struct") return Token(index, TokenType::STRUCT);
-	if (identifier == "True") return Token(index, TokenType::TRUE);
-	if (identifier == "try") return Token(index, TokenType::TRY);
-	if (identifier == "while") return Token(index, TokenType::WHILE);
-	if (identifier == "with") return Token(index, TokenType::WITH);
-	if (identifier == "yield") return Token(index, TokenType::YIELD);
+	TokenType token_type;
+	if (identifier == "and") token_type = TokenType::AND;
+	else if (identifier == "as") token_type = TokenType::AS;
+	else if (identifier == "assert") token_type = TokenType::ASSERT;
+	else if (identifier == "async") token_type = TokenType::ASYNC;
+	else if (identifier == "await") token_type = TokenType::AWAIT;
+	else if (identifier == "break") token_type = TokenType::BREAK;
+	else if (identifier == "continue") token_type = TokenType::CONTINUE;
+	else if (identifier == "class") token_type = TokenType::CLASS;
+	else if (identifier == "def") token_type = TokenType::DEF;
+	else if (identifier == "del") token_type = TokenType::DEL;
+	else if (identifier == "elif") token_type = TokenType::ELIF;
+	else if (identifier == "else") token_type = TokenType::ELSE;
+	else if (identifier == "except") token_type = TokenType::EXCEPT;
+	else if (identifier == "False") token_type = TokenType::FALSE;
+	else if (identifier == "finally") token_type = TokenType::FINALLY;
+	else if (identifier == "for") token_type = TokenType::FOR;
+	else if (identifier == "from") token_type = TokenType::FROM;
+	else if (identifier == "global") token_type = TokenType::GLOBAL;
+	else if (identifier == "if") token_type = TokenType::IF;
+	else if (identifier == "import") token_type = TokenType::IMPORT;
+	else if (identifier == "in") token_type = TokenType::IN;
+	else if (identifier == "is") token_type = TokenType::IS;
+	else if (identifier == "lambda") token_type = TokenType::LAMBDA;
+	else if (identifier == "none") token_type = TokenType::NONE;
+	else if (identifier == "nonlocal") token_type = TokenType::NONLOCAL;
+	else if (identifier == "not") token_type = TokenType::NOT;
+	else if (identifier == "or") token_type = TokenType::OR;
+	else if (identifier == "pass") token_type = TokenType::PASS;
+	else if (identifier == "raise") token_type = TokenType::RAISE;
+	else if (identifier == "return") token_type = TokenType::RETURN;
+	else if (identifier == "struct") token_type = TokenType::STRUCT;
+	else if (identifier == "True") token_type = TokenType::TRUE;
+	else if (identifier == "try") token_type = TokenType::TRY;
+	else if (identifier == "while") token_type = TokenType::WHILE;
+	else if (identifier == "with") token_type = TokenType::WITH;
+	else if (identifier == "yield") token_type = TokenType::YIELD;
+	else token_type = TokenType::IDENTIFIER;
 
-	return Token(index, TokenType::IDENTIFIER, identifier);
+	return Token(index, token_type, identifier);
 }
 
 } // namespace OrichalcumLib

@@ -2,10 +2,7 @@
 
 namespace OrichalcumLib {
 
-void Compiler::compile(const std::string &file) {
-	Lexer lexer;
-	lexer.load(file);
-	lexers.push_back(lexer);
-}
+Compiler::Compiler(const std::string &file):
+	lexer(std::make_unique<Lexer>(file)) { }
 
 } // namespace Orichalcum

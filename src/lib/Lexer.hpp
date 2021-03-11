@@ -6,6 +6,7 @@
 namespace OrichalcumLib {
 
 enum class TokenType {
+	EMPTY, // purely used to initialize tokens without data
 	EOF_TOKEN,
 	INDENT,
 
@@ -70,6 +71,7 @@ struct Index{
 };
 
 struct Token {
+	Token();
 	Token(Index index, TokenType type, const std::string &content);
 
 	Index index;
@@ -80,9 +82,7 @@ struct Token {
 
 class Lexer {
 public:
-	Lexer();
-	void load(const std::vector<char> &bytes);
-	void load(const std::string &file);
+	Lexer(const std::string &file);
 
 	Token get_next_token();
 
