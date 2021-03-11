@@ -64,3 +64,13 @@ cl on Windows:
 
 clang on Linux:
 `bazel build main --config=clang --compiler=clang --keep_going`
+
+## Resources
+
+Things I read that helped quite a bit:
+
+- [Crafting interpreters](https://craftinginterpreters.com)
+- [Llvm compiler frontend tutorial](https://llvm.org/docs/tutorial/MyFirstLanguageFrontend)
+- [starlark docs](https://github.com/bazelbuild/starlark)
+- "Engineering a Compiler" - Keith Copper and Linda Torczon
+- "Compilers - Principles, Techniques, and Tools" (2006 edition) - Alfred V. Aho, Monica S. Lam, Ravi Sethi, Jeffrey D. Ullman
