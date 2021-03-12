@@ -20,6 +20,13 @@ union Constant{
 	double float_;
 };
 
+struct Line {
+	int repeat;
+	int line;
+
+	Line(int repeat, int line);
+};
+
 class Chunk {
 public:
 	Chunk(const std::string &name);
@@ -42,7 +49,10 @@ private:
 	friend void disassemble_chunk(Chunk &chunk);
 	std::vector<Instruction> instructions;
 	std::vector<Constant> constants;
-	std::vector<int> lines;
+	std::vector<Line> lines;
+
+	void init();
+	void write_line(int line);
 
 };
 

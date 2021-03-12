@@ -4,18 +4,29 @@
 
 namespace OrichalcumLib {
 
-Chunk::Chunk(const std::string &_name): name(_name) { }
-Chunk::Chunk(size_t index): name(Misc::to_hex(index)) { }
+Line::Line(int _repeat, int _line): repeat(_repeat), line(_line) { }
+
+Chunk::Chunk(const std::string &_name): name(_name) {
+	init();
+}
+
+Chunk::Chunk(size_t index): name(Misc::to_hex(index)) {
+	init();
+}
+
+void Chunk::init() {
+	lines.push_back(Line(0, 0));
+}
 
 void Chunk::write(OP_CODE op_code, int line) {
-	lines.push_back(line);
+	write_line(line);
 	Instruction instruction;
 	instruction.op_code = op_code;
 	instructions.push_back(instruction);
 }
 
 void Chunk::write(int64_t _constant, int line) {
-	lines.push_back(line);
+	write_line(line);
 	Instruction instruction;
 	instruction.op_code = OP_CODE::CONST_INT;
 	instructions.push_back(instruction);
@@ -25,14 +36,14 @@ void Chunk::write(int64_t _constant, int line) {
 	constants.push_back(constant);
 	size_t index = constants.size() - 1;
 
-	lines.push_back(line);
+	write_line(line);
 	Instruction const_addr;
 	const_addr.index = index;
 	instructions.push_back(const_addr);
 }
 
 void Chunk::write(double _constant, int line) {
-	lines.push_back(line);
+	write_line(line);
 	Instruction instruction;
 	instruction.op_code = OP_CODE::CONST_FLOAT;
 	instructions.push_back(instruction);
@@ -42,14 +53,39 @@ void Chunk::write(double _constant, int line) {
 	constants.push_back(constant);
 	size_t index = constants.size() - 1;
 
-	lines.push_back(line);
+	write_line(line);
 	Instruction const_addr;
 	const_addr.index = index;
 	instructions.push_back(const_addr);
 }
 
+void Chunk::write_line(int line) {
+	Line last_line = lines.back();
+
+	if (last_line.line == line) {
+		last_line.repeat++;
+		lines.pop_back();
+		lines.push_back(last_line);
+	}
+	else {
+		Line new_line(1, line);
+		lines.push_back(new_line);
+	}
+}
+
 int Chunk::get_line(size_t index) {
-	return lines.at(index);
+	size_t current_index = 0;
+	for (Line line: lines) {
+		if (line.repeat > 0) {
+			current_index += static_cast<size_t>(line.repeat);
+			if (index <= current_index) {
+				return line.line;
+			}
+		}
+	}
+
+	// This shouldn't happen, right?
+	return lines.back().line + 1;
 }
 
 Instruction Chunk::get(size_t index) {

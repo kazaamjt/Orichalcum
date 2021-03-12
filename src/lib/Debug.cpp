@@ -14,7 +14,7 @@ static void print_line(int line) {
 	if (last_line != line) {
 		std::cout << std::left << std::setfill(' ') << std::setw(5) << line;
 	}
-	else std::cout << "|     ";
+	else std::cout << "|    ";
 	last_line = line;
 }
 
