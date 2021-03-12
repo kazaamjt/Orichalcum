@@ -47,10 +47,12 @@ This way multiple tasks can be executed in parallel.
 
 Technically, both, I guess?  
 Orchalcum compiles code to bytecode for it's own internal execution, and to speed up recompiles.  
-The resulting `output model` however is returned from executing said bytecode.  
-This means the internals look a lot like an interpreter.  
+Bytecode is then interpreted by an internal `Virtual Machine`.  
 External systems should not touch this bytecode.  
-Externally it looks a lot like a compiler because fo these traits.  
+
+The `output model` is returned from executing said bytecode.  
+This means the internals look a lot like an interpreter,
+while externally it looks a lot like a compiler.  
 
 ## Build command
 

@@ -15,11 +15,11 @@ class Log {
 public:
 	static void set_level(LogLevel level);
 
-	static void debug(std::string &msg);
-	static void verbose(std::string &msg);
-	static void info(std::string &msg);
-	static void warning(std::string &msg);
-	static void error(std::string &msg);
+	static void debug(const std::string &msg);
+	static void verbose(const std::string &msg);
+	static void info(const std::string &msg);
+	static void warning(const std::string &msg);
+	static void error(const std::string &msg);
 
 private:
 	static LogLevel level;
