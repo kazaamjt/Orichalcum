@@ -18,7 +18,8 @@ cc_library(
 	hdrs = glob(["src/lib/*.hpp"]),
 	srcs = glob(["src/lib/*.cpp"]),
 	deps = [
-		":rang"
+		":rang",
+		":cxxopts",
 	]
 )
 

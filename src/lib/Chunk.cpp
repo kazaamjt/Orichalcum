@@ -1,5 +1,6 @@
 #include "Chunk.hpp"
 
+#include "Log.hpp"
 #include "Misc.hpp"
 
 namespace OrichalcumLib {
@@ -15,6 +16,7 @@ Chunk::Chunk(size_t index): name(Misc::to_hex(index)) {
 }
 
 void Chunk::init() {
+	Log::debug("Initializing chunk " + name);
 	lines.push_back(Line(0, 0));
 }
 
@@ -73,6 +75,10 @@ void Chunk::write_line(int line) {
 	}
 }
 
+ChunkIterator Chunk::get_iterator() {
+	return instructions.begin();
+}
+
 int Chunk::get_line(size_t index) {
 	size_t current_index = 0;
 	for (Line line: lines) {
@@ -86,6 +92,10 @@ int Chunk::get_line(size_t index) {
 
 	// This shouldn't happen, right?
 	return lines.back().line + 1;
+}
+
+ChunkIterator Chunk::next(ChunkIterator iterator) {
+	return std::next(iterator);
 }
 
 Instruction Chunk::get(size_t index) {

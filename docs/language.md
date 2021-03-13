@@ -20,14 +20,14 @@ The lexer does not care wether the indentation is needed or mixed. (Mixed indent
 ## keywords
 
 ```txt
-and        as        assert      async
-await      break     continue    class
-def        del       elif        else
-except     False     finally     for
-from       global    if          import
-in         is        lambda      None
-nonlocal   not       or          pass
-raise      return    struct      switch
-True       try       while       with
-yield
+and          as           assert       async
+await        break        constraint   continue
+class        def          del          elif
+else         except       False        finally
+for          from         global       if
+import       in           is           lambda
+None         nonlocal     not          or
+pass         raise        return       struct
+switch       True         try          type
+while        with         yield
 ```

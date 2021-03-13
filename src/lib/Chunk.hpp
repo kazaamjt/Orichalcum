@@ -27,6 +27,8 @@ struct Line {
 	Line(int repeat, int line);
 };
 
+using ChunkIterator = std::vector<Instruction>::iterator;
+
 class Chunk {
 public:
 	Chunk(const std::string &name);
@@ -36,13 +38,14 @@ public:
 	void write(int64_t constant, int line);
 	void write(double constant, int line);
 
-	int get_line(size_t index);
+	ChunkIterator get_iterator();
+	ChunkIterator next(ChunkIterator iterator);
 	Instruction get(size_t index);
+	int get_line(size_t index);
 	int64_t get_int(size_t index);
 	double get_float(size_t index);
 
 	size_t size();
-
 	std::string name;
 
 private:
@@ -53,7 +56,6 @@ private:
 
 	void init();
 	void write_line(int line);
-
 };
 
 } // OrichalcumLib
