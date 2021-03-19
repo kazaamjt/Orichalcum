@@ -31,6 +31,7 @@ void VM::init_chunk(const Chunk &_chunk) {
 INTERPRET_RESULT VM::run() {
 	Log::debug("Vm is executing chunk " + chunk.name);
 	if (vm_debug) {
+		Debug::print_stack(stack);
 		Debug::disassemble_chunk(chunk);
 	}
 
@@ -38,28 +39,42 @@ INTERPRET_RESULT VM::run() {
 		increment();
 		switch(instruction.op_code) {
 			case OP_CODE::RETURN: {
+				Debug::print_const(stack.pop());
 				return INTERPRET_RESULT::OK;
 			}
 
-			case OP_CODE::CONST_INT: {
-				std::cout << get_const_int() << std::endl;
+			case OP_CODE::CONST: {
+				Constant constant = get_const();
+				stack.push(constant);
 			} break;
 
-			case OP_CODE::CONST_FLOAT: {
-				std::cout << get_const_float() << std::endl;
+			case OP_CODE::SUBTRACT: {
+				subtract();
 			} break;
 		}
 	}
 }
 
-int64_t VM::get_const_int() {
-	increment();
-	return chunk.get_int(instruction.index);
+void VM::subtract() {
+	Constant constant = stack.pop();
+	switch (constant.type) {
+		case CONSTANT_TYPE::INT: {
+			constant.value.int_ = -constant.value.int_;
+		} break;
+
+		case CONSTANT_TYPE::FLOAT: {
+			constant.value.float_ = -constant.value.float_;
+		} break;
+
+		// Failure
+		default: break;
+	}
+	stack.push(constant);
 }
 
-double VM::get_const_float() {
+Constant VM::get_const() {
 	increment();
-	return chunk.get_float(instruction.index);
+	return chunk.get_const(instruction.index);
 }
 
 // Gets the currents instruction, then increments the iterator

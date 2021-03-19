@@ -30,11 +30,11 @@ void Chunk::write(OP_CODE op_code, int line) {
 void Chunk::write(int64_t _constant, int line) {
 	write_line(line);
 	Instruction instruction;
-	instruction.op_code = OP_CODE::CONST_INT;
+	instruction.op_code = OP_CODE::CONST;
 	instructions.push_back(instruction);
 
 	Constant constant;
-	constant.int_ = _constant;
+	constant.value.int_ = _constant;
 	constants.push_back(constant);
 	size_t index = constants.size() - 1;
 
@@ -47,11 +47,11 @@ void Chunk::write(int64_t _constant, int line) {
 void Chunk::write(double _constant, int line) {
 	write_line(line);
 	Instruction instruction;
-	instruction.op_code = OP_CODE::CONST_FLOAT;
+	instruction.op_code = OP_CODE::CONST;
 	instructions.push_back(instruction);
 
 	Constant constant;
-	constant.float_ = _constant;
+	constant.value.float_ = _constant;
 	constants.push_back(constant);
 	size_t index = constants.size() - 1;
 
@@ -90,7 +90,7 @@ int Chunk::get_line(size_t index) {
 		}
 	}
 
-	// This shouldn't happen, right?
+	// This shouldn't ever happen, right?
 	return lines.back().line + 1;
 }
 
@@ -102,12 +102,8 @@ Instruction Chunk::get(size_t index) {
 	return instructions.at(index);
 }
 
-int64_t Chunk::get_int(size_t index) {
-	return constants.at(index).int_;
-}
-
-double Chunk::get_float(size_t index) {
-	return constants.at(index).float_;
+Constant Chunk::get_const(size_t index) {
+	return constants.at(index);
 }
 
 size_t Chunk::size() {

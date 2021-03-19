@@ -25,11 +25,13 @@ private:
 	Chunk chunk;
 	ChunkIterator chunk_iter;
 	Instruction instruction;
+	Stack<Constant> stack;
 
 	void init_chunk(const Chunk &chunk);
 	void increment();
 	INTERPRET_RESULT run();
-	int64_t get_const_int();
-	double get_const_float();
+	Constant get_const();
+
+	void subtract();
 };
 } // OrichalcumLib

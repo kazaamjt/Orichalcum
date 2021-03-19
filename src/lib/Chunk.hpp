@@ -6,8 +6,9 @@ namespace OrichalcumLib {
 
 enum class OP_CODE {
 	RETURN = 0,
-	CONST_INT = 1,
-	CONST_FLOAT = 2,
+	CONST = 1,
+
+	SUBTRACT = 2,
 };
 
 union Instruction {
@@ -15,9 +16,19 @@ union Instruction {
 	size_t index;
 };
 
-union Constant{
+enum class CONSTANT_TYPE {
+	INT,
+	FLOAT,
+};
+
+union ConstantValue {
 	int64_t int_;
 	double float_;
+};
+
+struct Constant {
+	CONSTANT_TYPE type;
+	ConstantValue value;
 };
 
 struct Line {
@@ -42,8 +53,7 @@ public:
 	ChunkIterator next(ChunkIterator iterator);
 	Instruction get(size_t index);
 	int get_line(size_t index);
-	int64_t get_int(size_t index);
-	double get_float(size_t index);
+	Constant get_const(size_t index);
 
 	size_t size();
 	std::string name;

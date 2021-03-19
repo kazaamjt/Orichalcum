@@ -29,30 +29,54 @@ void disassemble_chunk(Chunk &chunk) {
 }
 
 size_t disassemble_instruction(size_t index, Chunk &chunk) {
+	std::cout << Misc::to_hex(index);
 	print_line(chunk.get_line(index));
 	switch (chunk.get(index).op_code) {
 		case OP_CODE::RETURN: {
-			std::cout << Misc::to_hex(index) << " RETURN" << std::endl;
+			std::cout << " RETURN" << std::endl;
 		} break;
 
-		case OP_CODE::CONST_INT: {
-			std::cout << Misc::to_hex(index) << " CONST_INT" << std::endl;
+		case OP_CODE::CONST: {
+			std::cout << " CONST_INT" << std::endl;
 			size_t const_index = chunk.get(++index).index;
 			print_line(chunk.get_line(index));
 			std::cout << Misc::to_hex(index) << " CONST_INDEX => ";
-			std::cout << Misc::to_hex(const_index) << " = " << chunk.get_int(const_index) << std::endl;
+			std::cout << Misc::to_hex(const_index) << " = ";
+			print_const(chunk.get_const(const_index));
+			std::cout << std::endl;
 		} break;
 
-		case OP_CODE::CONST_FLOAT: {
-			std::cout << Misc::to_hex(index) << " CONST_FLOAT" << std::endl;
-			size_t const_index = chunk.get(++index).index;
-			print_line(chunk.get_line(index));
-			std::cout << Misc::to_hex(index) << " CONST_INDEX => ";
-			std::cout << Misc::to_hex(const_index) << " = " << chunk.get_float(const_index) << std::endl;
-		} break;
+		case OP_CODE::SUBTRACT: {
+			std::cout << "SUBTRACT" << std::endl;
+		}
 	}
 
 	return ++index;
+}
+
+void print_const(const Constant &constant) {
+	switch (constant.type) {
+		case CONSTANT_TYPE::INT: {
+			std::cout << constant.value.int_;
+		} break;
+
+		case CONSTANT_TYPE::FLOAT: {
+			std::cout << constant.value.float_;
+		} break;
+	}
+}
+
+template <typename T>
+void print_stack(Stack<T> stack) {
+	Log::debug("Current stack:");
+	std::cout << "[";
+	for (T constant: stack.internal) {
+		print_const(constant);
+		if (constant != stack.internal.end()) {
+			std::cout << " ";
+		}
+	}
+	std::cout << "]" << std::endl;
 }
 
 } // OrichalcumLib
