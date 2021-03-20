@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 
 #include "Misc.hpp"
 #include "Log.hpp"
@@ -11,11 +12,11 @@ namespace OrichalcumLib::Debug {
 static void print_line(int line) {
 	static int last_line = 0;
 	std::cout << "line ";
-	if (last_line != line) {
+	if (line != last_line) {
 		std::cout << std::left << std::setfill(' ') << std::setw(5) << line;
+		last_line = line;
 	}
 	else std::cout << "|    ";
-	last_line = line;
 }
 
 void disassemble_chunk(Chunk &chunk) {
@@ -29,15 +30,14 @@ void disassemble_chunk(Chunk &chunk) {
 }
 
 size_t disassemble_instruction(size_t index, Chunk &chunk) {
-	std::cout << Misc::to_hex(index);
 	print_line(chunk.get_line(index));
 	switch (chunk.get(index).op_code) {
 		case OP_CODE::RETURN: {
-			std::cout << " RETURN" << std::endl;
+			std::cout<< Misc::to_hex(index) << " RETURN" << std::endl;
 		} break;
 
 		case OP_CODE::CONST: {
-			std::cout << " CONST_INT" << std::endl;
+			std::cout<< Misc::to_hex(index) << " CONST_INT" << std::endl;
 			size_t const_index = chunk.get(++index).index;
 			print_line(chunk.get_line(index));
 			std::cout << Misc::to_hex(index) << " CONST_INDEX => ";
@@ -46,37 +46,51 @@ size_t disassemble_instruction(size_t index, Chunk &chunk) {
 			std::cout << std::endl;
 		} break;
 
+		case OP_CODE::NEGATE: {
+			std::cout<< Misc::to_hex(index) << " NEGATE" << std::endl;
+		} break;
+		case OP_CODE::ADD: {
+			std::cout<< Misc::to_hex(index) << " ADD" << std::endl;
+		} break;
 		case OP_CODE::SUBTRACT: {
-			std::cout << "SUBTRACT" << std::endl;
-		}
+			std::cout<< Misc::to_hex(index) << " SUBTRACT" << std::endl;
+		} break;
+		case OP_CODE::MULTIPLY: {
+			std::cout<< Misc::to_hex(index) << " MULTIPLY" << std::endl;
+		} break;
+		case OP_CODE::DIVIDE: {
+			std::cout<< Misc::to_hex(index) << " DIVIDE" << std::endl;
+		} break;
 	}
 
 	return ++index;
 }
 
-void print_const(const Constant &constant) {
+std::string to_string(const Constant &constant) {
 	switch (constant.type) {
-		case CONSTANT_TYPE::INT: {
-			std::cout << constant.value.int_;
-		} break;
-
-		case CONSTANT_TYPE::FLOAT: {
-			std::cout << constant.value.float_;
-		} break;
+		case CONSTANT_TYPE::INT:
+			return std::to_string(constant.value.int_);
+		case CONSTANT_TYPE::FLOAT:
+			return std::to_string(constant.value.float_);
 	}
 }
 
-template <typename T>
-void print_stack(Stack<T> stack) {
+void print_const(const Constant &constant) {
+	std::cout << to_string(constant);
+}
+
+void print_stack(ConstStack &stack) {
 	Log::debug("Current stack:");
 	std::cout << "[";
-	for (T constant: stack.internal) {
+	for (Constant constant: stack.internal) {
 		print_const(constant);
-		if (constant != stack.internal.end()) {
-			std::cout << " ";
-		}
+		std::cout << " ";
 	}
-	std::cout << "]" << std::endl;
+	if (stack.internal.size() > 0) {
+		std::cout << "\b]" << std::endl;
+	} else {
+		std::cout << " ]" << std::endl;
+	}
 }
 
 } // OrichalcumLib

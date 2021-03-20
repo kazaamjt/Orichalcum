@@ -34,6 +34,7 @@ void Chunk::write(int64_t _constant, int line) {
 	instructions.push_back(instruction);
 
 	Constant constant;
+	constant.type = CONSTANT_TYPE::INT;
 	constant.value.int_ = _constant;
 	constants.push_back(constant);
 	size_t index = constants.size() - 1;
@@ -51,6 +52,7 @@ void Chunk::write(double _constant, int line) {
 	instructions.push_back(instruction);
 
 	Constant constant;
+	constant.type = CONSTANT_TYPE::FLOAT;
 	constant.value.float_ = _constant;
 	constants.push_back(constant);
 	size_t index = constants.size() - 1;
@@ -84,7 +86,7 @@ int Chunk::get_line(size_t index) {
 	for (Line line: lines) {
 		if (line.repeat > 0) {
 			current_index += static_cast<size_t>(line.repeat);
-			if (index <= current_index) {
+			if (index + 1 <= current_index) {
 				return line.line;
 			}
 		}

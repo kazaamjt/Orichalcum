@@ -1,25 +1,22 @@
 #pragma once
 #include <vector>
 
+#include "Chunk.hpp"
+
 namespace OrichalcumLib {
 
-template <typename T>
-class Stack {
-public:
-	void push(const T &value) {
+struct ConstStack {
+	void push(const Constant &value) {
 		internal.push_back(value);
 	}
 
-	T pop() {
-		T value = internal.back();
+	Constant pop() {
+		Constant value = internal.back();
 		internal.pop_back();
 		return value;
 	}
 
-private:
-	friend void print_stack(Stack<T> stack);
-	std::vector<T> internal;
-
+	std::vector<Constant> internal;
 };
 
 } // namespace OrichalcumLib

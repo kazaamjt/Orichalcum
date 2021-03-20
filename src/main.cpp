@@ -30,12 +30,17 @@ inline OrichalcumLib::CompilerOptions init_options(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
 	OrichalcumLib::CompilerOptions compiler_options = init_options(argc, argv);
 	OrichalcumLib::VM vm;
-	vm.enable_debug();
+	if (compiler_options.debug_vm) vm.enable_debug();
 
 	OrichalcumLib::Chunk chunk("test");
-	chunk.write(static_cast<double>(0.001f), 1);
-	chunk.write(OrichalcumLib::OP_CODE::SUBTRACT, 2);
-	chunk.write(static_cast<int64_t>(2021), 3);
+	chunk.write(static_cast<int64_t>(2020), 2);
+	chunk.write(static_cast<int64_t>(12), 2);
+	chunk.write(OrichalcumLib::OP_CODE::ADD, 2);
+
+	chunk.write(static_cast<int64_t>(4), 2);
+	chunk.write(OrichalcumLib::OP_CODE::DIVIDE, 2);
+
+	chunk.write(OrichalcumLib::OP_CODE::NEGATE, 2);
 	chunk.write(OrichalcumLib::OP_CODE::RETURN, 4);
 
 	vm.interpret(chunk);

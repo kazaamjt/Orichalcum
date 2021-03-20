@@ -5,10 +5,14 @@
 namespace OrichalcumLib {
 
 enum class OP_CODE {
-	RETURN = 0,
-	CONST = 1,
+	RETURN,
+	CONST,
 
-	SUBTRACT = 2,
+	NEGATE,
+	ADD,
+	SUBTRACT,
+	MULTIPLY,
+	DIVIDE,
 };
 
 union Instruction {

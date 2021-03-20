@@ -39,7 +39,9 @@ INTERPRET_RESULT VM::run() {
 		increment();
 		switch(instruction.op_code) {
 			case OP_CODE::RETURN: {
+				std::cout << "CHUNK RETURNED ";
 				Debug::print_const(stack.pop());
+				std::cout << std::endl;
 				return INTERPRET_RESULT::OK;
 			}
 
@@ -48,9 +50,13 @@ INTERPRET_RESULT VM::run() {
 				stack.push(constant);
 			} break;
 
-			case OP_CODE::SUBTRACT: {
+			case OP_CODE::NEGATE: {
 				subtract();
 			} break;
+			case OP_CODE::ADD: binary_op(BINARY_OP::ADD);break;
+			case OP_CODE::SUBTRACT: binary_op(BINARY_OP::SUBTRACT);break;
+			case OP_CODE::MULTIPLY: binary_op(BINARY_OP::MULTIPLY);break;
+			case OP_CODE::DIVIDE: binary_op(BINARY_OP::DIVIDE);break;
 		}
 	}
 }
@@ -65,12 +71,64 @@ void VM::subtract() {
 		case CONSTANT_TYPE::FLOAT: {
 			constant.value.float_ = -constant.value.float_;
 		} break;
-
-		// Failure
-		default: break;
 	}
 	stack.push(constant);
 }
+
+void VM::binary_op(BINARY_OP op) {
+	// b first, this is important
+	Constant const_b = stack.pop();
+	Constant const_a = stack.pop();
+	Constant const_c;
+	switch (const_a.type) {
+		case CONSTANT_TYPE::INT: {
+			switch (const_b.type) {
+				case CONSTANT_TYPE::INT: {
+					const_c.type = CONSTANT_TYPE::INT;
+					const_c.value.int_ = calc(op, const_a.value.int_, const_b.value.int_);
+				} break;
+				case CONSTANT_TYPE::FLOAT: {
+					// warning
+					const_c.type = CONSTANT_TYPE::FLOAT;
+					const_c.value.float_ = calc(op, static_cast<double>(const_a.value.int_), const_b.value.float_);
+				} break;
+			}
+		} break;
+		case CONSTANT_TYPE::FLOAT: {
+			switch (const_b.type) {
+				case CONSTANT_TYPE::INT: {
+					// warning
+					const_c.type = CONSTANT_TYPE::FLOAT;
+					const_c.value.float_ = calc(op, const_a.value.float_, static_cast<double>(const_b.value.int_));
+				} break;
+				case CONSTANT_TYPE::FLOAT: {
+					const_c.type = CONSTANT_TYPE::FLOAT;
+					const_c.value.float_ = calc(op, const_a.value.float_, const_b.value.float_);
+				} break;
+			}
+		} break;
+	}
+	stack.push(const_c);
+}
+
+int64_t VM::calc(BINARY_OP op, int64_t a, int64_t b) {
+	switch (op) {
+		case BINARY_OP::ADD: return a + b;
+		case BINARY_OP::SUBTRACT: return a - b;
+		case BINARY_OP::MULTIPLY: return a * b;
+		case BINARY_OP::DIVIDE: return a / b;
+	}
+}
+
+double VM::calc(BINARY_OP op, double a, double b) {
+	switch (op) {
+		case BINARY_OP::ADD: return a + b;
+		case BINARY_OP::SUBTRACT: return a - b;
+		case BINARY_OP::MULTIPLY: return a * b;
+		case BINARY_OP::DIVIDE: return a / b;
+	}
+}
+
 
 Constant VM::get_const() {
 	increment();
