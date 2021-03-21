@@ -1,7 +1,8 @@
 #pragma once
+#include <exception>
+#include <filesystem>
 #include <string>
 #include <vector>
-#include <exception>
 
 namespace OrichalcumLib {
 
@@ -82,7 +83,7 @@ struct Token {
 
 class Lexer {
 public:
-	Lexer(const std::string &file);
+	Lexer(const std::filesystem::path &file);
 
 	Token get_next_token();
 
@@ -97,9 +98,9 @@ private:
 
 class FailedToRead: public std::exception {
 public:
-	std::string file;
+	std::filesystem::path file;
 
-	FailedToRead(const char *msg, const std::string &_file):
+	FailedToRead(const char *msg, const std::filesystem::path &_file):
 		std::exception(msg),
 		file(_file) { }
 };

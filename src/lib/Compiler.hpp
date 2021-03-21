@@ -1,4 +1,5 @@
 #pragma once
+#include <filesystem>
 #include <memory>
 #include <string>
 
@@ -7,29 +8,32 @@
 
 namespace OrichalcumLib {
 
-enum class CompileResult {
-	COMPILE_OK,
-	LEXER_ERROR,
+enum class COMPILE_RESULT {
+	OK,
 	PARSER_ERROR,
 	RUNTIME_ERROR,
 };
 
 struct CompilerReport {
-	CompileResult result;
+	COMPILE_RESULT result;
 };
 
 struct CompilerOptions {
-	bool debug_vm;
+	std::string file = "";
+	bool debug_vm = false;
 };
 
 class Compiler {
 public:
-	Compiler(const std::string &file);
+	Compiler(CompilerOptions options);
+	CompilerReport compile();
 
 private:
 	std::unique_ptr<Lexer> lexer;
 	std::unique_ptr<VM> vm;
 
+	CompilerOptions options;
+	std::filesystem::path main_module;
 };
 
 } // namespace Orichalcum

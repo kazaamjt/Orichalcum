@@ -19,9 +19,12 @@ void Index::set(int _line, int _col) {
 	col = _col;
 }
 
-Lexer::Lexer(const std::string &file):
+Lexer::Lexer(const std::filesystem::path &file):
 	line(0), col(-1)
 {
+	if (file.empty()) {
+		throw FailedToRead("ERROR: No such file" , file);
+	}
 	std::ifstream input(file);
 	if (!input.is_open()) {
 		throw FailedToRead("ERROR: Failed to read file" , file);
