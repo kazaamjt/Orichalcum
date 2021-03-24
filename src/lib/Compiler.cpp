@@ -22,7 +22,7 @@ Compiler::Compiler(CompilerOptions _options): options(_options) {
 
 CompilerReport Compiler::compile() {
 	CompilerReport report;
-	report.result == COMPILE_RESULT::OK;
+	report.result = COMPILE_RESULT::OK;
 
 	return report;
 }

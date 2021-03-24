@@ -96,12 +96,15 @@ private:
 	Token scan_identifier(const std::string &identifier, Index index);
 };
 
-class FailedToRead: public std::exception {
+class FailedToRead: public std::runtime_error  {
+protected:
+	std::string msg_;
+
 public:
 	std::filesystem::path file;
 
-	FailedToRead(const char *msg, const std::filesystem::path &_file):
-		std::exception(msg),
+	FailedToRead(const std::string &msg, const std::filesystem::path &_file):
+		std::runtime_error::runtime_error (msg),
 		file(_file) { }
 };
 

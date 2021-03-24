@@ -1,7 +1,7 @@
 #include <cxxopts.hpp>
 
-#include "lib\Compiler.hpp"
-#include "lib\Log.hpp"
+#include "lib/Compiler.hpp"
+#include "lib/Log.hpp"
 
 inline OrichalcumLib::CompilerOptions init_options(int argc, char *argv[]) {
 	OrichalcumLib::CompilerOptions compiler_options;

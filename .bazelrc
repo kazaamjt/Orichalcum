@@ -6,6 +6,8 @@ build:cl --linkopt shell32.lib
 build:clang-cl --copt /clang:-m64
 build:clang-cl --copt /clang:-std=c++17
 build:clang-cl --copt /clang:-Weverything
+build:clang-cl --copt /clang:-Wno-padded
+build:clang-cl --copt /clang:-Wno-weak-vtables
 build:clang-cl --copt /clang:-Wno-c++98-compat
 build:clang-cl --copt /clang:-Wno-c++98-compat-pedantic
 build:clang-cl --copt /clang:--system-header-prefix=cxxopts
@@ -14,7 +16,13 @@ build:clang-cl --copt /clang:--system-header-prefix=rang
 build:clang --copt -m64
 build:clang --copt -std=c++17
 build:clang --copt -Weverything
+build:clang --copt -Wno-padded
+build:clang --copt -Wno-weak-vtables
 build:clang --copt -Wno-c++98-compat
 build:clang --copt -Wno-c++98-compat-pedantic
 build:clang --copt --system-header-prefix=cxxopts
 build:clang --copt --system-header-prefix=rang
+
+build:gcc --copt -m64
+build:gcc --copt -std=c++17
+build:gcc --copt -Wall

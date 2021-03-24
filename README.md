@@ -17,31 +17,30 @@ Some (potential) use cases:
 - Build automation systems (e.g. jenkins)
 - Orchestration tools (e.g. Terraform)
 - Build tools (make, bazel is a big inspiration)
-- maybe even software that has complex config requirements, like webservers?  
+- Software that has complex config requirements, like webservers?
 
 ## GOALS
 
-- Easy to understand/use  
-
-Python is very big in DevOps, this I'll try to make this language look as much like Python,
+- Easy to understand/use:  
+Python is very big in DevOps, and I'm very familiar with Python,  
+thusly I'll try to make this language look as much like Python,
 so it is easy to pick up for anyone familiar with python.  
 Potential pitfalls and hard to understand concepts should be avoided.  
 Jenkins and it's jenkinsfiles come to mind as an example of what not to do here.  
 
 - Deterministic evaluation  
-
 Executing the same code twice should give the same result. Looking at you Terraform.  
 
-- hermetic execution
-
-Execution cannot access the file system, network, system clock. It is safe to execute untrusted code.  
+- Hermetic execution
+Execution cannot access the file system, network, or system clock, by default.  
+It should be safe to execute untrusted code.  
 Ofcourse, what comes out is a set of instructions for the system it is embeded in,
-which might access any of these systems.  
+which might access any of these systems and not be safe anymore.  
 
-- Parallel output model
-
+- Output model
 The `output model` has a set of tasks that each have dependencies.  
 This way multiple tasks can be executed in parallel.  
+It has to be in a format that is easy to parse by humans and machines alike.  
 
 ## Compiler or Interpreter?
 
@@ -65,7 +64,17 @@ cl on Windows:
 `bazel build main --config=cl --keep_going`
 
 clang on Linux:
-`bazel build main --config=clang --compiler=clang --keep_going`
+`CC=clang bazel build main --config=clang --keep_going`
+
+gcc on Linux:
+`bazel build main --config=gcc --keep_going`
+
+NOTES:
+- On Linux gcc 9 or up is required. This is due to the internals using `std::filesystem`
+(Debian 10 is known not to work out of the box, Ubuntu 20.4 does)
+- While gcc on Linux should compile, the focus is Clang because it emits less false positives
+and is available cross-platform. In other words, using GCC might result in a bunch of warnings.  
+
 
 ## Resources
 
