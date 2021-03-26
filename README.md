@@ -57,24 +57,30 @@ while externally it looks a lot like a compiler.
 
 Requires bazel and a suitable C++ compiler to build. (gcc, clang or Visual C++)  
 
-clang-cl on Windows:
-`bazel build main --config=clang-cl --compiler=clang-cl --keep_going`
+clang-cl on Windows:  
+`bazel build main --config=clang-cl --compiler=clang-cl --keep_going`  
 
-cl on Windows:
-`bazel build main --config=cl --keep_going`
+cl on Windows:  
+`bazel build main --config=cl --keep_going`  
 
-clang on Linux:
-`CC=clang bazel build main --config=clang --keep_going`
+clang on Linux:  
+`CC=clang bazel build main --config=clang --keep_going`  
 
-gcc on Linux:
-`bazel build main --config=gcc --keep_going`
+gcc on Linux:  
+`bazel build main --config=gcc --keep_going`  
 
 NOTES:
-- On Linux gcc 9 or up is required. This is due to the internals using `std::filesystem`
-(Debian 10 is known not to work out of the box, Ubuntu 20.4 does)
+
+- On Linux gcc 9 or up is required. This is due to the internals using `std::filesystem`  
+(Debian 10 is known not to work out of the box, Ubuntu 20.4 and Debian 11 do)  
 - While gcc on Linux should compile, the focus is Clang because it emits less false positives
 and is available cross-platform. In other words, using GCC might result in a bunch of warnings.  
 
+### Cross build
+
+A docker image with the required tools is provided to perform a Linux build on a Windows host.  
+Build the image using `docker build -t orichalcum-build-linux-x64_86 .`  
+Then run the provided script (from the project root): `scripts/linux_cross_build.ps1`  
 
 ## Resources
 
