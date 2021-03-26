@@ -10,7 +10,7 @@ inline OrichalcumLib::CompilerOptions init_options(int argc, char *argv[]) {
 		.positional_help("[Positional args]")
 		.show_positional_help();
 	options.add_options()
-		("f,file", "File to use as input [Positional]", cxxopts::value<std::string>())
+		("f,file", "[Positional] File to use as input", cxxopts::value<std::string>())
 		("debug-vm", "Enable debugging")
 		("h,help", "Prints this help message")
 	;
@@ -30,8 +30,7 @@ inline OrichalcumLib::CompilerOptions init_options(int argc, char *argv[]) {
 	if (result.count("file")) {
 		compiler_options.file = result["file"].as<std::string>();
 	} else {
-		std::cout << options.help() << std::endl;
-		exit(1);
+		compiler_options.repl = true;
 	}
 
 	return compiler_options;
@@ -40,6 +39,7 @@ inline OrichalcumLib::CompilerOptions init_options(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
 	OrichalcumLib::CompilerOptions compiler_options = init_options(argc, argv);
 	OrichalcumLib::Compiler compiler(compiler_options);
+	compiler.run();
 
 	return 0;
 }

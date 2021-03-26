@@ -30,12 +30,12 @@ void Log::info(const std::string &msg) {
 
 void Log::warning(const std::string &msg) {
 	if (level >= LogLevel::WARNING) {
-		std::cout << rang::fg::yellow << "WARNING: " << rang::fg::reset << msg << std::endl;
+		std::cerr << rang::fg::yellow << "WARNING: " << rang::fg::reset << msg << std::endl;
 	}
 }
 
 void Log::error(const std::string &msg) {
-	std::cout << rang::fg::red << "ERROR: " << rang::fg::reset << msg << std::endl;
+	std::cerr << rang::fg::red << "ERROR: " << rang::fg::reset << msg << std::endl;
 }
 
 } // lib

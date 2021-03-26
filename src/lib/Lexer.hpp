@@ -84,6 +84,7 @@ struct Token {
 class Lexer {
 public:
 	Lexer(const std::filesystem::path &file);
+	Lexer(const std::string &content);
 
 	Token get_next_token();
 
@@ -96,7 +97,7 @@ private:
 	Token scan_identifier(const std::string &identifier, Index index);
 };
 
-class FailedToRead: public std::runtime_error  {
+class FailedToRead: public std::runtime_error {
 protected:
 	std::string msg_;
 

@@ -19,18 +19,21 @@ struct CompilerReport {
 };
 
 struct CompilerOptions {
-	std::string file = "";
+	std::string file;
 	bool debug_vm = false;
+	bool repl = false;
 };
 
 class Compiler {
 public:
 	Compiler(CompilerOptions options);
-	CompilerReport compile();
+	CompilerReport run();
 
 private:
 	std::unique_ptr<Lexer> lexer;
 	std::unique_ptr<VM> vm;
+
+	void repl();
 
 	CompilerOptions options;
 	std::filesystem::path main_module;

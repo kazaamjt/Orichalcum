@@ -31,13 +31,13 @@ Jenkins and it's jenkinsfiles come to mind as an example of what not to do here.
 - Deterministic evaluation  
 Executing the same code twice should give the same result. Looking at you Terraform.  
 
-- Hermetic execution
+- Hermetic execution  
 Execution cannot access the file system, network, or system clock, by default.  
 It should be safe to execute untrusted code.  
 Ofcourse, what comes out is a set of instructions for the system it is embeded in,
 which might access any of these systems and not be safe anymore.  
 
-- Output model
+- Output model  
 The `output model` has a set of tasks that each have dependencies.  
 This way multiple tasks can be executed in parallel.  
 It has to be in a format that is easy to parse by humans and machines alike.  

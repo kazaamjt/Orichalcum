@@ -38,6 +38,13 @@ Lexer::Lexer(const std::filesystem::path &file):
 	bytes.push_back(EOF);
 }
 
+Lexer::Lexer(const std::string &content) {
+	for (char c: content) {
+		bytes.push_back(c);
+	}
+	bytes.push_back(EOF);
+}
+
 char Lexer::next_char() {
 	static size_t i = 0;
 	char next = bytes[i];
