@@ -23,6 +23,7 @@ struct CompilerReport {
 struct CompilerOptions {
 	std::filesystem::path file;
 	bool debug_vm = false;
+	bool debug_lexer = false;
 	bool repl = false;
 };
 
@@ -32,12 +33,13 @@ public:
 	CompilerReport run();
 
 private:
-	std::unique_ptr<VM> vm;
+	std::unique_ptr<VM> vm = std::make_unique<VM>();
 
-	CompilerReport run_unsafe();
+	CompilerReport run_file();
 	void repl();
 
 	CompilerOptions options;
+	std::filesystem::path current_file;
 	std::filesystem::path main_module;
 };
 

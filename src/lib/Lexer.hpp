@@ -98,13 +98,16 @@ public:
 	Lexer(const std::string &content);
 
 	Token get_next_token();
+	void enable_debug();
 
 private:
 	std::vector<char> bytes;
 	int line;
 	int col;
+	bool debug = false;
 
 	char next_char();
+	Token get_token();
 	Token scan_identifier(const std::string &identifier, Index index);
 };
 

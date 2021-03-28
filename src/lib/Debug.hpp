@@ -4,9 +4,11 @@
 #include "Chunk.hpp"
 #include "data_structures.hpp"
 #include "Lexer.hpp"
+#include "Lexer.hpp"
 
 namespace OrichalcumLib::Debug {
 
+void print_token(const Token &token);
 void disassemble_chunk(Chunk &chunk);
 size_t disassemble_instruction(size_t index, Chunk &chunk);
 

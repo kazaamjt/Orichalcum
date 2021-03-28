@@ -28,7 +28,7 @@ public:
 	InterpretReport interpret(const Chunk &chunk);
 
 private:
-	bool vm_debug;
+	bool vm_debug = false;
 
 	Chunk chunk;
 	ChunkIterator chunk_iter;

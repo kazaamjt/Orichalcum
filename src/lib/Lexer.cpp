@@ -3,12 +3,14 @@
 #include <fstream>
 #include <iostream>
 
+#include "Debug.hpp"
+
 namespace OrichalcumLib {
 
 Token::Token():
 	index(Index(0,0)), type(TOKEN_TYPE::EMPTY), content("") { }
 
-Token::Token(Index _index, TOKEN_TYPE _type, const std::string &_content=""):
+Token::Token(Index _index, TOKEN_TYPE _type, const std::string &_content):
 	index(_index), type(_type), content(_content) { }
 
 Index::Index(int _line, int _col):
@@ -44,6 +46,10 @@ Lexer::Lexer(const std::string &content) {
 	bytes.push_back(EOF);
 }
 
+void Lexer::enable_debug() {
+	debug = true;
+}
+
 char Lexer::next_char() {
 	static size_t i = 0;
 	char next = bytes[i];
@@ -58,6 +64,12 @@ char Lexer::next_char() {
 }
 
 Token Lexer::get_next_token() {
+	Token token = get_token();
+	if (debug) Debug::print_token(token);
+	return token;
+}
+
+Token Lexer::get_token() {
 	static char current = next_char();
 	Index index(line, col);
 
@@ -193,19 +205,19 @@ Token Lexer::get_next_token() {
 	switch (current) {
 		case '(': {
 			current = next_char();
-			return Token(index, TOKEN_TYPE::LEFT_PAREN);
+			return Token(index, TOKEN_TYPE::LEFT_PAREN, "(");
 		}
 		case ')': {
 			current = next_char();
-			return Token(index, TOKEN_TYPE::RIGHT_PAREN);
+			return Token(index, TOKEN_TYPE::RIGHT_PAREN, ")");
 		}
 		case ',': {
 			current = next_char();
-			return Token(index, TOKEN_TYPE::COMMA);
+			return Token(index, TOKEN_TYPE::COMMA, ",");
 		}
 		case '.': {
 			current = next_char();
-			return Token(index, TOKEN_TYPE::DOT);
+			return Token(index, TOKEN_TYPE::DOT, ".");
 		}
 
 		case '"': {

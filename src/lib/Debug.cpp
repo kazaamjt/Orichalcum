@@ -9,6 +9,14 @@
 
 namespace OrichalcumLib::Debug {
 
+void print_token(const Token &token) {
+	Log::debug(
+		"(" + std::to_string(token.index.line + 1) + ","
+		+ std::to_string(token.index.col + 1) + ") "
+		+ to_string(token.type) + " " + token.content
+	);
+}
+
 static void print_line(int line) {
 	static int last_line = 0;
 	std::cout << "line ";

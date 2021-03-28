@@ -12,6 +12,7 @@ Compiler::Compiler(CompilerOptions _options): options(_options) {
 	if (options.repl) {
 		main_module = std::filesystem::current_path();
 	} else {
+		current_file = options.file;
 		main_module = options.file.parent_path();
 	}
 }
@@ -25,7 +26,7 @@ static COMPILE_RESULT section_to_result(Misc::COMPILER_SECTION section) {
 
 CompilerReport Compiler::run() {
 	try {
-		return run_unsafe();
+		return run_file();
 	}
 	catch(const Misc::CompileError &error) {
 		CompilerReport report;
@@ -35,28 +36,16 @@ CompilerReport Compiler::run() {
 	}
 }
 
-CompilerReport Compiler::run_unsafe() {
+CompilerReport Compiler::run_file() {
 	CompilerReport report;
 	report.result = COMPILE_RESULT::OK;
 
 	if (options.repl) {
 		repl();
 	} else {
-		Lexer lexer(options.file);
+		Lexer lexer(current_file);
+		if (options.debug_lexer) lexer.enable_debug();
 		Token token = lexer.get_next_token();
-		int line = -1;
-		while (token.type != TOKEN_TYPE::EOF_TOKEN) {
-			if (token.index.line == line) {
-				std::cout << "    |";
-			} else {
-				std::cout << std::right << std::setfill(' ') << std::setw(5) << token.index.line + 1;
-				line = token.index.line;
-			}
-			std::cout << " " << Debug::to_string(token.type) << " " << token.content << std::endl;
-
-			token = lexer.get_next_token();
-		}
-		std::cout << "    - " << Debug::to_string(token.type) << std::endl;
 	}
 
 	return report;
