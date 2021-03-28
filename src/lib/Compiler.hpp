@@ -5,6 +5,7 @@
 
 #include "Lexer.hpp"
 #include "VM.hpp"
+#include "Misc.hpp"
 
 namespace OrichalcumLib {
 
@@ -16,10 +17,11 @@ enum class COMPILE_RESULT {
 
 struct CompilerReport {
 	COMPILE_RESULT result;
+	Misc::CompileError error;
 };
 
 struct CompilerOptions {
-	std::string file;
+	std::filesystem::path file;
 	bool debug_vm = false;
 	bool repl = false;
 };
@@ -30,9 +32,9 @@ public:
 	CompilerReport run();
 
 private:
-	std::unique_ptr<Lexer> lexer;
 	std::unique_ptr<VM> vm;
 
+	CompilerReport run_unsafe();
 	void repl();
 
 	CompilerOptions options;

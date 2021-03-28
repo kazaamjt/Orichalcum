@@ -1,2 +1,4 @@
 def test(col: int, line: int) -> None:
 	pass
+
+test_string = "this is a test"

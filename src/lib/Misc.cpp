@@ -11,4 +11,13 @@ std::string to_hex(size_t number, int width) {
 	return stream.str();
 }
 
+CompileError::CompileError():
+std::runtime_error::runtime_error ("This error was not initialized properly") { }
+
+CompileError::CompileError(
+	const std::string &_msg, const std::filesystem::path &_file, COMPILER_SECTION _section):
+std::runtime_error::runtime_error(_msg), msg(_msg), file(_file), section(_section) {
+
+}
+
 } // OrichalcumLib

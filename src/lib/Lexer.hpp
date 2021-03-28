@@ -6,24 +6,40 @@
 
 namespace OrichalcumLib {
 
-enum class TokenType {
-	EMPTY, // purely used to initialize tokens without data
+enum class TOKEN_TYPE {
+	// Special Tokens
+	EMPTY, // used to initialize tokens without data
 	EOF_TOKEN,
-	INDENT,
+	UNKNOWN,
 
+	// Gramatical Structures
+	INDENT,
+	RETURN_TYPE_SIGN,
+	IDENTIFIER,
+	LEFT_PAREN,
+	RIGHT_PAREN,
+	COMMA,
+	DOT,
+
+	// Operators
 	ASIGNMENT_OP,
 	ARITHMATIC_OP,
 	COMPARISON_OP,
 	NOT_OP,
+
+	//Base types
 	FLOAT,
 	INTEGER,
+	STRING,
 
+	// Reserved words
 	AND,
 	AS,
 	ASSERT,
 	ASYNC,
 	AWAIT,
 	BREAK,
+	CONSTRAINT,
 	CONTINUE,
 	CLASS,
 	DEF,
@@ -54,11 +70,6 @@ enum class TokenType {
 	WHILE,
 	WITH,
 	YIELD,
-
-	RETURN_SIGN,
-	IDENTIFIER,
-
-	UNKNOWN
 };
 
 
@@ -73,10 +84,10 @@ struct Index{
 
 struct Token {
 	Token();
-	Token(Index index, TokenType type, const std::string &content);
+	Token(Index index, TOKEN_TYPE type, const std::string &content);
 
 	Index index;
-	TokenType type;
+	TOKEN_TYPE type;
 	std::string content;
 };
 
@@ -95,18 +106,6 @@ private:
 
 	char next_char();
 	Token scan_identifier(const std::string &identifier, Index index);
-};
-
-class FailedToRead: public std::runtime_error {
-protected:
-	std::string msg_;
-
-public:
-	std::filesystem::path file;
-
-	FailedToRead(const std::string &msg, const std::filesystem::path &_file):
-		std::runtime_error::runtime_error (msg),
-		file(_file) { }
 };
 
 } // namespace OrichalcumLib

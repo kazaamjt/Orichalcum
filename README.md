@@ -82,6 +82,8 @@ A docker image with the required tools is provided to perform a Linux build on a
 Build the image using `docker build -t orichalcum-build-linux-x64_86 .`  
 Then run the provided script (from the project root): `scripts/linux_cross_build.ps1`  
 
+The artifacts resulting from this build are not kept currently.  
+
 ## Resources
 
 Things I read that helped quite a bit:
