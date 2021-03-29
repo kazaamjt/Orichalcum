@@ -1,3 +1,5 @@
-.vscode
-bazel-*
-linux-build
+.vscode/
+bazel-*/
+linux-build/
+build/
+.mypy_cache/

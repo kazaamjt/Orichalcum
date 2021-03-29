@@ -3,6 +3,11 @@ build:cl --copt /W4
 build:cl --linkopt /SUBSYSTEM:CONSOLE
 build:cl --linkopt shell32.lib
 
+build:DLL --copt /std:c++17
+build:DLL --copt /W0
+build:DLL --linkopt /SUBSYSTEM:CONSOLE
+build:DLL --linkopt shell32.lib
+
 build:clang-cl --copt /clang:-m64
 build:clang-cl --copt /clang:-std=c++17
 build:clang-cl --copt /clang:-Weverything

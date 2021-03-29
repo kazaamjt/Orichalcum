@@ -5,11 +5,26 @@ alias(
 	actual = ":Orichalcum"
 )
 
+alias(
+	name = "DLL",
+	actual = ":OrichalcumLib"
+)
+
 cc_binary(
 	name = "Orichalcum",
 	srcs = ["src/main.cpp"],
 	deps = [
 		":lib",
+	],
+	linkstatic=True,
+)
+
+cc_binary(
+	name = "OrichalcumLib",
+	linkshared = True,
+	linkstatic=True,
+	deps = [
+		":lib"
 	],
 )
 
