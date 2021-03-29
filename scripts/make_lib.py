@@ -16,7 +16,7 @@ def make_windows() -> None:
 		shutil.rmtree(output_dir)
 	output_dir.mkdir()
 	shutil.copy(
-		ROOT_DIR.joinpath("bazel-bin/OrichalcumLib.dll"),
+		ROOT_DIR.joinpath("bazel-bin/DLL.dll"),
 		output_dir.joinpath("OrichalcumLib.dll")
 	)
 	recurse_copy_headers(
