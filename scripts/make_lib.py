@@ -1,3 +1,4 @@
+import os
 import platform
 import shutil
 import subprocess
@@ -9,8 +10,8 @@ BUILD_DIR = ROOT_DIR.joinpath("build")
 
 
 def make_windows() -> None:
-	subprocess.check_output("bazel build DLL --config=DLL")
-	output_dir = BUILD_DIR.joinpath("OrichalcumLib-windows-x86_64")
+	subprocess.check_output(["bazel", "build", "DLL", "--config=DLL"])
+	output_dir = BUILD_DIR.joinpath("OrichalcumLib-Windows-x86_64")
 	if output_dir.exists():
 		shutil.rmtree(output_dir)
 	output_dir.mkdir()
@@ -26,7 +27,29 @@ def make_windows() -> None:
 
 
 def make_linux() -> None:
-	raise NotImplemented
+	env = os.environ.copy()
+	env["CC"] = "clang"
+	subprocess.check_output(
+		["bazel", "build", "lib", "--config=clang"],
+		env=env
+	)
+	output_dir = BUILD_DIR.joinpath("OrichalcumLib-Linux-x86_64")
+	if output_dir.exists():
+		shutil.rmtree(output_dir)
+	output_dir.mkdir()
+	shutil.copy(
+		ROOT_DIR.joinpath("bazel-bin/liblib.so"),
+		output_dir.joinpath("lib_orichalcum.so")
+	)
+	shutil.copy(
+		ROOT_DIR.joinpath("bazel-bin/liblib.a"),
+		output_dir.joinpath("lib_orichalcum.a")
+	)
+	recurse_copy_headers(
+		ROOT_DIR.joinpath("src/lib"),
+		output_dir.joinpath("include")
+	)
+	shutil.make_archive(str(output_dir), "xztar", output_dir)
 
 
 def recurse_copy_headers(src: Path, dest: Path) -> None:
@@ -42,7 +65,7 @@ def recurse_copy_headers(src: Path, dest: Path) -> None:
 def main() -> None:
 	if not BUILD_DIR.exists():
 		BUILD_DIR.mkdir()
-	subprocess.check_output("bazel clean")
+	subprocess.check_output(["bazel", "clean"])
 	if platform.system() == "Windows":
 		make_windows()
 	elif platform.system() == "Linux":

@@ -27,6 +27,8 @@ build:clang --copt -Wno-c++98-compat
 build:clang --copt -Wno-c++98-compat-pedantic
 build:clang --copt --system-header-prefix=cxxopts
 build:clang --copt --system-header-prefix=rang
+build:clang --linkopt -static
+build:clang --linkopt -static-libgcc
 
 build:gcc --copt -m64
 build:gcc --copt -std=c++17

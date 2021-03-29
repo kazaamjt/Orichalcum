@@ -1,5 +1,5 @@
 .vscode/
-bazel-*/
+bazel-*
 linux-build/
 build/
 .mypy_cache/

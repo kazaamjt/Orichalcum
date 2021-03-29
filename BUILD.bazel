@@ -5,11 +5,6 @@ alias(
 	actual = ":Orichalcum"
 )
 
-alias(
-	name = "DLL",
-	actual = ":OrichalcumLib"
-)
-
 cc_binary(
 	name = "Orichalcum",
 	srcs = ["src/main.cpp"],
@@ -20,9 +15,9 @@ cc_binary(
 )
 
 cc_binary(
-	name = "OrichalcumLib",
+	name = "DLL",
 	linkshared = True,
-	linkstatic=True,
+	linkstatic = True,
 	deps = [
 		":lib"
 	],
@@ -35,7 +30,7 @@ cc_library(
 	deps = [
 		":rang",
 		":cxxopts",
-	]
+	],
 )
 
 ######################
