@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-namespace OrichalcumLib {
+namespace LibOrichalcum {
 
 enum class OP_CODE {
 	RETURN,
@@ -72,4 +72,4 @@ private:
 	void write_line(int line);
 };
 
-} // OrichalcumLib
+} // LibOrichalcum

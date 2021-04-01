@@ -5,7 +5,7 @@
 
 #include "Debug.hpp"
 
-namespace OrichalcumLib {
+namespace LibOrichalcum {
 
 Token::Token():
 	index(Index(0,0)), type(TOKEN_TYPE::EMPTY), content("") { }
@@ -21,8 +21,11 @@ void Index::set(int _line, int _col) {
 	col = _col;
 }
 
-Lexer::Lexer(const std::filesystem::path &file):
-line(0), col(-1) {
+Lexer::Lexer():
+line(0), col(-1), debug(false) { }
+
+Lexer::Lexer(const std::filesystem::path &file, bool _debug):
+line(0), col(-1), debug(_debug) {
 	if (file.empty()) {
 		throw std::runtime_error("ERROR: No such file " + file.string());
 	}
@@ -39,15 +42,12 @@ line(0), col(-1) {
 	bytes.push_back(EOF);
 }
 
-Lexer::Lexer(const std::string &content) {
+Lexer::Lexer(const std::string &content, bool _debug):
+line(0), col(-1), debug(_debug) {
 	for (char c: content) {
 		bytes.push_back(c);
 	}
 	bytes.push_back(EOF);
-}
-
-void Lexer::enable_debug() {
-	debug = true;
 }
 
 char Lexer::next_char() {
@@ -285,4 +285,4 @@ Token Lexer::scan_identifier(const std::string &identifier, Index index) {
 	return Token(index, token_type, identifier);
 }
 
-} // namespace OrichalcumLib
+} // namespace LibOrichalcum

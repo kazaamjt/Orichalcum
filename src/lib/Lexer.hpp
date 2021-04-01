@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace OrichalcumLib {
+namespace LibOrichalcum {
 
 enum class TOKEN_TYPE {
 	// Special Tokens
@@ -94,21 +94,21 @@ struct Token {
 
 class Lexer {
 public:
-	Lexer(const std::filesystem::path &file);
-	Lexer(const std::string &content);
+	Lexer();
+	Lexer(const std::filesystem::path &file, bool debug=false);
+	Lexer(const std::string &content, bool debug=false);
 
 	Token get_next_token();
-	void enable_debug();
 
 private:
 	std::vector<char> bytes;
 	int line;
 	int col;
-	bool debug = false;
+	bool debug;
 
 	char next_char();
 	Token get_token();
 	Token scan_identifier(const std::string &identifier, Index index);
 };
 
-} // namespace OrichalcumLib
+} // namespace LibOrichalcum

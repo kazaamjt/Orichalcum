@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-namespace OrichalcumLib {
+namespace LibOrichalcum {
 
 IntExprAST::IntExprAST(const std::string &_value) {
 	std::stringstream stream(_value);
@@ -32,4 +32,4 @@ PrototypeAST::PrototypeAST(const std::string &_name, std::vector<FunctionArg> _a
 FunctionAST::FunctionAST(std::unique_ptr<PrototypeAST> _proto, std::unique_ptr<ExprAST> _body):
 	proto(std::move(_proto)), body(std::move(_body)) { }
 
-} // namespace OrichalcumLib
+} // namespace LibOrichalcum

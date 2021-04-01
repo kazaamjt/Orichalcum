@@ -11,13 +11,13 @@ BUILD_DIR = ROOT_DIR.joinpath("build")
 
 def make_windows() -> None:
 	subprocess.check_output(["bazel", "build", "DLL", "--config=DLL"])
-	output_dir = BUILD_DIR.joinpath("OrichalcumLib-Windows-x86_64")
+	output_dir = BUILD_DIR.joinpath("LibOrichalcum-Windows-x86_64")
 	if output_dir.exists():
 		shutil.rmtree(output_dir)
 	output_dir.mkdir()
 	shutil.copy(
 		ROOT_DIR.joinpath("bazel-bin/DLL.dll"),
-		output_dir.joinpath("OrichalcumLib.dll")
+		output_dir.joinpath("LibOrichalcum.dll")
 	)
 	recurse_copy_headers(
 		ROOT_DIR.joinpath("src/lib"),
@@ -33,7 +33,7 @@ def make_linux() -> None:
 		["bazel", "build", "lib", "--config=clang"],
 		env=env
 	)
-	output_dir = BUILD_DIR.joinpath("OrichalcumLib-Linux-x86_64")
+	output_dir = BUILD_DIR.joinpath("LibOrichalcum-Linux-x86_64")
 	if output_dir.exists():
 		shutil.rmtree(output_dir)
 	output_dir.mkdir()

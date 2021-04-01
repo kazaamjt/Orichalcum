@@ -5,14 +5,15 @@
 #include "Debug.hpp"
 #include "Log.hpp"
 
-namespace OrichalcumLib {
+namespace LibOrichalcum {
 
 Compiler::Compiler(CompilerOptions _options): options(_options) {
-	if (options.debug_vm) vm->enable_debug();
+	if (options.debug_vm) vm.enable_debug();
+	if (options.debug_parser) parser.enable_debug();
 	if (options.repl) {
 		main_module = std::filesystem::current_path();
 	} else {
-		current_file = options.file;
+		main_file = options.file;
 		main_module = options.file.parent_path();
 	}
 }
@@ -25,30 +26,24 @@ static COMPILE_RESULT section_to_result(Misc::COMPILER_SECTION section) {
 }
 
 CompilerReport Compiler::run() {
-	try {
-		return run_file();
-	}
-	catch(const Misc::CompileError &error) {
-		CompilerReport report;
-		report.result = section_to_result(error.section);
-		report.error = error;
-		return report;
-	}
-}
-
-CompilerReport Compiler::run_file() {
 	CompilerReport report;
 	report.result = COMPILE_RESULT::OK;
+	try {
+		_run();
+	}
+	catch(const Misc::CompileError &error) {
+		report.result = section_to_result(error.section);
+		report.error = error;
+	}
+	return report;
+}
 
+void Compiler::_run() {
 	if (options.repl) {
 		repl();
 	} else {
-		Lexer lexer(current_file);
-		if (options.debug_lexer) lexer.enable_debug();
-		Token token = lexer.get_next_token();
+		compile_file(main_file);
 	}
-
-	return report;
 }
 
 void Compiler::repl() {
@@ -58,6 +53,10 @@ void Compiler::repl() {
 		std::getline(std::cin, line);
 		std::cout << line << std::endl;
 	}
+}
+
+void Compiler::compile_file(const std::filesystem::path &file) {
+	parser.parse(file);
 }
 
 } // namespace Orichalcum

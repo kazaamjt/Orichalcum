@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <string>
 
-namespace OrichalcumLib::Misc {
+namespace LibOrichalcum::Misc {
 
 std::string to_hex(size_t number, int width = 5);
 
@@ -21,4 +21,4 @@ public:
 	CompileError(const std::string &msg, const std::filesystem::path &file, COMPILER_SECTION section);
 };
 
-} // OrichalcumLib
+} // LibOrichalcum

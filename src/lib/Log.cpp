@@ -2,7 +2,7 @@
 
 #include <rang.hpp>
 
-namespace OrichalcumLib {
+namespace LibOrichalcum {
 
 LogLevel Log::level = LogLevel::INFO;
 

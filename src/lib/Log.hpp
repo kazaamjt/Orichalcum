@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace OrichalcumLib {
+namespace LibOrichalcum {
 
 enum class LogLevel {
 	DEBUG = 0,

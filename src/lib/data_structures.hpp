@@ -3,7 +3,7 @@
 
 #include "Chunk.hpp"
 
-namespace OrichalcumLib {
+namespace LibOrichalcum {
 
 struct ConstStack {
 	void push(const Constant &value) {
@@ -19,4 +19,4 @@ struct ConstStack {
 	std::vector<Constant> internal;
 };
 
-} // namespace OrichalcumLib
+} // namespace LibOrichalcum

@@ -3,11 +3,11 @@
 #include <memory>
 #include <string>
 
-#include "Lexer.hpp"
-#include "VM.hpp"
 #include "Misc.hpp"
+#include "Parser.hpp"
+#include "VM.hpp"
 
-namespace OrichalcumLib {
+namespace LibOrichalcum {
 
 enum class COMPILE_RESULT {
 	OK,
@@ -23,7 +23,7 @@ struct CompilerReport {
 struct CompilerOptions {
 	std::filesystem::path file;
 	bool debug_vm = false;
-	bool debug_lexer = false;
+	bool debug_parser = false;
 	bool repl = false;
 };
 
@@ -33,13 +33,15 @@ public:
 	CompilerReport run();
 
 private:
-	std::unique_ptr<VM> vm = std::make_unique<VM>();
+	Parser parser = Parser();
+	VM vm = VM();
 
-	CompilerReport run_file();
+	void _run();
 	void repl();
+	void compile_file(const std::filesystem::path &file);
 
 	CompilerOptions options;
-	std::filesystem::path current_file;
+	std::filesystem::path main_file;
 	std::filesystem::path main_module;
 };
 

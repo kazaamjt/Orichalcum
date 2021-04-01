@@ -5,7 +5,7 @@
 #include "Debug.hpp"
 #include "Log.hpp"
 
-namespace OrichalcumLib {
+namespace LibOrichalcum {
 
 VM::VM():
 	chunk(0), chunk_iter(chunk.get_iterator()) { }
@@ -141,4 +141,4 @@ void VM::increment() {
 	chunk_iter = chunk.next(chunk_iter);
 }
 
-} // OrichalcumLib
+} // LibOrichalcum

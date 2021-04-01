@@ -3,7 +3,7 @@
 #include "Log.hpp"
 #include "Misc.hpp"
 
-namespace OrichalcumLib {
+namespace LibOrichalcum {
 
 Line::Line(int _repeat, int _line): repeat(_repeat), line(_line) { }
 
@@ -112,4 +112,4 @@ size_t Chunk::size() {
 	return instructions.size();
 }
 
-} // OrichalcumLib
+} // LibOrichalcum

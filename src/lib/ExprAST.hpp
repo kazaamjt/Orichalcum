@@ -5,7 +5,7 @@
 
 #include "Lexer.hpp"
 
-namespace OrichalcumLib {
+namespace LibOrichalcum {
 
 class ExprAST {
 public:
@@ -68,4 +68,4 @@ public:
 	FunctionAST(std::unique_ptr<PrototypeAST> proto, std::unique_ptr<ExprAST> body);
 };
 
-} // namespace OrichalcumLib
+} // namespace LibOrichalcum

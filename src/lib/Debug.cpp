@@ -7,7 +7,7 @@
 #include "Misc.hpp"
 #include "Log.hpp"
 
-namespace OrichalcumLib::Debug {
+namespace LibOrichalcum::Debug {
 
 void print_token(const Token &token) {
 	Log::debug(
@@ -160,4 +160,4 @@ std::string to_string(const TOKEN_TYPE token_type) {
 	}
 }
 
-} // OrichalcumLib
+} // LibOrichalcum

@@ -3,7 +3,7 @@
 #include <sstream>
 #include <iomanip>
 
-namespace OrichalcumLib::Misc {
+namespace LibOrichalcum::Misc {
 
 std::string to_hex(size_t number, int width) {
 	std::stringstream stream;
@@ -20,4 +20,4 @@ std::runtime_error::runtime_error(_msg), msg(_msg), file(_file), section(_sectio
 
 }
 
-} // OrichalcumLib
+} // LibOrichalcum
