@@ -4,15 +4,17 @@
 namespace LibOrichalcum {
 
 enum class LogLevel {
-	DEBUG = 0,
-	VERBOSE = 1,
-	INFO = 2,
-	WARNING = 3,
-	ERROR = 4
+	DEBUG,
+	VERBOSE,
+	INFO,
+	WARNING,
+	ERROR_,
 };
+std::string to_string(LogLevel level);
 
 class Log {
 public:
+	static LogLevel get_level();
 	static void set_level(LogLevel level);
 
 	static void debug(const std::string &msg);

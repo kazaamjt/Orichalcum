@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 
+#include "Log.hpp"
 #include "Misc.hpp"
 #include "Parser.hpp"
 #include "VM.hpp"
@@ -22,6 +23,7 @@ struct CompilerReport {
 
 struct CompilerOptions {
 	std::filesystem::path file;
+	LogLevel log_level = Log::get_level();
 	bool debug_vm = false;
 	bool debug_parser = false;
 	bool repl = false;

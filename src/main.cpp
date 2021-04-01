@@ -25,6 +25,10 @@ inline LibOrichalcum::CompilerOptions init_options(int argc, char *argv[]) {
 		exit(0);
 	}
 
+	if (result.count("debug-all")) {
+		compiler_options.log_level = LibOrichalcum::LogLevel::DEBUG;
+	}
+
 	if (result.count("debug-lexer") || result.count("debug-all")) {
 		compiler_options.debug_parser = true;
 	}
