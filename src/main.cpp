@@ -17,6 +17,7 @@ inline LibOrichalcum::CompilerOptions init_options(int argc, char *argv[]) {
 		("h,help", "Prints this help message")
 	;
 
+	compiler_options.print_output = true;
 	options.parse_positional({"file"});
 	auto result = options.parse(argc, argv);
 

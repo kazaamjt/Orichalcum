@@ -19,14 +19,16 @@ enum class COMPILE_RESULT {
 struct CompilerReport {
 	COMPILE_RESULT result;
 	Misc::CompileError error;
+	std::vector<LogLine> logs;
 };
 
 struct CompilerOptions {
 	std::filesystem::path file;
-	LogLevel log_level = Log::get_level();
+	LogLevel log_level = LogLevel::INFO;
 	bool debug_vm = false;
 	bool debug_parser = false;
 	bool repl = false;
+	bool print_output = false;
 };
 
 class Compiler {

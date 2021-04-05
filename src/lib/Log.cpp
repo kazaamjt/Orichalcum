@@ -18,18 +18,14 @@ LogLevel Log::get_level() {
 void Log::set_level(LogLevel _level, bool _print_output) {
 	level = _level;
 	print_output = _print_output;
-	for (LogLine line: buffer) {
-		if (print_output) {
+	if (print_output) {
+		for (LogLine line: buffer) {
 			switch (line.level) {
 				case LogLevel::DEBUG: debug(line.msg); break;
 				case LogLevel::VERBOSE: verbose(line.msg); break;
 				case LogLevel::INFO: info(line.msg); break;
 				case LogLevel::WARNING: warning(line.msg); break;
 				case LogLevel::ERROR_: error(line.msg); break;
-			}
-		} else {
-			if (line.level >= level) {
-				buffer.push_back(line);
 			}
 		}
 	}
@@ -81,6 +77,14 @@ void Log::error(const std::string &msg) {
 	} else {
 		buffer.push_back(LogLine(LogLevel::DEBUG, msg));
 	}
+}
+
+bool Log::print_logs() {
+	return print_output;
+}
+
+std::vector<LogLine> Log::get_logs() {
+	return buffer;
 }
 
 std::string to_string(LogLevel level) {

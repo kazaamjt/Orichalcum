@@ -31,6 +31,7 @@ public:
 	static void error(const std::string &msg);
 
 	static bool print_logs();
+	static std::vector<LogLine> get_logs();
 
 private:
 	static LogLevel level;
