@@ -4,42 +4,83 @@
 
 namespace LibOrichalcum {
 
-LogLevel Log::level = LogLevel::INFO;
+LogLevel Log::level = LogLevel::DEBUG;
+bool Log::print_output = false;
+std::vector<LogLine> Log::buffer;
+
+LogLine::LogLine(const LogLevel _level, const std::string &_msg):
+level(_level), msg(_msg) { }
 
 LogLevel Log::get_level() {
 	return level;
 }
 
-void Log::set_level(LogLevel _level) {
+void Log::set_level(LogLevel _level, bool _print_output) {
 	level = _level;
+	print_output = _print_output;
+	for (LogLine line: buffer) {
+		if (print_output) {
+			switch (line.level) {
+				case LogLevel::DEBUG: debug(line.msg); break;
+				case LogLevel::VERBOSE: verbose(line.msg); break;
+				case LogLevel::INFO: info(line.msg); break;
+				case LogLevel::WARNING: warning(line.msg); break;
+				case LogLevel::ERROR_: error(line.msg); break;
+			}
+		} else {
+			if (line.level >= level) {
+				buffer.push_back(line);
+			}
+		}
+	}
 }
 
 void Log::debug(const std::string &msg) {
 	if (level <= LogLevel::DEBUG) {
-		std::cout << rang::fg::blue << "DEBUG: " << rang::fg::reset << msg << std::endl;
+		if (print_output) {
+			std::cout << rang::fg::blue << "DEBUG: " << rang::fg::reset << msg << std::endl;
+		} else {
+			buffer.push_back(LogLine(LogLevel::DEBUG, msg));
+		}
 	}
 }
 
 void Log::verbose(const std::string &msg) {
 	if (level <= LogLevel::VERBOSE) {
-		std::cout << rang::fg::cyan << "VERBOSE: " << rang::fg::reset << msg << std::endl;
+		if (print_output) {
+			std::cout << rang::fg::cyan << "VERBOSE: " << rang::fg::reset << msg << std::endl;
+		} else {
+			buffer.push_back(LogLine(LogLevel::DEBUG, msg));
+		}
 	}
 }
 
 void Log::info(const std::string &msg) {
 	if (level <= LogLevel::INFO) {
-		std::cout << rang::fg::green << "INFO: " << rang::fg::reset << msg << std::endl;
+		if (print_output) {
+			std::cout << rang::fg::green << "INFO: " << rang::fg::reset << msg << std::endl;
+		} else {
+			buffer.push_back(LogLine(LogLevel::DEBUG, msg));
+		}
 	}
 }
 
 void Log::warning(const std::string &msg) {
 	if (level <= LogLevel::WARNING) {
-		std::cerr << rang::fg::yellow << "WARNING: " << rang::fg::reset << msg << std::endl;
+		if (print_output) {
+			std::cerr << rang::fg::yellow << "WARNING: " << rang::fg::reset << msg << std::endl;
+		} else {
+			buffer.push_back(LogLine(LogLevel::DEBUG, msg));
+		}
 	}
 }
 
 void Log::error(const std::string &msg) {
-	std::cerr << rang::fg::red << "ERROR: " << rang::fg::reset << msg << std::endl;
+	if (print_output) {
+		std::cerr << rang::fg::red << "ERROR: " << rang::fg::reset << msg << std::endl;
+	} else {
+		buffer.push_back(LogLine(LogLevel::DEBUG, msg));
+	}
 }
 
 std::string to_string(LogLevel level) {
