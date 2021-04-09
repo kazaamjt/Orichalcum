@@ -1,24 +1,36 @@
 #pragma once
 #include <filesystem>
+#include <stdexcept>
 #include <string>
+
 
 namespace LibOrichalcum::Misc {
 
 std::string to_hex(size_t number, int width = 5);
+
+struct Index{
+	Index(int line, int col);
+
+	int line;
+	int col;
+
+	void set(int line, int col);
+};
 
 enum class COMPILER_SECTION {
 	PARSER,
 	VM,
 };
 
-class CompileError: public std::runtime_error {
+class Error: public std::runtime_error {
 public:
-	std::string msg;
-	std::filesystem::path file;
-	COMPILER_SECTION section;
+	Error(const COMPILER_SECTION section, const std::string &msg, const Index index, const std::string &file_path);
+	Error();
 
-	CompileError();
-	CompileError(const std::string &msg, const std::filesystem::path &file, COMPILER_SECTION section);
+	const COMPILER_SECTION section;
+	const std::string msg;
+	const Index index;
+	const std::string file;
 };
 
 } // LibOrichalcum

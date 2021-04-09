@@ -11,23 +11,25 @@
 namespace LibOrichalcum {
 
 enum class COMPILE_RESULT {
-	OK,
+	SUCCESS,
 	PARSER_ERROR,
 	RUNTIME_ERROR,
 };
 
 struct CompilerReport {
-	COMPILE_RESULT result;
-	Misc::CompileError error;
-	std::vector<LogLine> logs;
+	const COMPILE_RESULT result;
+	const Misc::Error error;
+	const std::vector<LogLine> logs;
+
+	CompilerReport(COMPILE_RESULT result, std::vector<LogLine> logs);
+	CompilerReport(COMPILE_RESULT result, const Misc::Error &error, std::vector<LogLine> logs);
 };
 
 struct CompilerOptions {
 	std::filesystem::path file;
-	LogLevel log_level = LogLevel::INFO;
+	LOG_LEVEL log_level = LOG_LEVEL::INFO;
 	bool debug_vm = false;
 	bool debug_parser = false;
-	bool repl = false;
 	bool print_output = false;
 };
 
@@ -41,8 +43,6 @@ private:
 	VM vm = VM();
 
 	void _run();
-	void repl();
-	void compile_file(const std::filesystem::path &file);
 
 	CompilerOptions options;
 	std::filesystem::path main_file;

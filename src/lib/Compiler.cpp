@@ -7,17 +7,19 @@
 
 namespace LibOrichalcum {
 
+CompilerReport::CompilerReport(COMPILE_RESULT _result, std::vector<LogLine> _logs):
+result(_result), logs(_logs) { }
+
+CompilerReport::CompilerReport(COMPILE_RESULT _result, const Misc::Error &_error, std::vector<LogLine> _logs):
+result(_result), error(_error), logs(_logs) { }
+
 Compiler::Compiler(CompilerOptions _options): options(_options) {
 	Log::set_level(options.log_level, options.print_output);
 	Log::verbose("Log level set to " + to_string(options.log_level));
 	if (options.debug_vm) vm.enable_debug();
 	if (options.debug_parser) parser.enable_debug();
-	if (options.repl) {
-		main_module = std::filesystem::current_path();
-	} else {
-		main_file = options.file;
-		main_module = options.file.parent_path();
-	}
+	main_file = options.file;
+	main_module = options.file.parent_path();
 }
 
 static COMPILE_RESULT section_to_result(Misc::COMPILER_SECTION section) {
@@ -28,37 +30,21 @@ static COMPILE_RESULT section_to_result(Misc::COMPILER_SECTION section) {
 }
 
 CompilerReport Compiler::run() {
-	CompilerReport report;
-	report.result = COMPILE_RESULT::OK;
 	try {
 		_run();
 	}
-	catch(const Misc::CompileError &error) {
-		report.result = section_to_result(error.section);
-		report.error = error;
+	catch(const Misc::Error &error) {
+		return CompilerReport(
+			section_to_result(error.section),
+			error,
+			Log::get_logs()
+		);
 	}
-	return report;
+	return CompilerReport(COMPILE_RESULT::SUCCESS, Log::get_logs());
 }
 
 void Compiler::_run() {
-	if (options.repl) {
-		repl();
-	} else {
-		compile_file(main_file);
-	}
-}
-
-void Compiler::repl() {
-	std::string line;
-	while (!std::cin.fail()) {
-		std::cout << "> ";
-		std::getline(std::cin, line);
-		std::cout << line << std::endl;
-	}
-}
-
-void Compiler::compile_file(const std::filesystem::path &file) {
-	parser.parse(file);
+	parser.parse(main_file);
 }
 
 } // namespace Orichalcum

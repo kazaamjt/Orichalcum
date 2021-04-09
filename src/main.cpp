@@ -27,7 +27,7 @@ inline LibOrichalcum::CompilerOptions init_options(int argc, char *argv[]) {
 	}
 
 	if (result.count("debug-all")) {
-		compiler_options.log_level = LibOrichalcum::LogLevel::DEBUG;
+		compiler_options.log_level = LibOrichalcum::LOG_LEVEL::DEBUG;
 	}
 
 	if (result.count("debug-lexer") || result.count("debug-all")) {
@@ -41,7 +41,9 @@ inline LibOrichalcum::CompilerOptions init_options(int argc, char *argv[]) {
 	if (result.count("file")) {
 		compiler_options.file = result["file"].as<std::string>();
 	} else {
-		compiler_options.repl = true;
+		LibOrichalcum::Log::set_level(LibOrichalcum::LOG_LEVEL::ERROR_, true);
+		LibOrichalcum::Log::error("Need a file to compile.");
+		exit(1);
 	}
 
 	return compiler_options;

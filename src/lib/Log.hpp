@@ -4,25 +4,25 @@
 
 namespace LibOrichalcum {
 
-enum class LogLevel {
+enum class LOG_LEVEL {
 	DEBUG,
 	VERBOSE,
 	INFO,
 	WARNING,
 	ERROR_,
 };
-std::string to_string(LogLevel level);
+std::string to_string(LOG_LEVEL level);
 
 struct LogLine {
-	LogLine(const LogLevel level, const std::string &msg);
-	const LogLevel level;
+	LogLine(const LOG_LEVEL level, const std::string &msg);
+	const LOG_LEVEL level;
 	const std::string msg;
 };
 
 class Log {
 public:
-	static LogLevel get_level();
-	static void set_level(LogLevel level, bool _print_output = false);
+	static LOG_LEVEL get_level();
+	static void set_level(LOG_LEVEL level, bool _print_output = false);
 
 	static void debug(const std::string &msg);
 	static void verbose(const std::string &msg);
@@ -30,11 +30,12 @@ public:
 	static void warning(const std::string &msg);
 	static void error(const std::string &msg);
 
-	static bool print_logs();
+	static bool print_logs_enabled();
 	static std::vector<LogLine> get_logs();
 
 private:
-	static LogLevel level;
+	static LOG_LEVEL level;
+	static bool store;
 	static bool print_output;
 	static std::vector<LogLine> buffer;
 };

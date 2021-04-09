@@ -1,8 +1,10 @@
 #pragma once
-#include <exception>
 #include <filesystem>
+#include <memory>
 #include <string>
 #include <vector>
+
+#include "Misc.hpp"
 
 namespace LibOrichalcum {
 
@@ -72,21 +74,12 @@ enum class TOKEN_TYPE {
 	YIELD,
 };
 
-
-struct Index{
-	Index(int line, int col);
-
-	int line;
-	int col;
-
-	void set(int line, int col);
-};
-
 struct Token {
 	Token();
-	Token(Index index, TOKEN_TYPE type, const std::string &content);
+	Token(const std::string &file_path, Misc::Index index, TOKEN_TYPE type, const std::string &content);
 
-	Index index;
+	std::string file_path;
+	Misc::Index index;
 	TOKEN_TYPE type;
 	std::string content;
 };
@@ -96,7 +89,6 @@ class Lexer {
 public:
 	Lexer();
 	Lexer(const std::filesystem::path &file, bool debug=false);
-	Lexer(const std::string &content, bool debug=false);
 
 	Token get_next_token();
 
@@ -105,10 +97,11 @@ private:
 	int line;
 	int col;
 	bool debug;
+	std::string file_path;
 
 	char next_char();
 	Token get_token();
-	Token scan_identifier(const std::string &identifier, Index index);
+	Token scan_identifier(const std::string &identifier, Misc::Index index);
 };
 
 } // namespace LibOrichalcum

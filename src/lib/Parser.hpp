@@ -19,5 +19,12 @@ public:
 private:
 	Lexer lexer;
 	bool debug;
+
+	Token previous_token;
+	Token current_token;
+	Token next_token;
+
+	void advance_token();
+	void _parse();
 };
 } // LibOrichalcum
