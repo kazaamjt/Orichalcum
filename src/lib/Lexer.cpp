@@ -9,12 +9,6 @@
 
 namespace LibOrichalcum {
 
-Token::Token():
-	index(Misc::Index(0,0)), type(TOKEN_TYPE::EMPTY), content("") { }
-
-Token::Token(const std::string &_file_path, Misc::Index _index, TOKEN_TYPE _type, const std::string &_content):
-	file_path(_file_path), index(_index), type(_type), content(_content) { }
-
 Lexer::Lexer():
 line(0), col(-1), debug(false) { }
 
@@ -40,12 +34,23 @@ line(0), col(-1), debug(_debug), file_path(std::filesystem::absolute(file).strin
 	bytes.push_back(EOF);
 }
 
+Token Lexer::mk_token(
+	const std::string &_file_path,
+	Index _index,
+	TOKEN_TYPE _type,
+	const std::string &_content
+	) {
+		return Token(_file_path, _index, _type, _content, current_line);
+	}
+
 char Lexer::next_char() {
 	static size_t i = 0;
 	char next = bytes[i];
+	current_line += next;
 	col++;
 	i++;
 	if (next == '\n') {
+		current_line = std::string(1, next);
 		line++;
 		col = -1;
 	}
@@ -61,7 +66,7 @@ Token Lexer::get_next_token() {
 
 Token Lexer::get_token() {
 	static char current = next_char();
-	Misc::Index index(line, col);
+	Index index(line, col);
 
 	if (current == '\n') {
 		while (current == '\n') {
@@ -74,7 +79,7 @@ Token Lexer::get_token() {
 			current = next_char();
 		}
 		if (indent_token.length() > 0) {
-			return Token(file_path, index, TOKEN_TYPE::INDENT, indent_token);
+			return mk_token(file_path, index, TOKEN_TYPE::INDENT, indent_token);
 		}
 	}
 
@@ -108,10 +113,10 @@ Token Lexer::get_token() {
 				current = next_char();
 			}
 
-			return Token(file_path, index, TOKEN_TYPE::FLOAT, number);
+			return mk_token(file_path, index, TOKEN_TYPE::FLOAT, number);
 		}
 
-		return Token(file_path, index, TOKEN_TYPE::INTEGER, number);
+		return mk_token(file_path, index, TOKEN_TYPE::INTEGER, number);
 	}
 
 	// - and return operators
@@ -119,95 +124,95 @@ Token Lexer::get_token() {
 		current = next_char();
 		if (current == '>') {
 			current = next_char();
-			return Token(file_path, index, TOKEN_TYPE::RETURN_TYPE_SIGN, "->");
+			return mk_token(file_path, index, TOKEN_TYPE::RETURN_TYPE_SIGN, "->");
 		}
 
-		return Token(file_path, index, TOKEN_TYPE::ARITHMATIC_OP, "-");
+		return mk_token(file_path, index, TOKEN_TYPE::ARITHMATIC_OP, "-");
 	}
 
 	if (current == '*') {
 		current = next_char();
 		if (current == '*') {
 			current = next_char();
-			return Token(file_path, index, TOKEN_TYPE::ARITHMATIC_OP, "**");
+			return mk_token(file_path, index, TOKEN_TYPE::ARITHMATIC_OP, "**");
 		}
 
-		return Token(file_path, index, TOKEN_TYPE::ARITHMATIC_OP, "*");
+		return mk_token(file_path, index, TOKEN_TYPE::ARITHMATIC_OP, "*");
 	}
 
 	if (current == '/') {
 		current = next_char();
 		if (current == '/') {
 			current = next_char();
-			return Token(file_path, index, TOKEN_TYPE::ARITHMATIC_OP, "//");
+			return mk_token(file_path, index, TOKEN_TYPE::ARITHMATIC_OP, "//");
 		}
 
-		return Token(file_path, index, TOKEN_TYPE::ARITHMATIC_OP, "/");
+		return mk_token(file_path, index, TOKEN_TYPE::ARITHMATIC_OP, "/");
 	}
 
 	if (current == '+' || current == '%') {
 		std::string op_sign(1, current);
 		current = next_char();
-		return Token(file_path, index, TOKEN_TYPE::ARITHMATIC_OP, op_sign);
+		return mk_token(file_path, index, TOKEN_TYPE::ARITHMATIC_OP, op_sign);
 	}
 
 	if (current == '=') {
 		current = next_char();
 		if (current == '=') {
 			current = next_char();
-			return Token(file_path, index, TOKEN_TYPE::COMPARISON_OP, "==");
+			return mk_token(file_path, index, TOKEN_TYPE::COMPARISON_OP, "==");
 		}
 
-		return Token(file_path, index, TOKEN_TYPE::ASIGNMENT_OP, "=");
+		return mk_token(file_path, index, TOKEN_TYPE::ASIGNMENT_OP, "=");
 	}
 
 	if (current == '!') {
 		current = next_char();
 		if (current == '=') {
 			current = next_char();
-			return Token(file_path, index, TOKEN_TYPE::COMPARISON_OP, "!=");
+			return mk_token(file_path, index, TOKEN_TYPE::COMPARISON_OP, "!=");
 		}
 
-		return Token(file_path, index, TOKEN_TYPE::ASIGNMENT_OP, "!");
+		return mk_token(file_path, index, TOKEN_TYPE::ASIGNMENT_OP, "!");
 	}
 
 	if (current == '<') {
 		current = next_char();
 		if (current == '=') {
 			current = next_char();
-			return Token(file_path, index, TOKEN_TYPE::COMPARISON_OP, "<=");
+			return mk_token(file_path, index, TOKEN_TYPE::COMPARISON_OP, "<=");
 		}
 
-		return Token(file_path, index, TOKEN_TYPE::ASIGNMENT_OP, "<");
+		return mk_token(file_path, index, TOKEN_TYPE::ASIGNMENT_OP, "<");
 	}
 
 	if (current == '>') {
 		current = next_char();
 		if (current == '=') {
 			current = next_char();
-			return Token(file_path, index, TOKEN_TYPE::COMPARISON_OP, ">=");
+			return mk_token(file_path, index, TOKEN_TYPE::COMPARISON_OP, ">=");
 		}
 
-		return Token(file_path, index, TOKEN_TYPE::ASIGNMENT_OP, ">");
+		return mk_token(file_path, index, TOKEN_TYPE::ASIGNMENT_OP, ">");
 	}
 
 	// single char tokens
 	switch (current) {
 		case '(': {
 			current = next_char();
-			return Token(file_path, index, TOKEN_TYPE::LEFT_PAREN, "(");
+			return mk_token(file_path, index, TOKEN_TYPE::LEFT_PAREN, "(");
 		}
 		case ')': {
 			current = next_char();
-			return Token(file_path, index, TOKEN_TYPE::RIGHT_PAREN, ")");
+			return mk_token(file_path, index, TOKEN_TYPE::RIGHT_PAREN, ")");
 		}
 		case ',': {
 			current = next_char();
-			return Token(file_path, index, TOKEN_TYPE::COMMA, ",");
+			return mk_token(file_path, index, TOKEN_TYPE::COMMA, ",");
 		}
 		case '.': {
 			current = next_char();
-			return Token(file_path, index, TOKEN_TYPE::DOT, ".");
+			return mk_token(file_path, index, TOKEN_TYPE::DOT, ".");
 		}
 
 		case '"': {
@@ -218,20 +223,20 @@ Token Lexer::get_token() {
 				current = next_char();
 			}
 			current = next_char();
-			return Token(file_path, index, TOKEN_TYPE::STRING, string);
+			return mk_token(file_path, index, TOKEN_TYPE::STRING, string);
 		}
 	}
 
 	if (current == EOF) {
-		return Token(file_path, index, TOKEN_TYPE::EOF_TOKEN, "EOF");
+		return mk_token(file_path, index, TOKEN_TYPE::EOF_TOKEN, "EOF");
 	}
 
 	std::string unknown(1, current);
 	current = next_char();
-	return Token(file_path, index, TOKEN_TYPE::UNKNOWN, unknown);
+	return mk_token(file_path, index, TOKEN_TYPE::UNKNOWN, unknown);
 }
 
-Token Lexer::scan_identifier(const std::string &identifier, Misc::Index index) {
+Token Lexer::scan_identifier(const std::string &identifier, Index index) {
 	TOKEN_TYPE token_type;
 	if (identifier == "and") token_type = TOKEN_TYPE::AND;
 	else if (identifier == "as") token_type = TOKEN_TYPE::AS;
@@ -272,7 +277,7 @@ Token Lexer::scan_identifier(const std::string &identifier, Misc::Index index) {
 	else if (identifier == "yield") token_type = TOKEN_TYPE::YIELD;
 	else token_type = TOKEN_TYPE::IDENTIFIER;
 
-	return Token(file_path, index, token_type, identifier);
+	return mk_token(file_path, index, token_type, identifier);
 }
 
 } // namespace LibOrichalcum

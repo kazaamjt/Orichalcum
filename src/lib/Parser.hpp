@@ -25,6 +25,6 @@ private:
 	Token next_token;
 
 	void advance_token();
-	void _parse();
+	void consume_token();
 };
 } // LibOrichalcum

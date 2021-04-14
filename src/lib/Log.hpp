@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 
+#include "Misc.hpp"
+
 namespace LibOrichalcum {
 
 enum class LOG_LEVEL {
@@ -29,6 +31,7 @@ public:
 	static void info(const std::string &msg);
 	static void warning(const std::string &msg);
 	static void error(const std::string &msg);
+	static void error(const Misc::Error &error);
 
 	static bool print_logs_enabled();
 	static std::vector<LogLine> get_logs();

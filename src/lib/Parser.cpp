@@ -1,6 +1,7 @@
 #include "Parser.hpp"
 
 #include "Misc.hpp"
+#include "Log.hpp"
 
 namespace LibOrichalcum {
 
@@ -12,23 +13,31 @@ void Parser::enable_debug() {
 
 void Parser::parse(const std::filesystem::path &file) {
 	lexer = Lexer(file);
-	_parse();
+	next_token = lexer.get_next_token();
+	bool parsing = true;
+	while (parsing) {
+		advance_token();
+		consume_token();
+		if (next_token.type == TOKEN_TYPE::EOF_TOKEN) {
+			parsing = false;
+			Log::debug(current_token.file_path + ": Reached EOF");
+		}
+	}
 }
 
-void Parser::_parse() {
-	current_token = lexer.get_next_token();
-	next_token = lexer.get_next_token();
-	while (true) {
-		switch (current_token.type) {
-
-			default: {
-				throw Misc::Error(
-					Misc::COMPILER_SECTION::PARSER,
-					"Unexpected token: " + current_token.content,
-					current_token.index,
-					current_token.file_path
-				);
-			}
+void Parser::consume_token() {
+	advance_token();
+	switch (current_token.type) {
+		case TOKEN_TYPE::UNKNOWN: break;
+		// Neither of these should ever happen
+		case TOKEN_TYPE::EOF_TOKEN:
+		case TOKEN_TYPE::EMPTY:
+		default: {
+			throw Misc::Error(
+				Misc::COMPILER_SECTION::PARSER,
+				"Unexpected token: " + current_token.content,
+				current_token
+			);
 		}
 	}
 }
