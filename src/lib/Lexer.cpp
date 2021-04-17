@@ -10,10 +10,10 @@
 namespace LibOrichalcum {
 
 Lexer::Lexer():
-line(0), col(-1), debug(false) { }
+line(-1), col(-1), debug(false) { }
 
 Lexer::Lexer(const std::filesystem::path &file, bool _debug):
-line(0), col(-1), debug(_debug), file_path(std::filesystem::absolute(file).string()) {
+line(-1), col(-1), debug(_debug), file_path(std::filesystem::absolute(file).string()) {
 	if (file.empty()) {
 		std::string err = "No such file " + file_path;
 		Log::error(err);
@@ -32,6 +32,35 @@ line(0), col(-1), debug(_debug), file_path(std::filesystem::absolute(file).strin
 	}
 	input.close();
 	bytes.push_back(EOF);
+	next_line();
+}
+
+void Lexer::next_line() {
+	static size_t i = 0;
+	line++;
+	current_line = "";
+	char next = bytes[i];
+	while (next != '\n' && next != EOF) {
+		next = bytes[i++];
+		current_line += next;
+	}
+}
+
+char Lexer::next_char() {
+	static size_t i = 0;
+	col = static_cast<int>(i);
+	char next = current_line[i++];
+	if (next == '\n') {
+		next_line();
+		i = 0;
+	}
+	return next;
+}
+
+Token Lexer::get_next_token() {
+	Token token = get_token();
+	if (debug) Debug::print_token(token);
+	return token;
 }
 
 Token Lexer::mk_token(
@@ -42,27 +71,6 @@ Token Lexer::mk_token(
 	) {
 		return Token(_file_path, _index, _type, _content, current_line);
 	}
-
-char Lexer::next_char() {
-	static size_t i = 0;
-	char next = bytes[i];
-	current_line += next;
-	col++;
-	i++;
-	if (next == '\n') {
-		current_line = std::string(1, next);
-		line++;
-		col = -1;
-	}
-
-	return next;
-}
-
-Token Lexer::get_next_token() {
-	Token token = get_token();
-	if (debug) Debug::print_token(token);
-	return token;
-}
 
 Token Lexer::get_token() {
 	static char current = next_char();

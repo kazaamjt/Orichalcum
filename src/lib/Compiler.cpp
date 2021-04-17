@@ -34,6 +34,7 @@ CompilerReport Compiler::run() {
 		_run();
 	}
 	catch(const Misc::Error &error) {
+		Log::error(error);
 		return CompilerReport(
 			section_to_result(error.section),
 			error,
