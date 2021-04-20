@@ -79,8 +79,15 @@ and is available cross-platform. In other words, using GCC might result in a bun
 ### Cross build
 
 A docker image with the required tools is provided to perform a Linux build on a Windows host.  
-Build the image using `docker build -t orichalcum-build-linux-x64_86 .`  
-Then run the provided script (from the project root): `scripts/linux_cross_build.ps1`  
+Then run the provided script: `scripts/linux_cross_build.ps1`  
+This builds the container for you and then executes the build automagically.  
+The container does not need to be rebuild to reflect changes in the source code.  
+
+Similarly on linux, the provided `scripts/docker_build.sh` does the same thing.  
+The only real difference is that the Windows script uses some hashing to detects wether to rebuild the image,
+and that the linux version HAS to be executed from the project root.  
+
+Although untested, in theory one could use these with vscode as a work environment, as all required tools are provided in the image.  
 
 The artifacts resulting from this build are not kept currently.  
 
