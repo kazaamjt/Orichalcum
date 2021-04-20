@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 
+#include "Chunk.hpp"
 #include "Log.hpp"
 #include "Misc.hpp"
 #include "Parser.hpp"
@@ -10,19 +11,15 @@
 
 namespace LibOrichalcum {
 
-enum class COMPILE_RESULT {
-	SUCCESS,
-	PARSER_ERROR,
-	RUNTIME_ERROR,
-};
+static const std::string VERSION = "0.0.0";
 
 struct CompilerReport {
 	const COMPILE_RESULT result;
-	const Misc::Error error;
+	const Error error;
 	const std::vector<LogLine> logs;
 
 	CompilerReport(COMPILE_RESULT result, std::vector<LogLine> logs);
-	CompilerReport(COMPILE_RESULT result, const Misc::Error &error, std::vector<LogLine> logs);
+	CompilerReport(COMPILE_RESULT result, const Error &error, std::vector<LogLine> logs);
 };
 
 struct CompilerOptions {
@@ -43,6 +40,8 @@ private:
 	VM vm = VM();
 
 	void _run();
+
+	Chunk current_chunk;
 
 	CompilerOptions options;
 	std::filesystem::path main_file;

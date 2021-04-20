@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "Misc.hpp"
+#include "Error.hpp"
 
 namespace LibOrichalcum {
 
@@ -31,7 +31,7 @@ public:
 	static void info(const std::string &msg);
 	static void warning(const std::string &msg);
 	static void error(const std::string &msg);
-	static void error(const Misc::Error &error);
+	static void error(const Error &error);
 
 	static bool print_logs_enabled();
 	static std::vector<LogLine> get_logs();

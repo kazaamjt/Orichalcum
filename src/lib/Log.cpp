@@ -87,7 +87,7 @@ void Log::error(const std::string &msg) {
 	}
 }
 
-void Log::error(const Misc::Error &error) {
+void Log::error(const Error &error) {
 	std::string output = error.msg + "\n"
 			+ error.file + "(" + std::to_string(error.index.line + 1)
 			+ "," + std::to_string(error.index.col + 1) + "):\n"

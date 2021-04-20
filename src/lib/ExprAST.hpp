@@ -14,17 +14,21 @@ struct ExprAST {
 };
 
 struct IntExprAST: public ExprAST {
+	std::unique_ptr<Token> token;
 	int64_t value;
 
-	IntExprAST(const std::string &value);
-	void print_dbg();
+	IntExprAST(const Token &token);
+	~IntExprAST() override;
+	void print_dbg() override;
 };
 
 struct FloatExprAST: public ExprAST {
+	std::unique_ptr<Token> token;
 	double value;
 
-	FloatExprAST(const std::string &value);
-	void print_dbg();
+	FloatExprAST(const Token &token);
+	~FloatExprAST() override;
+	void print_dbg() override;
 };
 
 struct VariableExprAST: public ExprAST {
@@ -32,7 +36,8 @@ struct VariableExprAST: public ExprAST {
 	std::string type;
 
 	VariableExprAST(const std::string &name, const std::string &type);
-	void print_dbg();
+	~VariableExprAST() override;
+	void print_dbg() override;
 };
 
 struct BinaryExprAST: public ExprAST {
@@ -40,7 +45,8 @@ struct BinaryExprAST: public ExprAST {
 	std::unique_ptr<ExprAST> lefthand, righthand;
 
 	BinaryExprAST(std::unique_ptr<Token> op, std::unique_ptr<ExprAST> lefthand, std::unique_ptr<ExprAST> righthand);
-	void print_dbg();
+	~BinaryExprAST() override;
+	void print_dbg() override;
 };
 
 struct CallExprAST: public ExprAST {
@@ -48,7 +54,8 @@ struct CallExprAST: public ExprAST {
 	std::vector<ExprAST> args;
 
 	CallExprAST(const std::string callee, std::vector<ExprAST> args);
-	void print_dbg();
+	~CallExprAST() override;
+	void print_dbg() override;
 };
 
 struct FunctionArg {
@@ -65,6 +72,7 @@ struct ProtoTypeAST {
 	std::vector<FunctionArg> args;
 
 	ProtoTypeAST(const std::string &name, std::vector<FunctionArg> args);
+	~ProtoTypeAST();
 	void print_dbg();
 };
 
@@ -74,7 +82,8 @@ struct FunctionAST: public ExprAST {
 	std::unique_ptr<ExprAST> body;
 
 	FunctionAST(std::unique_ptr<ProtoTypeAST> proto, std::unique_ptr<ExprAST> body);
-	void print_dbg();
+	~FunctionAST() override;
+	void print_dbg() override;
 };
 
 } // namespace LibOrichalcum

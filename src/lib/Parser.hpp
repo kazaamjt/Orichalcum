@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 
+#include "ExprAST.hpp"
 #include "Lexer.hpp"
 
 namespace LibOrichalcum {
@@ -20,11 +21,17 @@ private:
 	Lexer lexer;
 	bool debug;
 
-	Token previous_token;
-	Token current_token;
-	Token next_token;
+	Token previous;
+	Token current;
+	Token next;
 
-	void advance_token();
-	void consume_token();
+	void advance();
+
+	std::unique_ptr<ExprAST> parse_expression();
+	std::unique_ptr<IntExprAST> parse_int();
+	std::unique_ptr<FloatExprAST> parse_float();
+	std::unique_ptr<ExprAST> parse_parens();
+	std::unique_ptr<VariableExprAST> parse_identifier();
 };
+
 } // LibOrichalcum

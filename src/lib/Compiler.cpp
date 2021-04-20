@@ -10,10 +10,12 @@ namespace LibOrichalcum {
 CompilerReport::CompilerReport(COMPILE_RESULT _result, std::vector<LogLine> _logs):
 result(_result), logs(_logs) { }
 
-CompilerReport::CompilerReport(COMPILE_RESULT _result, const Misc::Error &_error, std::vector<LogLine> _logs):
+CompilerReport::CompilerReport(COMPILE_RESULT _result, const Error &_error, std::vector<LogLine> _logs):
 result(_result), error(_error), logs(_logs) { }
 
-Compiler::Compiler(CompilerOptions _options): options(_options) {
+Compiler::Compiler(CompilerOptions _options):
+current_chunk(0),
+options(_options) {
 	Log::set_level(options.log_level, options.print_output);
 	Log::verbose("Log level set to " + to_string(options.log_level));
 	if (options.debug_vm) vm.enable_debug();
@@ -22,21 +24,14 @@ Compiler::Compiler(CompilerOptions _options): options(_options) {
 	main_module = options.file.parent_path();
 }
 
-static COMPILE_RESULT section_to_result(Misc::COMPILER_SECTION section) {
-	switch (section) {
-		case Misc::COMPILER_SECTION::PARSER: return COMPILE_RESULT::PARSER_ERROR;
-		case Misc::COMPILER_SECTION::VM: return COMPILE_RESULT::RUNTIME_ERROR;
-	}
-}
-
 CompilerReport Compiler::run() {
 	try {
 		_run();
 	}
-	catch(const Misc::Error &error) {
+	catch(const Error &error) {
 		Log::error(error);
 		return CompilerReport(
-			section_to_result(error.section),
+			error.section,
 			error,
 			Log::get_logs()
 		);
