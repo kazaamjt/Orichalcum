@@ -4,11 +4,13 @@
 #include "Chunk.hpp"
 #include "data_structures.hpp"
 #include "Lexer.hpp"
-#include "Lexer.hpp"
+#include "ExprAST.hpp"
 
 namespace LibOrichalcum::Debug {
 
 void print_token(const Token &token);
+void print_expr(ExprAST &expr_ast);
+
 void disassemble_chunk(Chunk &chunk);
 size_t disassemble_instruction(size_t index, Chunk &chunk);
 
@@ -17,6 +19,4 @@ void print_const(const Constant &constant);
 void print_stack(ConstStack &stack);
 
 std::string op_to_string(OP_CODE op_code);
-std::string to_string(const TOKEN_TYPE token_type);
-
 } // LibOrichalcum

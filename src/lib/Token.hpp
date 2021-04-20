@@ -68,6 +68,8 @@ enum class TOKEN_TYPE {
 	YIELD,
 };
 
+std::string to_string(const TOKEN_TYPE token_type);
+
 struct Index{
 	Index(int line, int col);
 
