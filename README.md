@@ -84,6 +84,16 @@ Then run the provided script (from the project root): `scripts/linux_cross_build
 
 The artifacts resulting from this build are not kept currently.  
 
+### Using docker as a build env
+
+Similarly, the above image can be used as docker build environment by vscode.  
+It contains all the tools required.  
+Currently, you still have to install the vscode extensions yourself though.  
+I recomend the `C/C++` extension by microsoft and the `Bazel` extension by the bazel team.  
+All the tools required for both extensions are already provided in the image.  
+
+I currently have not tested this myself though.  
+
 ## Resources
 
 Things I read that helped quite a bit:

@@ -24,6 +24,7 @@ private:
 	std::string file_path;
 	std::string current_line;
 
+	void next_line();
 	char next_char();
 	Token get_token();
 	Token mk_token(const std::string &file_path, Index index, TOKEN_TYPE type, const std::string &content);

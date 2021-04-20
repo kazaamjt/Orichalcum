@@ -1,4 +1,15 @@
-docker create --name orichalcum-build orichalcum-build-linux-x64_86 | Out-Null
+# PRE stuff
+$ProjectRoot = "$PSScriptRoot\.."
+Push-Location $ProjectRoot
+$Hash = (Get-FileHash dockerfile -Algorithm MD5).Hash
+$Name = "orichalcum-build-linux-x64_86:$Hash"
+
+(docker image inspect $Name) | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    docker build -t $Name .
+}
+
+docker create -t --name orichalcum-build $Name | Out-Null
 
 docker cp .\include orichalcum-build:/build/include
 docker cp .\src orichalcum-build:/build/src
@@ -8,3 +19,5 @@ docker cp .\WORKSPACE orichalcum-build:/build/WORKSPACE
 
 docker start -a orichalcum-build
 docker rm orichalcum-build | Out-Null
+
+Pop-Location

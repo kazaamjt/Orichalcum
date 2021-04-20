@@ -2,6 +2,7 @@
 
 #include "Misc.hpp"
 #include "Log.hpp"
+#include "Debug.hpp"
 
 namespace LibOrichalcum {
 
@@ -14,19 +15,16 @@ void Parser::enable_debug() {
 void Parser::parse(const std::filesystem::path &file) {
 	lexer = Lexer(file);
 	next_token = lexer.get_next_token();
-	bool parsing = true;
-	while (parsing) {
+	while (next_token.type != TOKEN_TYPE::EOF_TOKEN) {
 		advance_token();
 		consume_token();
-		if (next_token.type == TOKEN_TYPE::EOF_TOKEN) {
-			parsing = false;
-			Log::debug(current_token.file_path + ": Reached EOF");
-		}
 	}
+	Log::debug("Reached EOF");
 }
 
 void Parser::consume_token() {
-	advance_token();
+	Log::debug("Consuming token: ");
+	if (Log::get_level() == LOG_LEVEL::DEBUG) Debug::print_token(current_token);
 	switch (current_token.type) {
 		case TOKEN_TYPE::UNKNOWN: break;
 		// Neither of these should ever happen

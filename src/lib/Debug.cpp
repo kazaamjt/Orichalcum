@@ -12,9 +12,11 @@ namespace LibOrichalcum::Debug {
 
 void print_token(const Token &token) {
 	Log::debug(
-		"(" + std::to_string(token.index.line + 1) + ","
-		+ std::to_string(token.index.col + 1) + ") "
-		+ to_string(token.type) + " " + token.content
+		to_string(token.type)
+		+ " \"" + token.content
+		+ "\" " + token.file_path
+		+ "(" + std::to_string(token.index.line + 1) + ","
+		+ std::to_string(token.index.col + 1) + ")"
 	);
 }
 

@@ -52,7 +52,7 @@ inline LibOrichalcum::CompilerOptions init_options(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
 	LibOrichalcum::CompilerOptions compiler_options = init_options(argc, argv);
 	LibOrichalcum::Compiler compiler(compiler_options);
-	compiler.run();
+	auto result = compiler.run();
 
 	return 0;
 }
