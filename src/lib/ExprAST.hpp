@@ -2,19 +2,23 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <variant>
+#include <vector>
 
 #include "Lexer.hpp"
 
 namespace LibOrichalcum {
 
 struct ExprAST {
+	std::unique_ptr<Token> token;
+	ExprAST(const Token &token);
+	ExprAST(const ExprAST &);
+	ExprAST(ExprAST &&);
+
 	virtual void print_dbg();
 	virtual ~ExprAST();
 };
 
 struct IntExprAST: public ExprAST {
-	std::unique_ptr<Token> token;
 	int64_t value;
 
 	IntExprAST(const Token &token);
@@ -23,7 +27,6 @@ struct IntExprAST: public ExprAST {
 };
 
 struct FloatExprAST: public ExprAST {
-	std::unique_ptr<Token> token;
 	double value;
 
 	FloatExprAST(const Token &token);
@@ -35,16 +38,17 @@ struct VariableExprAST: public ExprAST {
 	std::string name;
 	std::string type;
 
-	VariableExprAST(const std::string &name, const std::string &type);
+	VariableExprAST(const Token &token);
+	VariableExprAST(const Token &token, const std::string &type);
 	~VariableExprAST() override;
 	void print_dbg() override;
 };
 
 struct BinaryExprAST: public ExprAST {
-	std::unique_ptr<Token> op;
+	TOKEN_TYPE op;
 	std::unique_ptr<ExprAST> lefthand, righthand;
 
-	BinaryExprAST(std::unique_ptr<Token> op, std::unique_ptr<ExprAST> lefthand, std::unique_ptr<ExprAST> righthand);
+	BinaryExprAST(const Token &token, std::unique_ptr<ExprAST> lefthand, std::unique_ptr<ExprAST> righthand);
 	~BinaryExprAST() override;
 	void print_dbg() override;
 };
@@ -53,16 +57,17 @@ struct CallExprAST: public ExprAST {
 	std::string callee;
 	std::vector<ExprAST> args;
 
-	CallExprAST(const std::string callee, std::vector<ExprAST> args);
+	CallExprAST(const Token &token, std::vector<ExprAST> args);
 	~CallExprAST() override;
 	void print_dbg() override;
 };
 
 struct FunctionArg {
+	Token token;
 	std::string name;
 	std::string type;
 
-	FunctionArg(const std::string &name, const std::string &type);
+	FunctionArg(const Token &_token, const std::string &type);
 	void print_dbg();
 };
 
@@ -81,7 +86,7 @@ struct FunctionAST: public ExprAST {
 	std::unique_ptr<ProtoTypeAST> proto;
 	std::unique_ptr<ExprAST> body;
 
-	FunctionAST(std::unique_ptr<ProtoTypeAST> proto, std::unique_ptr<ExprAST> body);
+	FunctionAST(const Token &_token, std::unique_ptr<ProtoTypeAST> proto, std::unique_ptr<ExprAST> body);
 	~FunctionAST() override;
 	void print_dbg() override;
 };

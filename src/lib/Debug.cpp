@@ -8,6 +8,8 @@
 #include "Misc.hpp"
 #include "Log.hpp"
 
+// TODO: Make sure calls to debug print functions only happen if debug is on
+
 namespace LibOrichalcum::Debug {
 
 void print_token(const Token &token) {

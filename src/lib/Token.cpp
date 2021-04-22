@@ -14,12 +14,11 @@ Token::Token():
 	index(Index(0,0)), type(TOKEN_TYPE::EMPTY), content("") { }
 
 Token::Token(
-	const std::string &_file_path,
-	Index _index,
-	TOKEN_TYPE _type,
-	const std::string &_content,
-	const std::string &_line_content
-	):
+const std::string &_file_path,
+Index _index,
+TOKEN_TYPE _type,
+const std::string &_content,
+const std::string &_line_content):
 	file_path(_file_path),
 	index(_index),
 	type(_type),
@@ -33,6 +32,7 @@ std::string to_string(const TOKEN_TYPE token_type) {
 		case TOKEN_TYPE::INDENT: return "INDENT";
 		case TOKEN_TYPE::LEFT_PAREN: return "LEFT_PAREN";
 		case TOKEN_TYPE::RIGHT_PAREN: return "RIGHT_PAREN";
+		case TOKEN_TYPE::COLON: return "COLON";
 		case TOKEN_TYPE::COMMA: return "COMMA";
 		case TOKEN_TYPE::DOT: return "DOT";
 		case TOKEN_TYPE::ASIGNMENT_OP: return "ASIGNMENT_OP";

@@ -25,13 +25,14 @@ private:
 	Token current;
 	Token next;
 
-	void advance();
+	void advance(int steps = 1);
 
 	std::unique_ptr<ExprAST> parse_expression();
+
 	std::unique_ptr<IntExprAST> parse_int();
 	std::unique_ptr<FloatExprAST> parse_float();
 	std::unique_ptr<ExprAST> parse_parens();
-	std::unique_ptr<VariableExprAST> parse_identifier();
+	std::unique_ptr<ExprAST> parse_identifier();
 };
 
 } // LibOrichalcum

@@ -222,6 +222,10 @@ Token Lexer::get_token() {
 			current = next_char();
 			return mk_token(file_path, index, TOKEN_TYPE::DOT, ".");
 		}
+		case ':': {
+			current = next_char();
+			return mk_token(file_path, index, TOKEN_TYPE::COLON, ":");
+		}
 
 		case '"': {
 			std::string string;
