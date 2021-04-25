@@ -180,8 +180,6 @@ Token Lexer::get_token() {
 			current = next_char();
 			return mk_token(file_path, index, TOKEN_TYPE::COMPARISON_OP, "!=");
 		}
-
-		return mk_token(file_path, index, TOKEN_TYPE::ASIGNMENT_OP, "!");
 	}
 
 	if (current == '<') {
@@ -191,7 +189,7 @@ Token Lexer::get_token() {
 			return mk_token(file_path, index, TOKEN_TYPE::COMPARISON_OP, "<=");
 		}
 
-		return mk_token(file_path, index, TOKEN_TYPE::ASIGNMENT_OP, "<");
+		return mk_token(file_path, index, TOKEN_TYPE::COMPARISON_OP, "<");
 	}
 
 	if (current == '>') {
@@ -201,7 +199,7 @@ Token Lexer::get_token() {
 			return mk_token(file_path, index, TOKEN_TYPE::COMPARISON_OP, ">=");
 		}
 
-		return mk_token(file_path, index, TOKEN_TYPE::ASIGNMENT_OP, ">");
+		return mk_token(file_path, index, TOKEN_TYPE::COMPARISON_OP, ">");
 	}
 
 	// single char tokens
