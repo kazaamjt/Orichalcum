@@ -13,18 +13,13 @@ enum class COMPILE_RESULT {
 	RUNTIME_ERROR,
 };
 
-enum class COMPILER_SECTION {
-	PARSER,
-	VM,
-};
-
 class Error: public std::runtime_error {
 public:
 	Error();
 	Error(
 		const COMPILE_RESULT section,
 		const std::string &msg,
-		Token token
+		std::shared_ptr<Token> token
 	);
 	Error(
 		const COMPILE_RESULT section,

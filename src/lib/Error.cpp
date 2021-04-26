@@ -8,12 +8,12 @@ namespace LibOrichalcum {
 Error::Error(
 	const COMPILE_RESULT _section,
 	const std::string &_msg,
-	Token token):
+	std::shared_ptr<Token> token):
 std::runtime_error(_msg),
 section(_section), msg(_msg),
-index(token.index),
-file(token.file_path),
-line_content(token.line_content) { }
+index(token->index),
+file(token->file_path),
+line_content(token->line_content) { }
 
 Error::Error(
 	const COMPILE_RESULT _section,

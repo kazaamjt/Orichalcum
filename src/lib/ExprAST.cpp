@@ -6,8 +6,8 @@
 
 namespace LibOrichalcum {
 
-ExprAST::ExprAST(const Token &_token):
-token(new Token(_token)) { }
+ExprAST::ExprAST(std::shared_ptr<Token> _token):
+token(_token) { }
 
 ExprAST::ExprAST(const ExprAST &expr):
 token(new Token(*expr.token)) { }
@@ -18,47 +18,42 @@ void ExprAST::print_dbg() {
 
 ExprAST::~ExprAST() { }
 
-IntExprAST::IntExprAST(const Token &_token):
+IntExprAST::IntExprAST(std::shared_ptr<Token> _token):
 ExprAST(_token) {
 	std::stringstream stream(token->content);
 	stream >> value;
 }
-
-IntExprAST::~IntExprAST() { }
 
 void IntExprAST::print_dbg() {
 	Log::debug("IntExprAST " + std::to_string(value));
 }
 
-FloatExprAST::FloatExprAST(const Token & _token):
+IntExprAST::~IntExprAST() { }
+
+FloatExprAST::FloatExprAST(std::shared_ptr<Token> _token):
 ExprAST(_token) {
 	token = std::make_unique<Token>(_token);
 	std::stringstream stream(token->content);
 	stream >> value;
 }
 
-FloatExprAST::~FloatExprAST() { }
-
 void FloatExprAST::print_dbg() {
 	Log::debug("FloatExprAST " + std::to_string(value));
 }
 
-VariableExprAST::VariableExprAST(const Token &_token):
+FloatExprAST::~FloatExprAST() { }
+
+VariableExprAST::VariableExprAST(std::shared_ptr<Token> _token):
 ExprAST(_token),
-name(_token.content) {
-	token = std::make_unique<Token>(_token);
-}
+name(_token->content) { }
 
 VariableExprAST::VariableExprAST(
-	const Token &_token,
-	const std::string &_type):
+	std::shared_ptr<Token> _token,
+	std::shared_ptr<Token> _type_token):
 ExprAST(_token),
-name(_token.content),
-type(_type) {
-	token = std::make_unique<Token>(_token);
-}
-
-VariableExprAST::~VariableExprAST() { }
+type_token(_type_token),
+name(_token->content),
+type(_type_token->content) { }
 
 void VariableExprAST::print_dbg() {
 	Log::debug(
@@ -67,18 +62,18 @@ void VariableExprAST::print_dbg() {
 	);
 }
 
+VariableExprAST::~VariableExprAST() { }
+
 BinaryExprAST::BinaryExprAST(
-	const Token &_token,
-	std::unique_ptr<ExprAST> lhs,
-	std::unique_ptr<ExprAST> rhs):
+	std::shared_ptr<Token> _token,
+	std::shared_ptr<ExprAST> lhs,
+	std::shared_ptr<ExprAST> rhs):
 ExprAST(_token),
-op(_token.type),
+op(_token->type),
 lefthand(std::move(lhs)),
 righthand(std::move(rhs)) {
 	token = std::make_unique<Token>(_token);
 }
-
-BinaryExprAST::~BinaryExprAST() { }
 
 void BinaryExprAST::print_dbg() {
 	Log::debug("BinaryExprAST: " + to_string(op));
@@ -88,24 +83,27 @@ void BinaryExprAST::print_dbg() {
 	righthand->print_dbg();
 }
 
-CallExprAST::CallExprAST(
-	const Token &_token,
-	std::vector<ExprAST> _args):
-args(_args),
-ExprAST(_token),
-callee(_token.content) { }
+BinaryExprAST::~BinaryExprAST() { }
 
-CallExprAST::~CallExprAST() { }
+CallExprAST::CallExprAST(std::shared_ptr<Token> _token):
+ExprAST(_token),
+callee(_token->content) { }
+
+void CallExprAST::add_arg(std::shared_ptr<ExprAST> arg) {
+	args.push_back(arg);
+}
 
 void CallExprAST::print_dbg() {
 	Log::debug("CallExprAST: Call to " + callee);
 	for (auto arg: args) {
-		arg.print_dbg();
+		arg->print_dbg();
 	}
 }
 
-FunctionArg::FunctionArg(const Token &_token, const std::string &_type) :
-token(_token), name(_token.content), type(_type) { }
+CallExprAST::~CallExprAST() { }
+
+FunctionArg::FunctionArg(std::shared_ptr<Token> _token, std::shared_ptr<Token> _type_token) :
+token(_token), type_token(_type_token), name(_token->content), type(_type_token->content) { }
 
 void FunctionArg::print_dbg() {
 	Log::debug(
@@ -114,27 +112,29 @@ void FunctionArg::print_dbg() {
 	);
 }
 
-ProtoTypeAST::ProtoTypeAST(const std::string &_name, std::vector<FunctionArg> _args):
-	name(_name), args(_args) { }
+PrototypeAST::PrototypeAST(const std::string &_name):
+	name(_name) { }
 
-ProtoTypeAST::~ProtoTypeAST() { }
+void PrototypeAST::add_arg(std::shared_ptr<FunctionArg> arg) {
+	args.push_back(arg);
+}
 
-void ProtoTypeAST::print_dbg() {
+void PrototypeAST::print_dbg() {
 	Log::debug("PrototypeAST: " + name);
 	for (auto arg: args) {
-		arg.print_dbg();
+		arg->print_dbg();
 	}
 }
 
+PrototypeAST::~PrototypeAST() { }
+
 FunctionAST::FunctionAST(
-	const Token &_token,
-	std::unique_ptr<ProtoTypeAST> _proto,
-	std::unique_ptr<ExprAST> _body):
+	std::shared_ptr<Token> _token,
+	std::unique_ptr<PrototypeAST> _proto,
+	std::shared_ptr<ExprAST> _body):
 ExprAST(_token),
 proto(std::move(_proto)),
-body(std::move(_body)) {
-	token = std::make_unique<Token>(_token);
-}
+body(_body) { }
 
 FunctionAST::~FunctionAST() { }
 
