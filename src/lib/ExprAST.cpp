@@ -32,7 +32,6 @@ IntExprAST::~IntExprAST() { }
 
 FloatExprAST::FloatExprAST(std::shared_ptr<Token> _token):
 ExprAST(_token) {
-	token = std::make_unique<Token>(_token);
 	std::stringstream stream(token->content);
 	stream >> value;
 }
@@ -51,9 +50,9 @@ VariableExprAST::VariableExprAST(
 	std::shared_ptr<Token> _token,
 	std::shared_ptr<Token> _type_token):
 ExprAST(_token),
-type_token(_type_token),
 name(_token->content),
-type(_type_token->content) { }
+type(_type_token->content),
+type_token(_type_token) { }
 
 void VariableExprAST::print_dbg() {
 	Log::debug(
@@ -71,9 +70,7 @@ BinaryExprAST::BinaryExprAST(
 ExprAST(_token),
 op(_token->type),
 lefthand(std::move(lhs)),
-righthand(std::move(rhs)) {
-	token = std::make_unique<Token>(_token);
-}
+righthand(std::move(rhs)) { }
 
 void BinaryExprAST::print_dbg() {
 	Log::debug("BinaryExprAST: " + to_string(op));

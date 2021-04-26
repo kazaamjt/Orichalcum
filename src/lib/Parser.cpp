@@ -77,6 +77,7 @@ std::shared_ptr<ExprAST> Parser::parse_expression() {
 	return parse_bin_op_rhs(0, lhs);
 }
 
+// Attemtps to parse binary operator expressions as one would in math.
 std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shared_ptr<ExprAST> lhs) {
 	while (true) {
 		int current_precedence = get_bin_op_precendence(current->content);
@@ -86,10 +87,14 @@ std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shar
 		advance();
 		std::shared_ptr<ExprAST> rhs = parse_primary();
 
+		// if bin_op binds less tightly with rhs than the operator after rhs,
+		// let the pending operator take rhs as it's lhs
 		int next_op_precedence = get_bin_op_precendence(current->content);
 		if (expr_precedence < next_op_precedence) {
-
+			rhs = parse_bin_op_rhs(current_precedence + 1, rhs);
 		}
+
+		lhs = std::make_shared<BinaryExprAST>(bin_op, lhs, rhs);
 	}
 }
 
@@ -127,7 +132,7 @@ std::shared_ptr<ExprAST> Parser::parse_identifier() {
 	// Function Call
 	if (next->type == TOKEN_TYPE::LEFT_PAREN) {
 		std::shared_ptr<Token> callee_token = current;
-		std::shared_ptr<CallExprAST> callee = std::make_unique<CallExprAST>(callee_token);
+		std::shared_ptr<CallExprAST> callee = std::make_shared<CallExprAST>(callee_token);
 		advance(2);
 		if (current->type == TOKEN_TYPE::RIGHT_PAREN) {
 			advance();
@@ -158,12 +163,15 @@ std::shared_ptr<ExprAST> Parser::parse_identifier() {
 		}
 	}
 	// variable with type
+	std::shared_ptr<Token> var_token = current;
+	advance();
 	if (next->type == TOKEN_TYPE::COLON) {
-		std::shared_ptr<Token> var_token = current;
-		advance(2);
+		advance();
 		std::shared_ptr<Token> Type_token = current;
 		advance();
-		return std::make_unique<VariableExprAST>(var_token, Type_token);
+		return std::make_shared<VariableExprAST>(var_token, Type_token);
+	} else {
+		return std::make_shared<VariableExprAST>(var_token);
 	}
 }
 
