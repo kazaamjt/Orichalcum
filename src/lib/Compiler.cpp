@@ -14,12 +14,12 @@ CompilerReport::CompilerReport(COMPILE_RESULT _result, const Error &_error, std:
 result(_result), error(_error), logs(_logs) { }
 
 Compiler::Compiler(CompilerOptions _options):
+parser(_options.debug_parser),
 current_chunk(0),
 options(_options) {
 	Log::set_level(options.log_level, options.print_output);
 	Log::verbose("Log level set to " + to_string(options.log_level));
 	if (options.debug_vm) vm.enable_debug();
-	if (options.debug_parser) parser.enable_debug();
 	main_file = options.file;
 	main_module = options.file.parent_path();
 }

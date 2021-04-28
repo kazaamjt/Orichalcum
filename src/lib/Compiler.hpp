@@ -36,8 +36,8 @@ public:
 	CompilerReport run();
 
 private:
-	Parser parser = Parser();
-	VM vm = VM();
+	Parser parser;
+	VM vm;
 
 	void _run();
 

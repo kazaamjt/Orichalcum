@@ -6,20 +6,30 @@
 
 namespace LibOrichalcum {
 
-Parser::Parser() {
+Parser::Parser():
+debug(false) {
+	init_bin_op_precedence();
+}
+
+Parser::Parser(bool _debug):
+debug(_debug) {
+	init_bin_op_precedence();
+}
+
+void Parser::init_bin_op_precedence() {
 	binary_op_precedence["+"] = 20;
 	binary_op_precedence["-"] = 20;
 	binary_op_precedence["*"] = 40;
 	binary_op_precedence["/"] = 40;
 	binary_op_precedence["//"] = 40;
 	binary_op_precedence["**"] = 60;
-}
 
-void Parser::enable_debug() {
-	debug = true;
+	Log::debug("Initializing binary operation precedence.");
+	print_bin_op_precedence();
 }
 
 void Parser::parse(const std::filesystem::path &file) {
+	Log::verbose("Parsing file " + file.string());
 	lexer = Lexer(file);
 	next = std::make_shared<Token>(lexer.get_next_token());
 	advance();
@@ -33,12 +43,22 @@ int Parser::get_bin_op_precendence(const std::string &binary_op) {
 	return iterator->second;
 }
 
+void Parser::set_bin_op_precendence(const std::string &binary_op, int precedence) {
+	Log::debug(
+		"Setting operator precedence value for \""
+		+ binary_op + "\" to " + std::to_string(precedence)
+	);
+	binary_op_precedence[binary_op] = precedence;
+}
+
 void Parser::advance(int steps, bool skip_indent) {
 	for (int i = 0 ; i == steps; i++) {
+		if (debug) Log::debug("Parser advance");
 		previous = current;
 		current = next;
 		next = std::make_shared<Token>(lexer.get_next_token());
 		while (skip_indent && current->type == TOKEN_TYPE::INDENT) {
+			if (debug) Log::debug("Ignoring whitespace token");
 			current = next;
 			next = std::make_shared<Token>(lexer.get_next_token());
 		}
@@ -73,15 +93,19 @@ std::shared_ptr<ExprAST> Parser::parse_primary() {
 }
 
 std::shared_ptr<ExprAST> Parser::parse_expression() {
+	Log::debug("Parsing expression");
 	std::shared_ptr<ExprAST> lhs = parse_primary();
 	return parse_bin_op_rhs(0, lhs);
 }
 
-// Attemtps to parse binary operator expressions as one would in math.
+// Parse binary operator expressions as one would in math.
 std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shared_ptr<ExprAST> lhs) {
+	Log::debug("Parsing binary expression.");
 	while (true) {
 		int current_precedence = get_bin_op_precendence(current->content);
-		if (current_precedence < expr_precedence) return lhs;
+		if (current_precedence < expr_precedence) {
+			return lhs;
+		}
 
 		std::shared_ptr<Token> bin_op = current;
 		advance();
@@ -111,6 +135,7 @@ std::shared_ptr<FloatExprAST> Parser::parse_float() {
 }
 
 std::shared_ptr<ExprAST> Parser::parse_parens() {
+	if (debug) Log::debug("Parsing parentheses expression.");
 	advance(1, true);
 	std::shared_ptr<ExprAST> expr = parse_expression();
 	advance(1, true);
@@ -131,47 +156,61 @@ std::shared_ptr<ExprAST> Parser::parse_parens() {
 std::shared_ptr<ExprAST> Parser::parse_identifier() {
 	// Function Call
 	if (next->type == TOKEN_TYPE::LEFT_PAREN) {
+		Log::debug("Identifer followed by parentheses, parsing as function call.");
 		std::shared_ptr<Token> callee_token = current;
-		std::shared_ptr<CallExprAST> callee = std::make_shared<CallExprAST>(callee_token);
+		std::vector<std::shared_ptr<ExprAST>> args;
 		advance(2);
 		if (current->type == TOKEN_TYPE::RIGHT_PAREN) {
 			advance();
-			return callee;
 		}
-		std::shared_ptr<ExprAST> next_expr;
-		while (true) {
-			callee->add_arg(parse_expression());
-			advance(1, true);
-			if (current->type == TOKEN_TYPE::COMMA) {
+		else {
+			std::shared_ptr<ExprAST> next_expr;
+			while (true) {
+				args.push_back(parse_expression());
 				advance(1, true);
-				if (current->type == TOKEN_TYPE::RIGHT_PAREN) {
+				if (current->type == TOKEN_TYPE::COMMA) {
 					advance(1, true);
+					if (current->type == TOKEN_TYPE::RIGHT_PAREN) {
+						advance(1, true);
+						break;
+					}
+				}
+				else if (current->type == TOKEN_TYPE::RIGHT_PAREN) {
+					advance();
 					break;
 				}
-			}
-			else if (current->type == TOKEN_TYPE::RIGHT_PAREN) {
-				advance();
-				break;
-			}
-			else {
-				throw Error(
-					COMPILE_RESULT::PARSER_ERROR,
-					"Unexpected token, expected a '(' or ','",
-					current
-				);
+				else {
+					throw Error(
+						COMPILE_RESULT::PARSER_ERROR,
+						"Unexpected token, expected a '(' or ','",
+						current
+					);
+				}
 			}
 		}
+		return std::make_shared<CallExprAST>(callee_token, args);
 	}
 	// variable with type
 	std::shared_ptr<Token> var_token = current;
 	advance();
 	if (next->type == TOKEN_TYPE::COLON) {
+		Log::debug("Parsing variable + type declaration.");
 		advance();
 		std::shared_ptr<Token> Type_token = current;
 		advance();
 		return std::make_shared<VariableExprAST>(var_token, Type_token);
 	} else {
+		Log::debug("Parsing variable.");
 		return std::make_shared<VariableExprAST>(var_token);
+	}
+}
+
+void Parser::print_bin_op_precedence() {
+	if (debug) {
+		Log::debug("Currently set operator precedence levels:");
+		for (auto const& [key, val]: binary_op_precedence) {
+			Log::debug(key + " = " + std::to_string(val));
+		}
 	}
 }
 

@@ -3,7 +3,7 @@
 Orichalcum is a domain-specific programming language.  
 It is meant to be used as an embedable language that helps with large and complicated configuration.  
 DevOps tools in particular.  
-Looks like Python. Feels like Python. Hopefully.  
+It's syntax si heavily inspired by Python.  
 
 The idea is simple:  
 
@@ -16,14 +16,17 @@ Some (potential) use cases:
 
 - Build automation systems (e.g. jenkins)
 - Orchestration tools (e.g. Terraform)
-- Build tools (make, bazel is a big inspiration)
+- Build tools (make comes to mind and bazel and starlark language were a direct inspiration for this project)
 - Software that has complex config requirements, like webservers?
+
+To be clear I am not hoping/advocating that Orichalcum be embedded in these tools.  
+Rather I would like to see/create tools that fill similar roles using Orichalcum as their DSL.  
 
 ## GOALS
 
 - Easy to understand/use:  
-Python is very big in DevOps, and I'm very familiar with Python,  
-thusly I'll try to make this language look as much like Python,
+Python is very big in DevOps, and I'm very familiar with Python,
+thusly I'll try to make this language look and feel like Python, when it makes sense,
 so it is easy to pick up for anyone familiar with python.  
 Potential pitfalls and hard to understand concepts should be avoided.  
 Jenkins and it's jenkinsfiles come to mind as an example of what not to do here.  
