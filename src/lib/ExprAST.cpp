@@ -12,7 +12,8 @@ token(_token) { }
 ExprAST::ExprAST(const ExprAST &expr):
 token(new Token(*expr.token)) { }
 
-void ExprAST::print_dbg(const std::string &pre = "") {
+void ExprAST::print_dbg(const std::string &pre) {
+	Log::error(pre);
 	throw Error(
 		COMPILE_RESULT::PARSER_ERROR,
 		"Debug printer got passed object with type ExprAST, this object shouldn't exist, it represents nothing concrete... this is BadBadNotGood.",
@@ -43,7 +44,7 @@ ExprAST(_token) {
 }
 
 void FloatExprAST::print_dbg(const std::string &pre) {
-	Log::debug("FloatExprAST " + std::to_string(value));
+	Log::debug(pre + "FloatExprAST " + std::to_string(value));
 }
 
 FloatExprAST::~FloatExprAST() { }

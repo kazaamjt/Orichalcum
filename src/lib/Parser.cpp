@@ -118,18 +118,18 @@ std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shar
 			rhs = parse_bin_op_rhs(current_precedence + 1, rhs);
 		}
 
-		lhs = std::make_shared<BinaryExprAST>(bin_op, lhs, rhs);
+		lhs = std::make_shared<BinaryExprAST>(bin_op, lhs, rhs, debug);
 	}
 }
 
 std::shared_ptr<IntExprAST> Parser::parse_int() {
-	auto expr = std::make_shared<IntExprAST>(current);
+	auto expr = std::make_shared<IntExprAST>(current, debug);
 	advance();
 	return expr;
 }
 
 std::shared_ptr<FloatExprAST> Parser::parse_float() {
-	auto expr = std::make_shared<FloatExprAST>(current);
+	auto expr = std::make_shared<FloatExprAST>(current, debug);
 	advance();
 	return expr;
 }
@@ -188,7 +188,7 @@ std::shared_ptr<ExprAST> Parser::parse_identifier() {
 				}
 			}
 		}
-		return std::make_shared<CallExprAST>(callee_token, args);
+		return std::make_shared<CallExprAST>(callee_token, args, debug);
 	}
 	// variable with type
 	std::shared_ptr<Token> var_token = current;
@@ -198,10 +198,10 @@ std::shared_ptr<ExprAST> Parser::parse_identifier() {
 		advance();
 		std::shared_ptr<Token> Type_token = current;
 		advance();
-		return std::make_shared<VariableExprAST>(var_token, Type_token);
+		return std::make_shared<VariableExprAST>(var_token, Type_token, debug);
 	} else {
 		Log::debug("Parsing variable.");
-		return std::make_shared<VariableExprAST>(var_token);
+		return std::make_shared<VariableExprAST>(var_token, debug);
 	}
 }
 
