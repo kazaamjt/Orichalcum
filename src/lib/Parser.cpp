@@ -67,16 +67,17 @@ void Parser::advance(int steps, bool skip_indent) {
 }
 
 std::shared_ptr<ExprAST> Parser::parse_primary() {
+	std::shared_ptr<Token> start_token = current;
 	if (current->type == TOKEN_TYPE::INTEGER) return parse_int();
 	else if (current->type ==  TOKEN_TYPE::FLOAT) return parse_float();
 	else if (current->type == TOKEN_TYPE::IDENTIFIER) return parse_identifier();
 	else if (current->type == TOKEN_TYPE::LEFT_PAREN) return parse_parens();
 	else if (current->type == TOKEN_TYPE::PASS) return std::make_shared<PassExprAST>(current, debug);
-	else if (current) {
-		syntax_error("Unexepected indentation");
+	else if (current->type == TOKEN_TYPE::INDENT) {
+		syntax_error("Unexpected indentation");
 	}
 	else {
-		syntax_error("Unexepected token " + current->content);
+		syntax_error(start_token, "Unexpected token " + current->content);
 	}
 }
 
@@ -313,10 +314,14 @@ void Parser::print_bin_op_precedence() {
 }
 
 void Parser::syntax_error(const std::string &error) {
+	syntax_error(current, error);
+}
+
+void Parser::syntax_error(std::shared_ptr<Token> token, const std::string &error) {
 	throw Error(
 		COMPILE_RESULT::PARSER_ERROR,
 		error,
-		current
+		token
 	);
 }
 

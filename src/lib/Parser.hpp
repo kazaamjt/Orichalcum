@@ -59,6 +59,7 @@ private:
 	void print_bin_op_precedence();
 
 	[[ noreturn ]] void syntax_error(const std::string &error);
+	[[ noreturn ]] void syntax_error(std::shared_ptr<Token> token, const std::string &error);
 };
 
 } // LibOrichalcum
