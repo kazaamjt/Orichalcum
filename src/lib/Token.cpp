@@ -25,6 +25,19 @@ const std::string &_line_content):
 	content(_content),
 	line_content(_line_content) { }
 
+std::string Token::alt_string() {
+	if (
+		type == TOKEN_TYPE::EMPTY ||
+		type == TOKEN_TYPE::EOF_TOKEN ||
+		type == TOKEN_TYPE::INDENT
+	) {
+		return to_string(type);
+	}
+	else {
+		return content;
+	}
+}
+
 std::string to_string(const TOKEN_TYPE token_type) {
 	switch(token_type){
 		case TOKEN_TYPE::EMPTY: return "EMPTY";

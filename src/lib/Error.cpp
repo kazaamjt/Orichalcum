@@ -29,6 +29,8 @@ file(_file),
 line_content(_line_content) { }
 
 Error::Error():
-std::runtime_error(""), section(COMPILE_RESULT::SUCCESS), index(0, 0) { }
+std::runtime_error(""),
+section(COMPILE_RESULT::SUCCESS),
+index(0, 0) { }
 
 } // LibOrichalcum

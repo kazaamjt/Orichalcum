@@ -47,6 +47,8 @@ private:
 	std::shared_ptr<FloatExprAST> parse_float();
 	std::shared_ptr<ExprAST> parse_parens();
 	std::shared_ptr<ExprAST> parse_identifier();
+	std::shared_ptr<PrototypeAST> parse_prototype();
+	std::shared_ptr<FunctionAST> parse_function();
 
 	void print_bin_op_precedence();
 };

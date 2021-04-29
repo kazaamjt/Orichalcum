@@ -33,8 +33,6 @@ void Parser::parse(const std::filesystem::path &file) {
 	lexer = Lexer(file);
 	next = std::make_shared<Token>(lexer.get_next_token());
 	advance();
-
-	Log::debug("Reached EOF");
 }
 
 int Parser::get_bin_op_precendence(const std::string &binary_op) {
@@ -66,29 +64,16 @@ void Parser::advance(int steps, bool skip_indent) {
 }
 
 std::shared_ptr<ExprAST> Parser::parse_primary() {
-	switch(current->type) {
-		case TOKEN_TYPE::INTEGER:
-			advance();
-			return parse_int();
-
-		case TOKEN_TYPE::FLOAT:
-			advance();
-			return parse_float();
-
-		case TOKEN_TYPE::IDENTIFIER:
-			advance();
-			return parse_identifier();
-
-		case TOKEN_TYPE::LEFT_PAREN:
-			advance();
-			return parse_parens();
-
-		default:
-			throw Error(
-				COMPILE_RESULT::PARSER_ERROR,
-				("Unexepected token " + current->content),
-				current
-			);
+	if (current->type == TOKEN_TYPE::INTEGER) return parse_int();
+	else if (current->type ==  TOKEN_TYPE::FLOAT) return parse_float();
+	else if (current->type == TOKEN_TYPE::IDENTIFIER) return parse_identifier();
+	else if (current->type == TOKEN_TYPE::LEFT_PAREN) return parse_parens();
+	else {
+		throw Error(
+			COMPILE_RESULT::PARSER_ERROR,
+			("Unexepected token " + current->content),
+			current
+		);
 	}
 }
 
@@ -182,7 +167,7 @@ std::shared_ptr<ExprAST> Parser::parse_identifier() {
 				else {
 					throw Error(
 						COMPILE_RESULT::PARSER_ERROR,
-						"Unexpected token, expected a '(' or ','",
+						"Unexpected token: " + current->alt_string() + " (expected '(' or ',')",
 						current
 					);
 				}
@@ -205,11 +190,114 @@ std::shared_ptr<ExprAST> Parser::parse_identifier() {
 	}
 }
 
+std::shared_ptr<PrototypeAST> Parser::parse_prototype() {
+	std::shared_ptr<Token> def_token = current;
+	advance();
+	if (current->type != TOKEN_TYPE::IDENTIFIER) {
+		throw Error(
+			COMPILE_RESULT::PARSER_ERROR,
+			"Unexpected token: " + current->alt_string() + " (expected a function name.)",
+			current
+		);
+	}
+
+	std::string name = current->content;
+	advance();
+	if (current->type != TOKEN_TYPE::LEFT_PAREN) {
+		throw Error(
+			COMPILE_RESULT::PARSER_ERROR,
+			"Unexpected token: " + current->alt_string() + " (expected '(').",
+			current
+		);
+	}
+
+	advance(1, true);
+	std::vector<std::shared_ptr<FunctionArg>> args;
+	while (true) {
+		if (current->type == TOKEN_TYPE::IDENTIFIER) {
+			advance();
+			if (current->type == TOKEN_TYPE::COLON) {
+				advance();
+				if (next->type == TOKEN_TYPE::IDENTIFIER) {
+					args.push_back(
+						std::make_shared<FunctionArg>(previous, next, debug)
+					);
+					advance();
+				}
+				else {
+					throw Error(
+						COMPILE_RESULT::PARSER_ERROR,
+						"Unexpected token: " + current->alt_string() + " (expected a type declaration.)",
+						current
+					);
+				}
+			}
+			else {
+				throw Error(
+					COMPILE_RESULT::PARSER_ERROR,
+					"Unexpected token: " + current->alt_string() + " (expected a type declaration.)",
+					current
+				);
+			}
+		}
+		else if (current->type == TOKEN_TYPE::COMMA) {
+			advance(1, true);
+		}
+		else if (current->type == TOKEN_TYPE::RIGHT_PAREN) {
+			advance();
+			break;
+		}
+		else {
+			throw Error(
+				COMPILE_RESULT::PARSER_ERROR,
+				"Unexpected token: " + current->alt_string() + " (expected ',' or ')').",
+				current
+			);
+		}
+	}
+
+	if (current->type == TOKEN_TYPE::RETURN_TYPE_SIGN) {
+		advance();
+		if (current->type == TOKEN_TYPE::IDENTIFIER) {
+			advance();
+		}
+		else {
+			throw Error(
+				COMPILE_RESULT::PARSER_ERROR,
+				"Unexpected token: " + current->alt_string() + " (expected a return type).",
+				current
+			);
+		}
+	}
+	else {
+		throw Error(
+			COMPILE_RESULT::PARSER_ERROR,
+			"Unexpected token: " + current->alt_string() + " (expected a return type).",
+			current
+		);
+	}
+
+	if (current->type != TOKEN_TYPE::COLON) {
+		throw Error(
+			COMPILE_RESULT::PARSER_ERROR,
+			"Unexpected token: " + current->alt_string() + " (expected a ':').",
+			current
+		);
+	}
+
+	return std::make_shared<PrototypeAST>(name, args, previous, debug);
+}
+
+std::shared_ptr<FunctionAST> Parser::parse_function() {
+	advance();
+	std::shared_ptr<PrototypeAST> proto = parse_prototype();
+}
+
 void Parser::print_bin_op_precedence() {
 	if (debug) {
 		Log::debug("Currently set operator precedence levels:");
 		for (auto const& [key, val]: binary_op_precedence) {
-			Log::debug(key + " = " + std::to_string(val));
+			Log::debug(std::to_string(val) + ": " + key);
 		}
 	}
 }

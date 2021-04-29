@@ -8,7 +8,7 @@
 namespace LibOrichalcum {
 
 VM::VM():
-	chunk("main"), chunk_iter(chunk.get_iterator()) { }
+	chunk("VM init chunk"), chunk_iter(chunk.get_iterator()) { }
 
 void VM::enable_debug() {
 	vm_debug = true;

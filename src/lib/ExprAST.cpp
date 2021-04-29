@@ -139,9 +139,12 @@ void FunctionArg::print_dbg(const std::string &pre) {
 PrototypeAST::PrototypeAST(
 	const std::string &_name,
 	std::vector<std::shared_ptr<FunctionArg>> _args,
+	std::shared_ptr<Token> _return_token,
 	bool print_debug):
 name(_name),
-args(_args) {
+args(_args),
+return_type(_return_token->content),
+return_token(_return_token) {
 	if (print_debug) print_dbg("Created ");
 }
 

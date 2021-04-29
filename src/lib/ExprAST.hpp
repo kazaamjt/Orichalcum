@@ -94,10 +94,13 @@ struct FunctionArg {
 struct PrototypeAST {
 	std::string name;
 	std::vector<std::shared_ptr<FunctionArg>> args;
+	std::string return_type;
+	std::shared_ptr<Token> return_token;
 
 	PrototypeAST(
 		const std::string &name,
 		std::vector<std::shared_ptr<FunctionArg>> args,
+		std::shared_ptr<Token> return_token,
 		bool print_debug
 	);
 	~PrototypeAST();

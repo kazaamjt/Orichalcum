@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <string>
 
 namespace LibOrichalcum {
@@ -95,6 +96,7 @@ struct Token {
 	TOKEN_TYPE type;
 	std::string content;
 	std::string line_content;
+	std::string alt_string();
 };
 
 }
