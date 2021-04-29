@@ -38,9 +38,6 @@ public:
 private:
 	Parser parser;
 	VM vm;
-
-	void _run();
-
 	Chunk current_chunk;
 
 	CompilerOptions options;

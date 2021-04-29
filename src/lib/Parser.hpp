@@ -26,6 +26,8 @@ private:
 	Lexer lexer;
 	bool debug;
 
+	void main_loop();
+
 	std::map<std::string, int> binary_op_precedence;
 	void init_bin_op_precedence();
 
@@ -39,7 +41,6 @@ private:
 	);
 
 	std::shared_ptr<ExprAST> parse_primary();
-
 	std::shared_ptr<ExprAST> parse_expression();
 	std::shared_ptr<ExprAST> parse_bin_op_rhs(int bin_op_precedence, std::shared_ptr<ExprAST> lhs);
 
@@ -48,7 +49,12 @@ private:
 	std::shared_ptr<ExprAST> parse_parens();
 	std::shared_ptr<ExprAST> parse_identifier();
 	std::shared_ptr<PrototypeAST> parse_prototype();
+	std::vector<std::shared_ptr<TopLevelExprAST>> parse_body();
 	std::shared_ptr<FunctionAST> parse_function();
+	std::shared_ptr<TopLevelExprAST> parse_top_level_expr();
+
+	void handle_definition();
+	void handle_top_level_expr();
 
 	void print_bin_op_precedence();
 };

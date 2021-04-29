@@ -83,14 +83,14 @@ BinaryExprAST::BinaryExprAST(
 	std::shared_ptr<ExprAST> rhs,
 	bool print_debug):
 ExprAST(_token),
-op(_token->type),
+op(_token->content),
 lefthand(std::move(lhs)),
 righthand(std::move(rhs)) {
 	if (print_debug) print_dbg("Created ");
 }
 
 void BinaryExprAST::print_dbg(const std::string &pre) {
-	Log::debug(pre + "BinaryExprAST: " + to_string(op));
+	Log::debug(pre + "BinaryExprAST: " + op);
 	Log::debug("Left hand: ");
 	lefthand->print_dbg();
 	Log::debug("Right hand: ");
@@ -159,11 +159,11 @@ PrototypeAST::~PrototypeAST() { }
 
 FunctionAST::FunctionAST(
 	std::shared_ptr<Token> _token,
-	std::unique_ptr<PrototypeAST> _proto,
-	std::shared_ptr<ExprAST> _body,
+	std::shared_ptr<PrototypeAST> _proto,
+	std::vector<std::shared_ptr<TopLevelExprAST>> _body,
 	bool print_debug):
 ExprAST(_token),
-proto(std::move(_proto)),
+proto(_proto),
 body(_body) {
 	if (print_debug) print_dbg("Created ");
 }
@@ -174,7 +174,38 @@ void FunctionAST::print_dbg(const std::string &pre) {
 	Log::debug(pre + "FunctionAST: ");
 	proto->print_dbg();
 	Log::debug("Body:");
+	for (auto expr: body) {
+		expr->print_dbg();
+	}
+}
+
+TopLevelExprAST::TopLevelExprAST(
+	std::shared_ptr<Token> _token,
+	std::shared_ptr<ExprAST> _body,
+	bool print_debug):
+ExprAST(_token),
+body(_body) {
+	if (print_debug) print_dbg("Created ");
+}
+
+void TopLevelExprAST::print_dbg(const std::string &pre) {
+	Log::debug(pre + "TopLevelExprAST: ");
 	body->print_dbg();
 }
+
+TopLevelExprAST::~TopLevelExprAST() { }
+
+PassExprAST::PassExprAST(
+	std::shared_ptr<Token> _token,
+	bool print_debug):
+ExprAST(_token) {
+	if (print_debug) print_dbg("Created ");
+}
+
+void PassExprAST::print_dbg(const std::string &pre) {
+	Log::debug(pre + "PassExprAST");
+}
+
+PassExprAST::~PassExprAST() { }
 
 } // namespace LibOrichalcum

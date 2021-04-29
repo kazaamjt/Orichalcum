@@ -39,7 +39,8 @@ void Lexer::next_line() {
 	static size_t i = 0;
 	line++;
 	current_line = "";
-	char next = bytes[i];
+	char next = bytes[i++];
+	current_line += next;
 	while (next != '\n' && next != EOF) {
 		next = bytes[i++];
 		current_line += next;
@@ -48,12 +49,18 @@ void Lexer::next_line() {
 
 char Lexer::next_char() {
 	static size_t i = 0;
-	col = static_cast<int>(i);
-	char next = current_line[i++];
-	if (next == '\n') {
+	static bool _next_line = false;
+	if (_next_line) {
+		_next_line = false;
 		next_line();
 		i = 0;
 	}
+	col = static_cast<int>(i);
+	char next = current_line[i++];
+	if (next == '\n') {
+		_next_line = true;
+	}
+	if (next == '\0') return next_char();
 	return next;
 }
 

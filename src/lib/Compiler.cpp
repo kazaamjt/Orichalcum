@@ -26,7 +26,7 @@ options(_options) {
 
 CompilerReport Compiler::run() {
 	try {
-		_run();
+		parser.parse(main_file);
 	}
 	catch(const Error &error) {
 		Log::error(error);
@@ -37,10 +37,6 @@ CompilerReport Compiler::run() {
 		);
 	}
 	return CompilerReport(COMPILE_RESULT::SUCCESS, Log::get_logs());
-}
-
-void Compiler::_run() {
-	parser.parse(main_file);
 }
 
 } // namespace Orichalcum

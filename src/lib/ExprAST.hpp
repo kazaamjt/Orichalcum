@@ -50,7 +50,7 @@ struct VariableExprAST: public ExprAST {
 };
 
 struct BinaryExprAST: public ExprAST {
-	TOKEN_TYPE op;
+	std::string op;
 	std::shared_ptr<ExprAST> lefthand, righthand;
 
 	BinaryExprAST(
@@ -108,18 +108,39 @@ struct PrototypeAST {
 	void print_dbg(const std::string &pre = "");
 };
 
-// Represents a whole function
-struct FunctionAST: public ExprAST {
-	std::unique_ptr<PrototypeAST> proto;
+struct TopLevelExprAST: public ExprAST {
 	std::shared_ptr<ExprAST> body;
 
-	FunctionAST(
-		std::shared_ptr<Token> _token,
-		std::unique_ptr<PrototypeAST> proto,
+	TopLevelExprAST(
+		std::shared_ptr<Token> token,
 		std::shared_ptr<ExprAST> body,
 		bool print_debug
 	);
+	~TopLevelExprAST() override;
+	void print_dbg(const std::string &pre = "") override;
+};
+
+// Represents a whole function
+struct FunctionAST: public ExprAST {
+	std::shared_ptr<PrototypeAST> proto;
+	std::vector<std::shared_ptr<TopLevelExprAST>> body;
+
+	FunctionAST(
+		std::shared_ptr<Token> token,
+		std::shared_ptr<PrototypeAST> proto,
+		std::vector<std::shared_ptr<TopLevelExprAST>> body,
+		bool print_debug
+	);
 	~FunctionAST() override;
+	void print_dbg(const std::string &pre = "") override;
+};
+
+struct PassExprAST: public ExprAST {
+	PassExprAST(
+		std::shared_ptr<Token> token,
+		bool print_debug
+	);
+	~PassExprAST() override;
 	void print_dbg(const std::string &pre = "") override;
 };
 

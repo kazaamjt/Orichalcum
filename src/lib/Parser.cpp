@@ -30,9 +30,10 @@ void Parser::init_bin_op_precedence() {
 
 void Parser::parse(const std::filesystem::path &file) {
 	Log::verbose("Parsing file " + file.string());
-	lexer = Lexer(file);
+	lexer = Lexer(file, debug);
 	next = std::make_shared<Token>(lexer.get_next_token());
 	advance();
+	main_loop();
 }
 
 int Parser::get_bin_op_precendence(const std::string &binary_op) {
@@ -50,16 +51,18 @@ void Parser::set_bin_op_precendence(const std::string &binary_op, int precedence
 }
 
 void Parser::advance(int steps, bool skip_indent) {
-	for (int i = 0 ; i == steps; i++) {
-		if (debug) Log::debug("Parser advance");
-		previous = current;
+	if (debug) Log::debug("Parser advance");
+	previous = current;
+	current = next;
+	next = std::make_shared<Token>(lexer.get_next_token());
+	while (skip_indent && current->type == TOKEN_TYPE::INDENT) {
+		if (debug) Log::debug("Ignoring whitespace token");
 		current = next;
 		next = std::make_shared<Token>(lexer.get_next_token());
-		while (skip_indent && current->type == TOKEN_TYPE::INDENT) {
-			if (debug) Log::debug("Ignoring whitespace token");
-			current = next;
-			next = std::make_shared<Token>(lexer.get_next_token());
-		}
+	}
+	steps--;
+	if (steps > 0) {
+		advance(steps, skip_indent);
 	}
 }
 
@@ -68,6 +71,14 @@ std::shared_ptr<ExprAST> Parser::parse_primary() {
 	else if (current->type ==  TOKEN_TYPE::FLOAT) return parse_float();
 	else if (current->type == TOKEN_TYPE::IDENTIFIER) return parse_identifier();
 	else if (current->type == TOKEN_TYPE::LEFT_PAREN) return parse_parens();
+	else if (current->type == TOKEN_TYPE::PASS) return std::make_shared<PassExprAST>(current, debug);
+	else if (current) {
+		throw Error(
+			COMPILE_RESULT::PARSER_ERROR,
+			("Unexepected indentation"),
+			current
+		);
+	}
 	else {
 		throw Error(
 			COMPILE_RESULT::PARSER_ERROR,
@@ -85,7 +96,7 @@ std::shared_ptr<ExprAST> Parser::parse_expression() {
 
 // Parse binary operator expressions as one would in math.
 std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shared_ptr<ExprAST> lhs) {
-	Log::debug("Parsing binary expression.");
+	Log::debug("Parsing to see if binary expression.");
 	while (true) {
 		int current_precedence = get_bin_op_precendence(current->content);
 		if (current_precedence < expr_precedence) {
@@ -123,7 +134,6 @@ std::shared_ptr<ExprAST> Parser::parse_parens() {
 	if (debug) Log::debug("Parsing parentheses expression.");
 	advance(1, true);
 	std::shared_ptr<ExprAST> expr = parse_expression();
-	advance(1, true);
 
 	if (current->type != TOKEN_TYPE::RIGHT_PAREN) {
 		throw Error(
@@ -217,12 +227,11 @@ std::shared_ptr<PrototypeAST> Parser::parse_prototype() {
 		if (current->type == TOKEN_TYPE::IDENTIFIER) {
 			advance();
 			if (current->type == TOKEN_TYPE::COLON) {
-				advance();
 				if (next->type == TOKEN_TYPE::IDENTIFIER) {
 					args.push_back(
 						std::make_shared<FunctionArg>(previous, next, debug)
 					);
-					advance();
+					advance(2);
 				}
 				else {
 					throw Error(
@@ -288,9 +297,62 @@ std::shared_ptr<PrototypeAST> Parser::parse_prototype() {
 	return std::make_shared<PrototypeAST>(name, args, previous, debug);
 }
 
+std::vector<std::shared_ptr<TopLevelExprAST>> Parser::parse_body() {
+	std::vector<std::shared_ptr<TopLevelExprAST>> body;
+	std::string indentation;
+	if (current->type == TOKEN_TYPE::INDENT)
+		indentation = current->content;
+	else {
+		throw Error(
+			COMPILE_RESULT::PARSER_ERROR,
+			"Unexpected token: " + current->alt_string() + " (expected indentation).",
+			current
+		);
+	}
+
+	while(1) {
+		if (current->content == indentation) {
+				advance();
+				body.push_back(parse_top_level_expr());
+		}
+		else break;
+	}
+
+	return body;
+}
+
 std::shared_ptr<FunctionAST> Parser::parse_function() {
-	advance();
+	std::shared_ptr<Token> def_token = current;
 	std::shared_ptr<PrototypeAST> proto = parse_prototype();
+	advance();
+	std::vector<std::shared_ptr<TopLevelExprAST>> body = parse_body();
+	return std::make_shared<FunctionAST>(def_token, proto, body, debug);
+}
+
+std::shared_ptr<TopLevelExprAST> Parser::parse_top_level_expr() {
+	std::shared_ptr<Token> token = current;
+	std::shared_ptr<ExprAST> body = parse_expression();
+	advance();
+	return std::make_shared<TopLevelExprAST>(token, body, debug);
+}
+
+void Parser::handle_definition() {
+	std::shared_ptr<FunctionAST> function_ast = parse_function();
+}
+
+void Parser::handle_top_level_expr() {
+	std::shared_ptr<TopLevelExprAST> top_level_ast = parse_top_level_expr();
+}
+
+void Parser::main_loop() {
+	while(1) {
+		if (current->type == TOKEN_TYPE::EOF_TOKEN) {
+			Log::debug("Parser reached EOF");
+			return;
+		}
+		else if (current->type == TOKEN_TYPE::DEF) handle_definition();
+		else handle_top_level_expr();
+	}
 }
 
 void Parser::print_bin_op_precedence() {
