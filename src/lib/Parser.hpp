@@ -57,6 +57,8 @@ private:
 	void handle_top_level_expr();
 
 	void print_bin_op_precedence();
+
+	[[ noreturn ]] void syntax_error(const std::string &error);
 };
 
 } // LibOrichalcum

@@ -73,18 +73,10 @@ std::shared_ptr<ExprAST> Parser::parse_primary() {
 	else if (current->type == TOKEN_TYPE::LEFT_PAREN) return parse_parens();
 	else if (current->type == TOKEN_TYPE::PASS) return std::make_shared<PassExprAST>(current, debug);
 	else if (current) {
-		throw Error(
-			COMPILE_RESULT::PARSER_ERROR,
-			("Unexepected indentation"),
-			current
-		);
+		syntax_error("Unexepected indentation");
 	}
 	else {
-		throw Error(
-			COMPILE_RESULT::PARSER_ERROR,
-			("Unexepected token " + current->content),
-			current
-		);
+		syntax_error("Unexepected token " + current->content);
 	}
 }
 
@@ -136,11 +128,7 @@ std::shared_ptr<ExprAST> Parser::parse_parens() {
 	std::shared_ptr<ExprAST> expr = parse_expression();
 
 	if (current->type != TOKEN_TYPE::RIGHT_PAREN) {
-		throw Error(
-			COMPILE_RESULT::PARSER_ERROR,
-			"Expected a ')'",
-			current
-		);
+		syntax_error("Expected a ')'");
 	}
 
 	advance();
@@ -175,11 +163,7 @@ std::shared_ptr<ExprAST> Parser::parse_identifier() {
 					break;
 				}
 				else {
-					throw Error(
-						COMPILE_RESULT::PARSER_ERROR,
-						"Unexpected token: " + current->alt_string() + " (expected '(' or ',')",
-						current
-					);
+					syntax_error("Unexpected token: " + current->alt_string() + " (expected '(' or ',')");
 				}
 			}
 		}
@@ -204,21 +188,13 @@ std::shared_ptr<PrototypeAST> Parser::parse_prototype() {
 	std::shared_ptr<Token> def_token = current;
 	advance();
 	if (current->type != TOKEN_TYPE::IDENTIFIER) {
-		throw Error(
-			COMPILE_RESULT::PARSER_ERROR,
-			"Unexpected token: " + current->alt_string() + " (expected a function name.)",
-			current
-		);
+		syntax_error("Unexpected token: " + current->alt_string() + " (expected a function name.)");
 	}
 
 	std::string name = current->content;
 	advance();
 	if (current->type != TOKEN_TYPE::LEFT_PAREN) {
-		throw Error(
-			COMPILE_RESULT::PARSER_ERROR,
-			"Unexpected token: " + current->alt_string() + " (expected '(').",
-			current
-		);
+		syntax_error("Unexpected token: " + current->alt_string() + " (expected '(').");
 	}
 
 	advance(1, true);
@@ -234,19 +210,11 @@ std::shared_ptr<PrototypeAST> Parser::parse_prototype() {
 					advance(2);
 				}
 				else {
-					throw Error(
-						COMPILE_RESULT::PARSER_ERROR,
-						"Unexpected token: " + current->alt_string() + " (expected a type declaration.)",
-						current
-					);
+					syntax_error("Unexpected token: " + current->alt_string() + " (expected a type declaration.)");
 				}
 			}
 			else {
-				throw Error(
-					COMPILE_RESULT::PARSER_ERROR,
-					"Unexpected token: " + current->alt_string() + " (expected a type declaration.)",
-					current
-				);
+				syntax_error("Unexpected token: " + current->alt_string() + " (expected a type declaration.)");
 			}
 		}
 		else if (current->type == TOKEN_TYPE::COMMA) {
@@ -257,11 +225,7 @@ std::shared_ptr<PrototypeAST> Parser::parse_prototype() {
 			break;
 		}
 		else {
-			throw Error(
-				COMPILE_RESULT::PARSER_ERROR,
-				"Unexpected token: " + current->alt_string() + " (expected ',' or ')').",
-				current
-			);
+			syntax_error("Unexpected token: " + current->alt_string() + " (expected ',' or ')').");
 		}
 	}
 
@@ -271,27 +235,15 @@ std::shared_ptr<PrototypeAST> Parser::parse_prototype() {
 			advance();
 		}
 		else {
-			throw Error(
-				COMPILE_RESULT::PARSER_ERROR,
-				"Unexpected token: " + current->alt_string() + " (expected a return type).",
-				current
-			);
+			syntax_error("Unexpected token: " + current->alt_string() + " (expected a return type).");
 		}
 	}
 	else {
-		throw Error(
-			COMPILE_RESULT::PARSER_ERROR,
-			"Unexpected token: " + current->alt_string() + " (expected a return type).",
-			current
-		);
+		syntax_error("Unexpected token: " + current->alt_string() + " (expected a return type).");
 	}
 
 	if (current->type != TOKEN_TYPE::COLON) {
-		throw Error(
-			COMPILE_RESULT::PARSER_ERROR,
-			"Unexpected token: " + current->alt_string() + " (expected a ':').",
-			current
-		);
+		syntax_error("Unexpected token: " + current->alt_string() + " (expected a ':').");
 	}
 
 	return std::make_shared<PrototypeAST>(name, args, previous, debug);
@@ -303,11 +255,7 @@ std::vector<std::shared_ptr<TopLevelExprAST>> Parser::parse_body() {
 	if (current->type == TOKEN_TYPE::INDENT)
 		indentation = current->content;
 	else {
-		throw Error(
-			COMPILE_RESULT::PARSER_ERROR,
-			"Unexpected token: " + current->alt_string() + " (expected indentation).",
-			current
-		);
+		syntax_error("Unexpected token: " + current->alt_string() + " (expected indentation).");
 	}
 
 	while(1) {
@@ -362,6 +310,14 @@ void Parser::print_bin_op_precedence() {
 			Log::debug(std::to_string(val) + ": " + key);
 		}
 	}
+}
+
+void Parser::syntax_error(const std::string &error) {
+	throw Error(
+		COMPILE_RESULT::PARSER_ERROR,
+		error,
+		current
+	);
 }
 
 Parser::~Parser() { }
