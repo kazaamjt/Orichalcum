@@ -7,14 +7,13 @@
 
 namespace LibOrichalcum {
 
-VM::VM():
-	chunk("VM init chunk"), chunk_iter(chunk.get_iterator()) { }
+VM::VM() { }
 
 void VM::enable_debug() {
 	vm_debug = true;
 }
 
-InterpretReport VM::interpret(const Chunk &_chunk) {
+InterpretReport VM::interpret(std::shared_ptr<Chunk> _chunk) {
 	InterpretReport interpret_report;
 	init_chunk(_chunk);
 
@@ -23,13 +22,13 @@ InterpretReport VM::interpret(const Chunk &_chunk) {
 	return interpret_report;
 }
 
-void VM::init_chunk(const Chunk &_chunk) {
+void VM::init_chunk(std::shared_ptr<Chunk> _chunk) {
 	chunk = _chunk;
-	chunk_iter = chunk.get_iterator();
+	chunk_iter = chunk->get_iterator();
 }
 
 INTERPRET_RESULT VM::run() {
-	Log::debug("Vm is executing chunk " + chunk.name);
+	Log::debug("Vm is executing chunk " + chunk->name);
 	if (vm_debug) {
 		Debug::print_stack(stack);
 		Debug::disassemble_chunk(chunk);
@@ -132,13 +131,13 @@ double VM::calc(BINARY_OP op, double a, double b) {
 
 Constant VM::get_const() {
 	increment();
-	return chunk.get_const(instruction.index);
+	return chunk->get_const(instruction.index);
 }
 
 // Gets the currents instruction, then increments the iterator
 void VM::increment() {
 	instruction = *chunk_iter;
-	chunk_iter = chunk.next(chunk_iter);
+	chunk_iter = chunk->next(chunk_iter);
 }
 
 } // LibOrichalcum

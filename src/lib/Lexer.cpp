@@ -76,7 +76,15 @@ Token Lexer::mk_token(
 	TOKEN_TYPE _type,
 	const std::string &_content
 	) {
-		return Token(_file_path, _index, _type, _content, current_line);
+		return Token(
+			_file_path,
+			_index,
+			_type,
+			_content,
+			// This is to remove the newlines at the end.
+			// A better way would probably be to just scan for /n and remove that.
+			current_line.substr(0, current_line.size() - 1)
+		);
 	}
 
 Token Lexer::get_token() {

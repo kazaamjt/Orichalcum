@@ -1,6 +1,10 @@
 #include "Log.hpp"
 
+#include <algorithm>
+
 #include <rang.hpp>
+
+#include "Misc.hpp"
 
 namespace LibOrichalcum {
 
@@ -88,10 +92,13 @@ void Log::error(const std::string &msg) {
 }
 
 void Log::error(const Error &error) {
+	std::string line = Misc::remove_white_space(error.line_content);
+	int count = Misc::count_whitespace(error.line_content);
 	std::string output = error.msg + "\n"
-			+ error.file + "(" + std::to_string(error.index.line + 1)
-			+ "," + std::to_string(error.index.col + 1) + "):\n" + error.line_content
-			+ "\n" + std::string(static_cast<size_t>(error.index.col), ' ') + "^";
+			"    File " + error.file + "(" + std::to_string(error.index.line + 1)
+			+ "," + std::to_string(error.index.col + 1) + "):\n"
+			+ std::string(8, ' ') + line + "\n"
+			+ std::string(static_cast<size_t>(error.index.col + 8 - count), ' ') + "^";
 	Log::error(output);
 }
 

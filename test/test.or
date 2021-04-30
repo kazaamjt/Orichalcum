@@ -1,5 +1,6 @@
-def test(col: int, line: int) -> None:
+def test(param_1: int, param_2: int) -> None:
 	1 + 1 * 2 + 17 * (11 + 2 * 1)
 	2 + 2
 
 pass
+test(1, 4)

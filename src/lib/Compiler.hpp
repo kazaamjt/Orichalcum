@@ -28,6 +28,7 @@ struct CompilerOptions {
 	bool debug_vm = false;
 	bool debug_parser = false;
 	bool print_output = false;
+	bool allow_stdout = false;
 };
 
 class Compiler {
@@ -38,7 +39,8 @@ public:
 private:
 	Parser parser;
 	VM vm;
-	Chunk current_chunk;
+	std::shared_ptr<Chunk> chunk;
+	std::shared_ptr<Chunk> current_chunk();
 
 	CompilerOptions options;
 	std::filesystem::path main_file;

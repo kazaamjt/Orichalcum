@@ -36,30 +36,30 @@ static void print_line(int line) {
 	else std::cout << "|    ";
 }
 
-void disassemble_chunk(Chunk &chunk) {
-	Log::debug("Disassembling chunk " + chunk.name);
+void disassemble_chunk(std::shared_ptr<Chunk> chunk) {
+	Log::debug("Disassembling chunk " + chunk->name);
 
 	size_t i = 0;
-	while (i < chunk.size()) {
+	while (i < chunk->size()) {
 		size_t next_i = disassemble_instruction(i, chunk);
 		i = next_i;
 	}
 }
 
-size_t disassemble_instruction(size_t index, Chunk &chunk) {
-	print_line(chunk.get_line(index));
-	switch (chunk.get(index).op_code) {
+size_t disassemble_instruction(size_t index, std::shared_ptr<Chunk> chunk) {
+	print_line(chunk->get_line(index));
+	switch (chunk->get(index).op_code) {
 		case OP_CODE::RETURN: {
 			std::cout<< Misc::to_hex(index) << " RETURN" << std::endl;
 		} break;
 
 		case OP_CODE::CONST: {
 			std::cout<< Misc::to_hex(index) << " CONST_INT" << std::endl;
-			size_t const_index = chunk.get(++index).index;
-			print_line(chunk.get_line(index));
+			size_t const_index = chunk->get(++index).index;
+			print_line(chunk->get_line(index));
 			std::cout << Misc::to_hex(index) << " CONST_INDEX => ";
 			std::cout << Misc::to_hex(const_index) << " = ";
-			print_const(chunk.get_const(const_index));
+			print_const(chunk->get_const(const_index));
 			std::cout << std::endl;
 		} break;
 

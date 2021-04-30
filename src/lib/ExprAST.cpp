@@ -111,7 +111,9 @@ args(_args) {
 
 void CallExprAST::print_dbg(const std::string &pre) {
 	Log::debug(pre + "CallExprAST: Call to " + callee);
+	int i = 0;
 	for (auto arg: args) {
+		Log::debug("arg " + std::to_string(++i) + ":");
 		arg->print_dbg();
 	}
 }

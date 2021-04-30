@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+
 #include "Chunk.hpp"
 #include "data_structures.hpp"
 
@@ -25,17 +27,17 @@ public:
 	VM();
 	void enable_debug();
 
-	InterpretReport interpret(const Chunk &chunk);
+	InterpretReport interpret(std::shared_ptr<Chunk> chunk);
 
 private:
 	bool vm_debug = false;
 
-	Chunk chunk;
+	std::shared_ptr<Chunk> chunk;
 	ChunkIterator chunk_iter;
 	Instruction instruction;
 	ConstStack stack;
 
-	void init_chunk(const Chunk &chunk);
+	void init_chunk(std::shared_ptr<Chunk> chunk);
 	void increment();
 	INTERPRET_RESULT run();
 	Constant get_const();

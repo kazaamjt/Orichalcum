@@ -148,10 +148,8 @@ std::shared_ptr<ExprAST> Parser::parse_identifier() {
 			advance();
 		}
 		else {
-			std::shared_ptr<ExprAST> next_expr;
 			while (true) {
 				args.push_back(parse_expression());
-				advance(1, true);
 				if (current->type == TOKEN_TYPE::COMMA) {
 					advance(1, true);
 					if (current->type == TOKEN_TYPE::RIGHT_PAREN) {
@@ -279,6 +277,13 @@ std::shared_ptr<FunctionAST> Parser::parse_function() {
 }
 
 std::shared_ptr<TopLevelExprAST> Parser::parse_top_level_expr() {
+	if (
+		current->type == TOKEN_TYPE::INDENT &&
+		current->index.line == next->index.line
+	) {
+		current->index.col = next->index.col;
+		syntax_error(current, "Bad indentation:");
+	}
 	std::shared_ptr<Token> token = current;
 	std::shared_ptr<ExprAST> body = parse_expression();
 	advance();

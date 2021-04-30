@@ -15,7 +15,7 @@ result(_result), error(_error), logs(_logs) { }
 
 Compiler::Compiler(CompilerOptions _options):
 parser(_options.debug_parser),
-current_chunk(0),
+chunk(std::make_shared<Chunk>(0)),
 options(_options) {
 	Log::set_level(options.log_level, options.print_output);
 	Log::verbose("Log level set to " + to_string(options.log_level));
@@ -37,6 +37,10 @@ CompilerReport Compiler::run() {
 		);
 	}
 	return CompilerReport(COMPILE_RESULT::SUCCESS, Log::get_logs());
+}
+
+std::shared_ptr<Chunk> Compiler::current_chunk() {
+	return chunk;
 }
 
 } // namespace Orichalcum
