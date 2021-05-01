@@ -39,7 +39,7 @@ public:
 private:
 	Parser parser;
 	VM vm;
-	std::shared_ptr<Chunk> chunk;
+	std::shared_ptr<Chunk> compiling_chunk;
 	std::shared_ptr<Chunk> current_chunk();
 
 	CompilerOptions options;

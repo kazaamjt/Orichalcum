@@ -144,4 +144,16 @@ struct PassExprAST: public ExprAST {
 	void print_dbg(const std::string &pre = "") override;
 };
 
+struct UnaryNegExprAST: public ExprAST {
+	std::shared_ptr<ExprAST> rhs;
+
+	UnaryNegExprAST(
+		std::shared_ptr<Token> token,
+		std::shared_ptr<ExprAST> rhs,
+		bool print_debug
+	);
+	~UnaryNegExprAST() override;
+	void print_dbg(const std::string &pre = "") override;
+};
+
 } // namespace LibOrichalcum

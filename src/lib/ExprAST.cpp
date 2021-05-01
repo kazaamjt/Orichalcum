@@ -210,4 +210,21 @@ void PassExprAST::print_dbg(const std::string &pre) {
 
 PassExprAST::~PassExprAST() { }
 
+UnaryNegExprAST::UnaryNegExprAST(
+	std::shared_ptr<Token> _token,
+	std::shared_ptr<ExprAST> _rhs,
+	bool print_debug
+):
+ExprAST(_token),
+rhs(_rhs) {
+	if (print_debug) print_dbg("Created ");
+}
+
+void UnaryNegExprAST::print_dbg(const std::string &pre) {
+	Log::debug(pre + "UnaryNegExprAST:");
+	rhs->print_dbg();
+}
+
+UnaryNegExprAST::~UnaryNegExprAST() { }
+
 } // namespace LibOrichalcum

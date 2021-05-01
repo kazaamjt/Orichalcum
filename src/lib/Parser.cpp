@@ -6,6 +6,8 @@
 
 namespace LibOrichalcum {
 
+// TODO: new line currently is not correctly parsed as a new instruction
+
 Parser::Parser():
 debug(false) {
 	init_bin_op_precedence();
@@ -81,18 +83,21 @@ std::shared_ptr<ExprAST> Parser::parse_primary() {
 	}
 }
 
-std::shared_ptr<ExprAST> Parser::parse_expression() {
+std::shared_ptr<ExprAST> Parser::parse_expression(bool parens) {
 	Log::debug("Parsing expression");
 	std::shared_ptr<ExprAST> lhs = parse_primary();
-	return parse_bin_op_rhs(0, lhs);
+	return parse_bin_op_rhs(0, lhs, parens);
 }
 
 // Parse binary operator expressions as one would in math.
-std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shared_ptr<ExprAST> lhs) {
+std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shared_ptr<ExprAST> lhs, bool parens) {
 	Log::debug("Parsing to see if binary expression.");
 	while (true) {
 		int current_precedence = get_bin_op_precendence(current->content);
 		if (current_precedence < expr_precedence) {
+			return lhs;
+		}
+		if (!parens && lhs->token->index.line != current->index.line) {
 			return lhs;
 		}
 
@@ -111,6 +116,16 @@ std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shar
 	}
 }
 
+std::shared_ptr<UnaryNegExprAST> Parser::parse_unary_neg() {
+	std::shared_ptr<Token> neg_token = current;
+	advance();
+	std::shared_ptr<ExprAST> rhs = parse_primary();
+	if (neg_token->index.line != rhs->token->index.line) {
+		syntax_error(neg_token, "Expected expression:");
+	}
+	return std::make_shared<UnaryNegExprAST>(current, rhs, debug);
+}
+
 std::shared_ptr<IntExprAST> Parser::parse_int() {
 	auto expr = std::make_shared<IntExprAST>(current, debug);
 	advance();
@@ -126,7 +141,7 @@ std::shared_ptr<FloatExprAST> Parser::parse_float() {
 std::shared_ptr<ExprAST> Parser::parse_parens() {
 	if (debug) Log::debug("Parsing parentheses expression.");
 	advance(1, true);
-	std::shared_ptr<ExprAST> expr = parse_expression();
+	std::shared_ptr<ExprAST> expr = parse_expression(true);
 
 	if (current->type != TOKEN_TYPE::RIGHT_PAREN) {
 		syntax_error("Expected a ')'");
@@ -296,6 +311,8 @@ void Parser::handle_definition() {
 
 void Parser::handle_top_level_expr() {
 	std::shared_ptr<TopLevelExprAST> top_level_ast = parse_top_level_expr();
+	Log::info(to_string(Log::get_level()));
+	top_level_ast->print_dbg();
 }
 
 void Parser::main_loop() {

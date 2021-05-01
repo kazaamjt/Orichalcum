@@ -9,7 +9,6 @@
 
 namespace LibOrichalcum {
 
-
 class Parser {
 public:
 	Parser();
@@ -40,10 +39,11 @@ private:
 		bool skip_indent = false
 	);
 
+	std::shared_ptr<ExprAST> parse_expression(bool parens = false);
 	std::shared_ptr<ExprAST> parse_primary();
-	std::shared_ptr<ExprAST> parse_expression();
-	std::shared_ptr<ExprAST> parse_bin_op_rhs(int bin_op_precedence, std::shared_ptr<ExprAST> lhs);
+	std::shared_ptr<ExprAST> parse_bin_op_rhs(int bin_op_precedence, std::shared_ptr<ExprAST> lhs, bool parens = false);
 
+	std::shared_ptr<UnaryNegExprAST> parse_unary_neg();
 	std::shared_ptr<IntExprAST> parse_int();
 	std::shared_ptr<FloatExprAST> parse_float();
 	std::shared_ptr<ExprAST> parse_parens();
