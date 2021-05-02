@@ -74,10 +74,11 @@ gcc on Linux:
 
 NOTES:
 
-- On Linux gcc 9 or up is required. This is due to the internals using `std::filesystem`  
-(Debian 10 is known not to work out of the box, Ubuntu 20.4 and Debian 11 do)  
-- While gcc on Linux should compile, the focus is Clang because it emits less false positives
-and is available cross-platform. In other words, using GCC might result in a bunch of warnings.  
+- On Linux gcc 9 or up is required.
+This is due to the internals using `std::filesystem` which requires a somewhat new version of libc  
+(Debian 10 is known not to work out of the box, Ubuntu 20.4 and Debian 11 are known to work)  
+- While gcc on Linux should compile, the focus is Clang.
+Using GCC might result in a bunch of warnings.  
 
 ### Cross build
 
