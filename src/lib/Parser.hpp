@@ -46,6 +46,7 @@ private:
 	std::shared_ptr<UnaryNegExprAST> parse_unary_neg();
 	std::shared_ptr<IntExprAST> parse_int();
 	std::shared_ptr<FloatExprAST> parse_float();
+	std::shared_ptr<PassExprAST> parse_pass();
 	std::shared_ptr<ExprAST> parse_parens();
 	std::shared_ptr<ExprAST> parse_identifier();
 	std::shared_ptr<PrototypeAST> parse_prototype();

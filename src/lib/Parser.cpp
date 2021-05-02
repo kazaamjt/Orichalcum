@@ -74,7 +74,12 @@ std::shared_ptr<ExprAST> Parser::parse_primary() {
 	else if (current->type ==  TOKEN_TYPE::FLOAT) return parse_float();
 	else if (current->type == TOKEN_TYPE::IDENTIFIER) return parse_identifier();
 	else if (current->type == TOKEN_TYPE::LEFT_PAREN) return parse_parens();
-	else if (current->type == TOKEN_TYPE::PASS) return std::make_shared<PassExprAST>(current, debug);
+	else if (current->type == TOKEN_TYPE::PASS) return parse_pass();
+	else if (current->content == "-") return parse_unary_neg();
+	else if (current->content == "+") {
+		advance();
+		return parse_expression();
+	}
 	else if (current->type == TOKEN_TYPE::INDENT) {
 		syntax_error("Unexpected indentation");
 	}
@@ -123,19 +128,22 @@ std::shared_ptr<UnaryNegExprAST> Parser::parse_unary_neg() {
 	if (neg_token->index.line != rhs->token->index.line) {
 		syntax_error(neg_token, "Expected expression:");
 	}
-	return std::make_shared<UnaryNegExprAST>(current, rhs, debug);
+	return std::make_shared<UnaryNegExprAST>(neg_token, rhs, debug);
 }
 
 std::shared_ptr<IntExprAST> Parser::parse_int() {
-	auto expr = std::make_shared<IntExprAST>(current, debug);
 	advance();
-	return expr;
+	return std::make_shared<IntExprAST>(previous, debug);
 }
 
 std::shared_ptr<FloatExprAST> Parser::parse_float() {
-	auto expr = std::make_shared<FloatExprAST>(current, debug);
 	advance();
-	return expr;
+	return std::make_shared<FloatExprAST>(previous, debug);
+}
+
+std::shared_ptr<PassExprAST> Parser::parse_pass() {
+	advance();
+	return std::make_shared<PassExprAST>(previous, debug);
 }
 
 std::shared_ptr<ExprAST> Parser::parse_parens() {
@@ -301,7 +309,6 @@ std::shared_ptr<TopLevelExprAST> Parser::parse_top_level_expr() {
 	}
 	std::shared_ptr<Token> token = current;
 	std::shared_ptr<ExprAST> body = parse_expression();
-	advance();
 	return std::make_shared<TopLevelExprAST>(token, body, debug);
 }
 
@@ -311,7 +318,6 @@ void Parser::handle_definition() {
 
 void Parser::handle_top_level_expr() {
 	std::shared_ptr<TopLevelExprAST> top_level_ast = parse_top_level_expr();
-	Log::info(to_string(Log::get_level()));
 	top_level_ast->print_dbg();
 }
 
