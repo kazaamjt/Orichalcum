@@ -84,8 +84,8 @@ BinaryExprAST::BinaryExprAST(
 	bool print_debug):
 ExprAST(_token),
 op(_token->content),
-lefthand(std::move(lhs)),
-righthand(std::move(rhs)) {
+lefthand(lhs),
+righthand(rhs) {
 	if (print_debug) print_dbg("Created ");
 }
 
@@ -226,5 +226,49 @@ void UnaryNegExprAST::print_dbg(const std::string &pre) {
 }
 
 UnaryNegExprAST::~UnaryNegExprAST() { }
+
+NoneExprAST::NoneExprAST(
+	std::shared_ptr<Token> _token,
+	bool print_debug):
+ExprAST(_token) {
+	if (print_debug) print_dbg("Created ");
+}
+
+void NoneExprAST::print_dbg(const std::string &pre) {
+	Log::debug(pre + "NoneExprAST.");
+}
+
+NoneExprAST::~NoneExprAST() { }
+
+BoolExprAST::BoolExprAST(
+	std::shared_ptr<Token> _token,
+	bool print_debug):
+ExprAST(_token) {
+	if (token->type == TOKEN_TYPE::TRUE) value = true;
+	else if (token->type == TOKEN_TYPE::FALSE) value = false;
+	if (print_debug) print_dbg("Created ");
+}
+
+void BoolExprAST::print_dbg(const std::string &pre) {
+	std::string val;
+	if (value) val = "True";
+	else val = "False";
+	Log::debug(pre + "BoolExprAST. (" + val + ")");
+}
+
+BoolExprAST::~BoolExprAST() { }
+
+EOFExprAST::EOFExprAST(
+	std::shared_ptr<Token> _token,
+	bool print_debug):
+ExprAST(_token) {
+	if (print_debug) print_dbg("Created ");
+}
+
+void EOFExprAST::print_dbg(const std::string &pre) {
+	Log::debug(pre + "EOFExprAST.");
+}
+
+EOFExprAST::~EOFExprAST() { }
 
 } // namespace LibOrichalcum

@@ -156,4 +156,33 @@ struct UnaryNegExprAST: public ExprAST {
 	void print_dbg(const std::string &pre = "") override;
 };
 
+struct NoneExprAST: public ExprAST {
+	NoneExprAST(
+		std::shared_ptr<Token> token,
+		bool print_debug
+	);
+	~NoneExprAST() override;
+	void print_dbg(const std::string &pre = "") override;
+};
+
+struct BoolExprAST: public ExprAST {
+	bool value;
+
+	BoolExprAST(
+		std::shared_ptr<Token> token,
+		bool print_debug
+	);
+	~BoolExprAST() override;
+	void print_dbg(const std::string &pre = "") override;
+};
+
+struct EOFExprAST: public ExprAST {
+	EOFExprAST(
+		std::shared_ptr<Token> token,
+		bool print_debug
+	);
+	~EOFExprAST() override;
+	void print_dbg(const std::string &pre = "") override;
+};
+
 } // namespace LibOrichalcum

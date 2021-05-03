@@ -36,7 +36,7 @@ void Parser::init_bin_op_precedence() {
 	binary_op_precedence["**"] = 70;
 	binary_op_precedence["."] = 80; // call operator
 
-	Log::debug("Initializing binary operation precedence.");
+	Log::verbose("Initializing binary operation precedence.");
 	print_bin_op_precedence();
 }
 
@@ -45,7 +45,6 @@ void Parser::parse(const std::filesystem::path &file) {
 	lexer = Lexer(file, debug);
 	next = std::make_shared<Token>(lexer.get_next_token());
 	advance();
-	main_loop();
 }
 
 int Parser::get_bin_op_precendence(const std::string &binary_op) {
@@ -63,12 +62,12 @@ void Parser::set_bin_op_precendence(const std::string &binary_op, int precedence
 }
 
 void Parser::advance(int steps, bool skip_indent) {
-	if (debug) Log::debug("Parser advance");
+	log_debug("Parser advance");
 	previous = current;
 	current = next;
 	next = std::make_shared<Token>(lexer.get_next_token());
 	while (skip_indent && current->type == TOKEN_TYPE::INDENT) {
-		if (debug) Log::debug("Ignoring whitespace token");
+		log_debug("Ignoring whitespace token");
 		current = next;
 		next = std::make_shared<Token>(lexer.get_next_token());
 	}
@@ -85,6 +84,9 @@ std::shared_ptr<ExprAST> Parser::parse_primary() {
 	else if (current->type == TOKEN_TYPE::IDENTIFIER) return parse_identifier();
 	else if (current->type == TOKEN_TYPE::LEFT_PAREN) return parse_parens();
 	else if (current->type == TOKEN_TYPE::PASS) return parse_pass();
+	else if (current->type == TOKEN_TYPE::NONE) return parse_none();
+	else if (current->type == TOKEN_TYPE::FALSE ||
+		current->type == TOKEN_TYPE::TRUE) return parse_bool();
 	else if (current->content == "-") return parse_unary_neg();
 	else if (current->content == "+") {
 		advance();
@@ -99,14 +101,14 @@ std::shared_ptr<ExprAST> Parser::parse_primary() {
 }
 
 std::shared_ptr<ExprAST> Parser::parse_expression(bool parens) {
-	Log::debug("Parsing expression");
+	log_debug("Parsing expression");
 	std::shared_ptr<ExprAST> lhs = parse_primary();
 	return parse_bin_op_rhs(0, lhs, parens);
 }
 
 // Parse binary operator expressions as one would in math.
 std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shared_ptr<ExprAST> lhs, bool parens) {
-	Log::debug("Parsing to see if binary expression.");
+	log_debug("Parsing to see if binary expression.");
 	while (true) {
 		int current_precedence = get_bin_op_precendence(current->content);
 		if (current_precedence < expr_precedence) {
@@ -156,8 +158,18 @@ std::shared_ptr<PassExprAST> Parser::parse_pass() {
 	return std::make_shared<PassExprAST>(previous, debug);
 }
 
+std::shared_ptr<NoneExprAST> Parser::parse_none() {
+	advance();
+	return std::make_shared<NoneExprAST>(previous, debug);
+}
+
+std::shared_ptr<BoolExprAST> Parser::parse_bool() {
+	advance();
+	return std::make_shared<BoolExprAST>(previous, debug);
+}
+
 std::shared_ptr<ExprAST> Parser::parse_parens() {
-	if (debug) Log::debug("Parsing parentheses expression.");
+	log_debug("Parsing parentheses expression.");
 	advance(1, true);
 	std::shared_ptr<ExprAST> expr = parse_expression(true);
 
@@ -173,7 +185,7 @@ std::shared_ptr<ExprAST> Parser::parse_parens() {
 std::shared_ptr<ExprAST> Parser::parse_identifier() {
 	// Function Call
 	if (next->type == TOKEN_TYPE::LEFT_PAREN) {
-		Log::debug("Identifer followed by parentheses, parsing as function call.");
+		log_debug("Identifer followed by parentheses, parsing as function call.");
 		std::shared_ptr<Token> callee_token = current;
 		std::vector<std::shared_ptr<ExprAST>> args;
 		advance(2);
@@ -205,13 +217,13 @@ std::shared_ptr<ExprAST> Parser::parse_identifier() {
 	std::shared_ptr<Token> var_token = current;
 	advance();
 	if (next->type == TOKEN_TYPE::COLON) {
-		Log::debug("Parsing variable + type declaration.");
+		log_debug("Parsing variable + type declaration.");
 		advance();
 		std::shared_ptr<Token> Type_token = current;
 		advance();
 		return std::make_shared<VariableExprAST>(var_token, Type_token, debug);
 	} else {
-		Log::debug("Parsing variable.");
+		log_debug("Parsing variable.");
 		return std::make_shared<VariableExprAST>(var_token, debug);
 	}
 }
@@ -322,24 +334,13 @@ std::shared_ptr<TopLevelExprAST> Parser::parse_top_level_expr() {
 	return std::make_shared<TopLevelExprAST>(token, body, debug);
 }
 
-void Parser::handle_definition() {
-	std::shared_ptr<FunctionAST> function_ast = parse_function();
-}
-
-void Parser::handle_top_level_expr() {
-	std::shared_ptr<TopLevelExprAST> top_level_ast = parse_top_level_expr();
-	top_level_ast->print_dbg();
-}
-
-void Parser::main_loop() {
-	while(1) {
-		if (current->type == TOKEN_TYPE::EOF_TOKEN) {
-			Log::debug("Parser reached EOF");
-			return;
-		}
-		else if (current->type == TOKEN_TYPE::DEF) handle_definition();
-		else handle_top_level_expr();
+std::shared_ptr<ExprAST> Parser::next_expr() {
+	if (current->type == TOKEN_TYPE::EOF_TOKEN) {
+		Log::debug("Parser reached EOF");
+		return std::make_shared<EOFExprAST>(current, debug);
 	}
+	else if (current->type == TOKEN_TYPE::DEF) return parse_function();
+	else return parse_top_level_expr();
 }
 
 void Parser::print_bin_op_precedence() {
@@ -349,6 +350,10 @@ void Parser::print_bin_op_precedence() {
 			Log::debug(std::to_string(val) + ": " + key);
 		}
 	}
+}
+
+void Parser::log_debug(const std::string &line) {
+	if (debug) Log::debug(line);
 }
 
 void Parser::syntax_error(const std::string &error) {

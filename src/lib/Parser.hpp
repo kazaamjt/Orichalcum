@@ -21,11 +21,12 @@ public:
 	int get_bin_op_precendence(const std::string &binary_op);
 	void set_bin_op_precendence(const std::string &binary_op, int precedence);
 
+	std::shared_ptr<ExprAST> next_expr();
+
 private:
 	Lexer lexer;
 	bool debug;
 
-	void main_loop();
 
 	std::map<std::string, int> binary_op_precedence;
 	void init_bin_op_precedence();
@@ -47,6 +48,8 @@ private:
 	std::shared_ptr<IntExprAST> parse_int();
 	std::shared_ptr<FloatExprAST> parse_float();
 	std::shared_ptr<PassExprAST> parse_pass();
+	std::shared_ptr<NoneExprAST> parse_none();
+	std::shared_ptr<BoolExprAST> parse_bool();
 	std::shared_ptr<ExprAST> parse_parens();
 	std::shared_ptr<ExprAST> parse_identifier();
 	std::shared_ptr<PrototypeAST> parse_prototype();
@@ -54,10 +57,8 @@ private:
 	std::shared_ptr<FunctionAST> parse_function();
 	std::shared_ptr<TopLevelExprAST> parse_top_level_expr();
 
-	void handle_definition();
-	void handle_top_level_expr();
-
 	void print_bin_op_precedence();
+	void log_debug(const std::string &line);
 
 	[[ noreturn ]] void syntax_error(const std::string &error);
 	[[ noreturn ]] void syntax_error(std::shared_ptr<Token> token, const std::string &error);

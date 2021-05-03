@@ -37,14 +37,16 @@ public:
 	CompilerReport run();
 
 private:
+	CompilerOptions options;
 	Parser parser;
 	VM vm;
 	std::shared_ptr<Chunk> compiling_chunk;
 	std::shared_ptr<Chunk> current_chunk();
 
-	CompilerOptions options;
 	std::filesystem::path main_file;
 	std::filesystem::path main_module;
+
+	void main_loop();
 };
 
 } // namespace Orichalcum

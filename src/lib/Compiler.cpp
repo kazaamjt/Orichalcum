@@ -14,12 +14,12 @@ CompilerReport::CompilerReport(COMPILE_RESULT _result, const Error &_error, std:
 result(_result), error(_error), logs(_logs) { }
 
 Compiler::Compiler(CompilerOptions _options):
+options(_options),
 parser(_options.debug_parser),
-compiling_chunk(std::make_shared<Chunk>(0)),
-options(_options) {
+vm(options.debug_vm),
+compiling_chunk(std::make_shared<Chunk>(0)) {
 	Log::set_level(options.log_level, options.print_output);
 	Log::verbose("Log level set to " + to_string(options.log_level));
-	if (options.debug_vm) vm.enable_debug();
 	main_file = options.file;
 	main_module = options.file.parent_path();
 }
@@ -27,6 +27,7 @@ options(_options) {
 CompilerReport Compiler::run() {
 	try {
 		parser.parse(main_file);
+		main_loop();
 	}
 	catch(const Error &error) {
 		Log::error(error);
@@ -41,6 +42,13 @@ CompilerReport Compiler::run() {
 
 std::shared_ptr<Chunk> Compiler::current_chunk() {
 	return compiling_chunk;
+}
+
+void Compiler::main_loop() {
+	while(1) {
+		std::shared_ptr<ExprAST> expr = parser.next_expr();
+		if (expr->token->type == TOKEN_TYPE::EOF_TOKEN) return;
+	}
 }
 
 } // namespace Orichalcum

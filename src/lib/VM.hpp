@@ -25,12 +25,12 @@ enum class BINARY_OP {
 class VM {
 public:
 	VM();
-	void enable_debug();
+	VM(bool debug);
 
 	InterpretReport interpret(std::shared_ptr<Chunk> chunk);
 
 private:
-	bool vm_debug = false;
+	bool debug = false;
 
 	std::shared_ptr<Chunk> chunk;
 	ChunkIterator chunk_iter;

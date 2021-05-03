@@ -8,10 +8,7 @@
 namespace LibOrichalcum {
 
 VM::VM() { }
-
-void VM::enable_debug() {
-	vm_debug = true;
-}
+VM::VM(bool _debug):debug(_debug) { }
 
 InterpretReport VM::interpret(std::shared_ptr<Chunk> _chunk) {
 	InterpretReport interpret_report;
@@ -29,7 +26,7 @@ void VM::init_chunk(std::shared_ptr<Chunk> _chunk) {
 
 INTERPRET_RESULT VM::run() {
 	Log::debug("Vm is executing chunk " + chunk->name);
-	if (vm_debug) {
+	if (debug) {
 		Debug::print_stack(stack);
 		Debug::disassemble_chunk(chunk);
 	}
