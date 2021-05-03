@@ -19,12 +19,22 @@ debug(_debug) {
 }
 
 void Parser::init_bin_op_precedence() {
-	binary_op_precedence["+"] = 20;
-	binary_op_precedence["-"] = 20;
-	binary_op_precedence["*"] = 40;
-	binary_op_precedence["/"] = 40;
-	binary_op_precedence["//"] = 40;
-	binary_op_precedence["**"] = 60;
+	binary_op_precedence["="] = 10;
+	binary_op_precedence["or"] = 20;
+	binary_op_precedence["and"] = 20;
+	binary_op_precedence["=="] = 30;
+	binary_op_precedence["!="] = 30;
+	binary_op_precedence["<"] = 40;
+	binary_op_precedence[">"] = 40;
+	binary_op_precedence["<="] = 40;
+	binary_op_precedence[">="] = 40;
+	binary_op_precedence["+"] = 50;
+	binary_op_precedence["-"] = 50;
+	binary_op_precedence["*"] = 60;
+	binary_op_precedence["/"] = 60;
+	binary_op_precedence["//"] = 60;
+	binary_op_precedence["**"] = 70;
+	binary_op_precedence["."] = 80; // call operator
 
 	Log::debug("Initializing binary operation precedence.");
 	print_bin_op_precedence();
