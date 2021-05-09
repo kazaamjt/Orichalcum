@@ -1,12 +1,1 @@
-def foo(param_1: int, param_2: int) -> None:
-	1 + 1 * 2 + 17 * (11 + 2 * 1)
-	2 + 2
-
-pass
-foo(1, 4)
--1
-+1
-
-None
-False
-True
+-1 + 1 * 2 + 17 * (11 + 2 * 1)

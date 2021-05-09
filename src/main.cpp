@@ -72,5 +72,9 @@ int main(int argc, char *argv[]) {
 	LibOrichalcum::Compiler compiler(compiler_options);
 	auto result = compiler.run();
 
-	return 0;
+	if (result.result == LibOrichalcum::COMPILE_RESULT::SUCCESS) {
+		return 0;
+	}
+
+	return 1;
 }

@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 
+#include "Token.hpp"
+
 namespace LibOrichalcum {
 
 enum class OP_CODE {
@@ -49,14 +51,14 @@ public:
 	Chunk(const std::string &name);
 	Chunk(size_t index);
 
-	void write(OP_CODE op_code, int line);
-	void write(int64_t constant, int line);
-	void write(double constant, int line);
+	void write(OP_CODE op_code, std::shared_ptr<Token> token);
+	void write(int64_t constant, std::shared_ptr<Token> token);
+	void write(double constant, std::shared_ptr<Token> token);
 
 	ChunkIterator get_iterator();
 	ChunkIterator next(ChunkIterator iterator);
 	Instruction get(size_t index);
-	int get_line(size_t index);
+	std::shared_ptr<Token> get_token(size_t index);
 	Constant get_const(size_t index);
 
 	size_t size();
@@ -66,10 +68,10 @@ private:
 	friend void disassemble_chunk(Chunk &chunk);
 	std::vector<Instruction> instructions;
 	std::vector<Constant> constants;
-	std::vector<Line> lines;
+	std::vector<std::shared_ptr<Token>> tokens;
 
 	void init();
-	void write_line(int line);
+	void write(std::shared_ptr<Token> token);
 };
 
 } // LibOrichalcum

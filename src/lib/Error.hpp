@@ -10,6 +10,7 @@ namespace LibOrichalcum {
 enum class COMPILE_RESULT {
 	SUCCESS,
 	PARSER_ERROR,
+	COMPILER_ERROR,
 	RUNTIME_ERROR,
 };
 

@@ -17,18 +17,21 @@ Chunk::Chunk(size_t index): name(Misc::to_hex(index)) {
 
 void Chunk::init() {
 	Log::debug("Initializing chunk " + name);
-	lines.push_back(Line(0, 0));
 }
 
-void Chunk::write(OP_CODE op_code, int line) {
-	write_line(line);
+void Chunk::write(std::shared_ptr<Token> token) {
+	tokens.push_back(token);
+}
+
+void Chunk::write(OP_CODE op_code, std::shared_ptr<Token> token) {
+	write(token);
 	Instruction instruction;
 	instruction.op_code = op_code;
 	instructions.push_back(instruction);
 }
 
-void Chunk::write(int64_t _constant, int line) {
-	write_line(line);
+void Chunk::write(int64_t _constant, std::shared_ptr<Token> token) {
+	write(token);
 	Instruction instruction;
 	instruction.op_code = OP_CODE::CONST;
 	instructions.push_back(instruction);
@@ -39,14 +42,14 @@ void Chunk::write(int64_t _constant, int line) {
 	constants.push_back(constant);
 	size_t index = constants.size() - 1;
 
-	write_line(line);
+	write(token);
 	Instruction const_addr;
 	const_addr.index = index;
 	instructions.push_back(const_addr);
 }
 
-void Chunk::write(double _constant, int line) {
-	write_line(line);
+void Chunk::write(double _constant, std::shared_ptr<Token> token) {
+	write(token);
 	Instruction instruction;
 	instruction.op_code = OP_CODE::CONST;
 	instructions.push_back(instruction);
@@ -57,43 +60,18 @@ void Chunk::write(double _constant, int line) {
 	constants.push_back(constant);
 	size_t index = constants.size() - 1;
 
-	write_line(line);
+	write(token);
 	Instruction const_addr;
 	const_addr.index = index;
 	instructions.push_back(const_addr);
-}
-
-void Chunk::write_line(int line) {
-	Line last_line = lines.back();
-
-	if (last_line.line == line) {
-		last_line.repeat++;
-		lines.pop_back();
-		lines.push_back(last_line);
-	}
-	else {
-		Line new_line(1, line);
-		lines.push_back(new_line);
-	}
 }
 
 ChunkIterator Chunk::get_iterator() {
 	return instructions.begin();
 }
 
-int Chunk::get_line(size_t index) {
-	size_t current_index = 0;
-	for (Line line: lines) {
-		if (line.repeat > 0) {
-			current_index += static_cast<size_t>(line.repeat);
-			if (index + 1 <= current_index) {
-				return line.line;
-			}
-		}
-	}
-
-	// This shouldn't ever happen, right?
-	return lines.back().line + 1;
+std::shared_ptr<Token> Chunk::get_token(size_t index) {
+	return tokens.at(index);
 }
 
 ChunkIterator Chunk::next(ChunkIterator iterator) {

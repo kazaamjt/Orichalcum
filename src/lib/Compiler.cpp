@@ -28,6 +28,7 @@ CompilerReport Compiler::run() {
 	try {
 		parser.parse(main_file);
 		main_loop();
+		Log::debug("Finished compiling");
 	}
 	catch(const Error &error) {
 		Log::error(error);
@@ -37,6 +38,7 @@ CompilerReport Compiler::run() {
 			Log::get_logs()
 		);
 	}
+	vm.interpret(current_chunk());
 	return CompilerReport(COMPILE_RESULT::SUCCESS, Log::get_logs());
 }
 
@@ -48,6 +50,7 @@ void Compiler::main_loop() {
 	while(1) {
 		std::shared_ptr<ExprAST> expr = parser.next_expr();
 		if (expr->token->type == TOKEN_TYPE::EOF_TOKEN) return;
+		expr->compile(current_chunk());
 	}
 }
 

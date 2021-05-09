@@ -129,7 +129,20 @@ std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shar
 			rhs = parse_bin_op_rhs(current_precedence + 1, rhs);
 		}
 
-		lhs = std::make_shared<BinaryExprAST>(bin_op, lhs, rhs, debug);
+		OP_CODE op_code;
+		if (bin_op->content == "+") op_code = OP_CODE::ADD;
+		else if (bin_op->content == "-") op_code = OP_CODE::SUBTRACT;
+		else if (bin_op->content == "*") op_code = OP_CODE::MULTIPLY;
+		else if (bin_op->content == "/") op_code = OP_CODE::DIVIDE;
+		else {
+			throw Error(
+				COMPILE_RESULT::PARSER_ERROR,
+				"Parser got confused",
+				bin_op
+			);
+		}
+
+		lhs = std::make_shared<BinaryExprAST>(op_code, bin_op, lhs, rhs, debug);
 	}
 }
 

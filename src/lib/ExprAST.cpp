@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "Log.hpp"
+#include "Debug.hpp"
 
 namespace LibOrichalcum {
 
@@ -21,6 +22,14 @@ void ExprAST::print_dbg(const std::string &pre) {
 	);
 }
 
+void ExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	throw Error(
+		COMPILE_RESULT::PARSER_ERROR,
+		"Compiler got passed object with type ExprAST, this object shouldn't exist, it represents nothing concrete... this is BadBadNotGood.",
+		token
+	);
+}
+
 ExprAST::~ExprAST() { }
 
 IntExprAST::IntExprAST(std::shared_ptr<Token> _token, bool print_debug):
@@ -34,6 +43,10 @@ void IntExprAST::print_dbg(const std::string &pre) {
 	Log::debug(pre + "IntExprAST " + std::to_string(value));
 }
 
+void IntExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	chunk->write(value, token);
+}
+
 IntExprAST::~IntExprAST() { }
 
 FloatExprAST::FloatExprAST(std::shared_ptr<Token> _token, bool print_debug):
@@ -45,6 +58,10 @@ ExprAST(_token) {
 
 void FloatExprAST::print_dbg(const std::string &pre) {
 	Log::debug(pre + "FloatExprAST " + std::to_string(value));
+}
+
+void FloatExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	chunk->write(value, token);
 }
 
 FloatExprAST::~FloatExprAST() { }
@@ -75,26 +92,41 @@ void VariableExprAST::print_dbg(const std::string &pre) {
 	Log::debug(output_str);
 }
 
+void VariableExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	throw Error(
+		COMPILE_RESULT::COMPILER_ERROR,
+		"VariableExprAST isn't currently implemented :(",
+		token
+	);
+}
+
 VariableExprAST::~VariableExprAST() { }
 
 BinaryExprAST::BinaryExprAST(
+	OP_CODE _op,
 	std::shared_ptr<Token> _token,
 	std::shared_ptr<ExprAST> lhs,
 	std::shared_ptr<ExprAST> rhs,
 	bool print_debug):
 ExprAST(_token),
-op(_token->content),
-lefthand(lhs),
-righthand(rhs) {
+op(_op),
+lefthand(std::move(lhs)),
+righthand(std::move(rhs)) {
 	if (print_debug) print_dbg("Created ");
 }
 
 void BinaryExprAST::print_dbg(const std::string &pre) {
-	Log::debug(pre + "BinaryExprAST: " + op);
+	Log::debug(pre + "BinaryExprAST: " + Debug::to_string(op));
 	Log::debug("Left hand: ");
 	lefthand->print_dbg();
 	Log::debug("Right hand: ");
 	righthand->print_dbg();
+}
+
+void BinaryExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	lefthand->compile(chunk);
+	righthand->compile(chunk);
+	chunk->write(op, token);
 }
 
 BinaryExprAST::~BinaryExprAST() { }
@@ -116,6 +148,14 @@ void CallExprAST::print_dbg(const std::string &pre) {
 		Log::debug("arg " + std::to_string(++i) + ":");
 		arg->print_dbg();
 	}
+}
+
+void CallExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	throw Error(
+		COMPILE_RESULT::COMPILER_ERROR,
+		"CallExprAST isn't currently implemented :(",
+		token
+	);
 }
 
 CallExprAST::~CallExprAST() { }
@@ -170,6 +210,14 @@ body(_body) {
 	if (print_debug) print_dbg("Created ");
 }
 
+void FunctionAST::compile(std::shared_ptr<Chunk> chunk) {
+	throw Error(
+		COMPILE_RESULT::COMPILER_ERROR,
+		"FunctionAST isn't currently implemented :(",
+		token
+	);
+}
+
 FunctionAST::~FunctionAST() { }
 
 void FunctionAST::print_dbg(const std::string &pre) {
@@ -190,6 +238,10 @@ body(_body) {
 	if (print_debug) print_dbg("Created ");
 }
 
+void TopLevelExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	body->compile(chunk);
+}
+
 void TopLevelExprAST::print_dbg(const std::string &pre) {
 	Log::debug(pre + "TopLevelExprAST: ");
 	body->print_dbg();
@@ -206,6 +258,14 @@ ExprAST(_token) {
 
 void PassExprAST::print_dbg(const std::string &pre) {
 	Log::debug(pre + "PassExprAST");
+}
+
+void PassExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	throw Error(
+		COMPILE_RESULT::COMPILER_ERROR,
+		"PassExprAST isn't currently implemented :(",
+		token
+	);
 }
 
 PassExprAST::~PassExprAST() { }
@@ -225,6 +285,11 @@ void UnaryNegExprAST::print_dbg(const std::string &pre) {
 	rhs->print_dbg();
 }
 
+void UnaryNegExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	rhs->compile(chunk);
+	chunk->write(OP_CODE::NEGATE, token);
+}
+
 UnaryNegExprAST::~UnaryNegExprAST() { }
 
 NoneExprAST::NoneExprAST(
@@ -232,6 +297,14 @@ NoneExprAST::NoneExprAST(
 	bool print_debug):
 ExprAST(_token) {
 	if (print_debug) print_dbg("Created ");
+}
+
+void NoneExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	throw Error(
+		COMPILE_RESULT::COMPILER_ERROR,
+		"NoneExprAST isn't currently implemented :(",
+		token
+	);
 }
 
 void NoneExprAST::print_dbg(const std::string &pre) {
@@ -249,6 +322,14 @@ ExprAST(_token) {
 	if (print_debug) print_dbg("Created ");
 }
 
+void BoolExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	throw Error(
+		COMPILE_RESULT::COMPILER_ERROR,
+		"BoolExprAST isn't currently implemented :(",
+		token
+	);
+}
+
 void BoolExprAST::print_dbg(const std::string &pre) {
 	std::string val;
 	if (value) val = "True";
@@ -263,6 +344,14 @@ EOFExprAST::EOFExprAST(
 	bool print_debug):
 ExprAST(_token) {
 	if (print_debug) print_dbg("Created ");
+}
+
+void EOFExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	throw Error(
+		COMPILE_RESULT::COMPILER_ERROR,
+		"Tried to compile an EOFExprAST, ",
+		token
+	);
 }
 
 void EOFExprAST::print_dbg(const std::string &pre) {

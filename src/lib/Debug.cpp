@@ -47,36 +47,30 @@ void disassemble_chunk(std::shared_ptr<Chunk> chunk) {
 }
 
 size_t disassemble_instruction(size_t index, std::shared_ptr<Chunk> chunk) {
-	print_line(chunk->get_line(index));
-	switch (chunk->get(index).op_code) {
+	print_line(chunk->get_token(index)->index.line);
+	OP_CODE op_code = chunk->get(index).op_code;
+	switch (op_code) {
 		case OP_CODE::RETURN: {
 			std::cout<< Misc::to_hex(index) << " RETURN" << std::endl;
 		} break;
 
 		case OP_CODE::CONST: {
-			std::cout<< Misc::to_hex(index) << " CONST_INT" << std::endl;
+			std::cout<< Misc::to_hex(index) << " CONST" << std::endl;
 			size_t const_index = chunk->get(++index).index;
-			print_line(chunk->get_line(index));
+			print_line(chunk->get_token(index)->index.line);
 			std::cout << Misc::to_hex(index) << " CONST_INDEX => ";
 			std::cout << Misc::to_hex(const_index) << " = ";
 			print_const(chunk->get_const(const_index));
 			std::cout << std::endl;
 		} break;
 
-		case OP_CODE::NEGATE: {
-			std::cout<< Misc::to_hex(index) << " NEGATE" << std::endl;
-		} break;
-		case OP_CODE::ADD: {
-			std::cout<< Misc::to_hex(index) << " ADD" << std::endl;
-		} break;
-		case OP_CODE::SUBTRACT: {
-			std::cout<< Misc::to_hex(index) << " SUBTRACT" << std::endl;
-		} break;
-		case OP_CODE::MULTIPLY: {
-			std::cout<< Misc::to_hex(index) << " MULTIPLY" << std::endl;
-		} break;
-		case OP_CODE::DIVIDE: {
-			std::cout<< Misc::to_hex(index) << " DIVIDE" << std::endl;
+		case OP_CODE::NEGATE:
+		case OP_CODE::ADD:
+		case OP_CODE::SUBTRACT:
+		case OP_CODE::MULTIPLY:
+		case OP_CODE::DIVIDE:
+		{
+			std::cout<< Misc::to_hex(index) << " " << to_string(op_code) << std::endl;
 		} break;
 	}
 
@@ -107,6 +101,18 @@ void print_stack(ConstStack &stack) {
 		std::cout << "\b]" << std::endl;
 	} else {
 		std::cout << " ]" << std::endl;
+	}
+}
+
+std::string to_string(OP_CODE op_code) {
+	switch (op_code) {
+		case OP_CODE::RETURN: return "RETURN";
+		case OP_CODE::CONST: return "CONST";
+		case OP_CODE::NEGATE: return "NEGATE";
+		case OP_CODE::ADD: return "ADD";
+		case OP_CODE::SUBTRACT: return "SUBTRACT";
+		case OP_CODE::MULTIPLY: return "MULTIPLY";
+		case OP_CODE::DIVIDE: return "DIVIDE";
 	}
 }
 
