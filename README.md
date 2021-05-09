@@ -83,7 +83,7 @@ Using GCC might result in a bunch of warnings.
 ### Cross build
 
 A docker image with the required tools is provided to perform a Linux build on a Windows host.  
-Then run the provided script: `scripts/linux_cross_build.ps1`  
+To perform a linux build on windows, run the provided script: `scripts/linux_cross_build.ps1`  
 This builds the container for you and then executes the build automagically.  
 The container does not need to be rebuild to reflect changes in the source code.  
 

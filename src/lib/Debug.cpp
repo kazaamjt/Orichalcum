@@ -28,6 +28,7 @@ void print_expr(ExprAST &expr_ast) {
 
 static void print_line(int line) {
 	static int last_line = 0;
+	line += 1;
 	std::cout << "line ";
 	if (line != last_line) {
 		std::cout << std::left << std::setfill(' ') << std::setw(5) << line;
