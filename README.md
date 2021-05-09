@@ -2,8 +2,8 @@
 
 Orichalcum is a domain-specific programming language.  
 It is meant to be used as an embedable language that helps with large and complicated configuration.  
-DevOps tools in particular.  
-It's syntax si heavily inspired by Python.  
+DevOps tools in particular suffer from bad DSL syndrome in my opinion.  
+The syntax is inspired by Python.  
 
 The idea is simple:  
 
@@ -19,7 +19,7 @@ Some (potential) use cases:
 - Build tools (make comes to mind and bazel and starlark language were a direct inspiration for this project)
 - Software that has complex config requirements, like webservers?
 
-To be clear I am not hoping/advocating that Orichalcum be embedded in these tools.  
+To be clear I am not hoping/advocating for Orichalcum to be embedded in these tools.  
 Rather I would like to see/create tools that fill similar roles using Orichalcum as their DSL.  
 
 ## GOALS
