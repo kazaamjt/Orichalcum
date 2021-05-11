@@ -25,7 +25,7 @@ struct ConstStack {
 class BigInt {
 public:
 	BigInt();
-	BigInt::BigInt(const BigInt &b);
+	BigInt(const BigInt &b);
 	BigInt(std::string);
 
 	// binary math operators
