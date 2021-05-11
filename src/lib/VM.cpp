@@ -49,10 +49,10 @@ INTERPRET_RESULT VM::run() {
 			case OP_CODE::NEGATE: {
 				subtract();
 			} break;
-			case OP_CODE::ADD: binary_op(BINARY_OP::ADD);break;
-			case OP_CODE::SUBTRACT: binary_op(BINARY_OP::SUBTRACT);break;
-			case OP_CODE::MULTIPLY: binary_op(BINARY_OP::MULTIPLY);break;
-			case OP_CODE::DIVIDE: binary_op(BINARY_OP::DIVIDE);break;
+			case OP_CODE::ADD: binary_op(BINARY_OP::ADD); break;
+			case OP_CODE::SUBTRACT: binary_op(BINARY_OP::SUBTRACT); break;
+			case OP_CODE::MULTIPLY: binary_op(BINARY_OP::MULTIPLY); break;
+			case OP_CODE::DIVIDE: binary_op(BINARY_OP::DIVIDE); break;
 		}
 	}
 }
