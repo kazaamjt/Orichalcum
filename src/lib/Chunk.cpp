@@ -33,7 +33,7 @@ void Chunk::write(OP_CODE op_code, std::shared_ptr<Token> token) {
 void Chunk::write(int64_t _constant, std::shared_ptr<Token> token) {
 	write(token);
 	Instruction instruction;
-	instruction.op_code = OP_CODE::CONST;
+	instruction.op_code = OP_CODE::CONST_;
 	instructions.push_back(instruction);
 
 	Constant constant;
@@ -51,7 +51,7 @@ void Chunk::write(int64_t _constant, std::shared_ptr<Token> token) {
 void Chunk::write(double _constant, std::shared_ptr<Token> token) {
 	write(token);
 	Instruction instruction;
-	instruction.op_code = OP_CODE::CONST;
+	instruction.op_code = OP_CODE::CONST_;
 	instructions.push_back(instruction);
 
 	Constant constant;

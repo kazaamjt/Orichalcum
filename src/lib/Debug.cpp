@@ -55,7 +55,7 @@ size_t disassemble_instruction(size_t index, std::shared_ptr<Chunk> chunk) {
 			std::cout<< Misc::to_hex(index) << " RETURN" << std::endl;
 		} break;
 
-		case OP_CODE::CONST: {
+		case OP_CODE::CONST_: {
 			std::cout<< Misc::to_hex(index) << " CONST" << std::endl;
 			size_t const_index = chunk->get(++index).index;
 			print_line(chunk->get_token(index)->index.line);
@@ -108,7 +108,7 @@ void print_stack(ConstStack &stack) {
 std::string to_string(OP_CODE op_code) {
 	switch (op_code) {
 		case OP_CODE::RETURN: return "RETURN";
-		case OP_CODE::CONST: return "CONST";
+		case OP_CODE::CONST_: return "CONST";
 		case OP_CODE::NEGATE: return "NEGATE";
 		case OP_CODE::ADD: return "ADD";
 		case OP_CODE::SUBTRACT: return "SUBTRACT";

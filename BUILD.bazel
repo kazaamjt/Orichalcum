@@ -33,6 +33,23 @@ cc_library(
 	],
 )
 
+cc_test(
+	name = "tests",
+	srcs = ["test/main.cpp"],
+	deps = [
+		":test-lib",
+	],
+)
+
+cc_library(
+	name = "test-lib",
+	hdrs = glob(["test/*.hpp"]),
+	srcs = glob(["test/*.cpp"]),
+	deps = [
+		":lib",
+	],
+)
+
 ######################
 # External Libraries #
 ######################

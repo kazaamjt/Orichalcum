@@ -41,7 +41,7 @@ INTERPRET_RESULT VM::run() {
 				return INTERPRET_RESULT::OK;
 			}
 
-			case OP_CODE::CONST: {
+			case OP_CODE::CONST_: {
 				Constant constant = get_const();
 				stack.push(constant);
 			} break;

@@ -13,21 +13,22 @@ base(b.base),
 skip(b.skip) { }
 
 
-BigInt::BigInt(std::string int_string):
+BigInt::BigInt(std::string _string):
 base(BigInt::default_base),
 skip(0) {
-	size_t size = int_string.length();
-	positive = (int_string[0] != '-');
+	size_t size = _string.length();
+	positive = (_string[0] != '-');
 
+	size_t length = 0;
+	int num = 0;
+	int prefix = 1;
 	while (true) {
 		if (size <= 0) break;
 		if (!positive && size <= 1) break;
 
-		size_t length = 0;
-		int num = 0;
-		int prefix = 1;
 		for (size_t i(size - 1); i >= size - 9; i--) {
-			num += (int_string[i] - '0') * prefix;
+			if (!isdigit(_string[i])) break;
+			num += (_string[i] - '0') * prefix;
 			prefix *= 10;
 			length++;
 		}
@@ -104,10 +105,8 @@ BigInt &BigInt::operator-=(BigInt const &b) {
 	}
 	if (dif < 0) positive = false;
 
-	if (number.size() > 1)
-	{
-		do
-		{
+	if (number.size() > 1) {
+		do {
 			it1 = number.end() - 1;
 			if (*it1 == 0) number.pop_back();
 			else break;
@@ -115,6 +114,43 @@ BigInt &BigInt::operator-=(BigInt const &b) {
 	}
 
 	return *this;
+}
+
+
+std::ostream &operator<<(std::ostream &out, BigInt const &a) {
+	if (!a.number.size()) return out << 0;
+	int i = a.number.size() - 1;
+	for (; i>=0 && a.number[i] == 0; --i);
+
+	if (i == -1) return out << 0;
+	if (!a.positive) out << '-';
+
+	std::vector<int>::const_reverse_iterator it = a.number.rbegin() + (a.number.size() - i - 1);
+
+	out << *it++;
+	for (; it != a.number.rend(); ++it) {
+		for (int i(0), len = a.segment_length(*it); i < 9 - len; ++i) out << '0';
+		if (*it) out << *it;
+	}
+
+	return out;
+}
+
+int BigInt::segment_length(int segment) const {
+	int length = 0;
+	while (segment) {
+		segment /= 10;
+		length++;
+	}
+
+	return length;
+}
+
+std::string to_string(const BigInt &value) {
+	std::ostringstream stream;
+	stream << value;
+
+	return stream.str();
 }
 
 } // namespace LibOrichalcum

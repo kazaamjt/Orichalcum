@@ -317,8 +317,8 @@ BoolExprAST::BoolExprAST(
 	std::shared_ptr<Token> _token,
 	bool print_debug):
 ExprAST(_token) {
-	if (token->type == TOKEN_TYPE::TRUE) value = true;
-	else if (token->type == TOKEN_TYPE::FALSE) value = false;
+	if (token->type == TOKEN_TYPE::TRUE_) value = true;
+	else if (token->type == TOKEN_TYPE::FALSE_) value = false;
 	if (print_debug) print_dbg("Created ");
 }
 

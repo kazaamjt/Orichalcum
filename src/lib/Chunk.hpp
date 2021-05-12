@@ -8,7 +8,7 @@ namespace LibOrichalcum {
 
 enum class OP_CODE {
 	RETURN,
-	CONST,
+	CONST_,
 
 	NEGATE,
 	ADD,
