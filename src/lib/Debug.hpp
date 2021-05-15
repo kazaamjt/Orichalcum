@@ -2,7 +2,7 @@
 #include <string>
 
 #include "Chunk.hpp"
-#include "data_structures.hpp"
+#include "VM.hpp"
 #include "Lexer.hpp"
 #include "ExprAST.hpp"
 

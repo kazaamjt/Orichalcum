@@ -2,7 +2,6 @@
 #include <memory>
 
 #include "Chunk.hpp"
-#include "data_structures.hpp"
 
 namespace LibOrichalcum {
 
@@ -20,6 +19,20 @@ enum class BINARY_OP {
 	SUBTRACT,
 	MULTIPLY,
 	DIVIDE,
+};
+
+struct ConstStack {
+	void push(const Constant &value) {
+		internal.push_back(value);
+	}
+
+	Constant pop() {
+		Constant value = internal.back();
+		internal.pop_back();
+		return value;
+	}
+
+	std::vector<Constant> internal;
 };
 
 class VM {

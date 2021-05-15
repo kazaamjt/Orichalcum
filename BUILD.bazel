@@ -25,8 +25,8 @@ cc_binary(
 
 cc_library(
 	name = "lib",
-	hdrs = glob(["src/lib/*.hpp"]),
-	srcs = glob(["src/lib/*.cpp"]),
+	hdrs = glob(["src/lib/**/*.hpp"]),
+	srcs = glob(["src/lib/**/*.cpp"]),
 	deps = [
 		":rang",
 		":cxxopts",

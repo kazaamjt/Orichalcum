@@ -5,23 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "Chunk.hpp"
-
 namespace LibOrichalcum {
-
-struct ConstStack {
-	void push(const Constant &value) {
-		internal.push_back(value);
-	}
-
-	Constant pop() {
-		Constant value = internal.back();
-		internal.pop_back();
-		return value;
-	}
-
-	std::vector<Constant> internal;
-};
 
 class BigInt {
 public:
@@ -36,6 +20,8 @@ public:
 	BigInt &operator-=(BigInt const &b);
 	BigInt operator*(BigInt const &b);
 	BigInt &operator*=(BigInt const &b);
+	BigInt operator/(BigInt const &b);
+	BigInt &operator/=(BigInt const &b);
 
 	// Comparison operators
 	bool operator<(const BigInt &b) const;
@@ -51,21 +37,17 @@ public:
 	// unary neg
 	BigInt operator-() const;
 
-	// helpers
-	int digits();
-	int trailing_zeros();
-	friend std::ostream &operator<<(std::ostream &out, BigInt const &a);
+	// Helpers
+	std::string str() const;
 
 private:
 	std::vector<int> number;
-	bool positive;
-	int base;
-	unsigned int skip;
-	static const int default_base=1000000000;
+	bool negative;
 
-	int segment_length(int segment) const;
+	const size_t segment_length = 9;
 };
 
-std::string to_string(const BigInt &value);
+std::string to_string(const BigInt &big_int);
 
 } // namespace LibOrichalcum
+
