@@ -11,7 +11,8 @@ class BigInt {
 public:
 	BigInt();
 	BigInt(const BigInt &b);
-	BigInt(std::string _string);
+	BigInt(int value);
+	BigInt(std::string value);
 
 	// binary math operators
 	BigInt operator+(BigInt const &b) const;
@@ -41,7 +42,7 @@ public:
 	std::string str() const;
 
 private:
-	std::vector<int> number;
+	std::vector<unsigned int> number;
 	bool negative;
 
 	const size_t segment_length = 9;

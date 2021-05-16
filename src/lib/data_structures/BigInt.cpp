@@ -2,28 +2,38 @@
 
 namespace LibOrichalcum {
 BigInt::BigInt():
-negative(false) { }
+negative(false) {
+	number.push_back(0);
+}
 
 BigInt::BigInt(const BigInt &b):
 number(b.number),
 negative(b.negative) { }
 
-BigInt::BigInt(std::string _string) {
+BigInt::BigInt(int value) {
+	if (value < 0) {
+		negative = true;
+		value = -value;
+	}
+	number.push_back(static_cast<unsigned int>(value));
+}
+
+BigInt::BigInt(std::string value) {
 	size_t start_pos = 0;
-	if (_string[0] == '-') {
+	if (value[0] == '-') {
 		negative = true;
 		start_pos = 1;
 	}
-	size_t digits = _string.size();
+	size_t digits = value.size();
 	std::string substr;
 	while (digits > segment_length) {
-		substr = _string.substr(digits - segment_length, segment_length);
-		number.push_back(std::stoi(substr));
+		substr = value.substr(digits - segment_length, segment_length);
+		number.push_back(static_cast<unsigned int>(std::stoi(substr)));
 		digits -= segment_length;
 	}
 
-	substr = _string.substr(start_pos, digits - start_pos);
-	number.push_back(std::stoi(substr));
+	substr = value.substr(start_pos, digits - start_pos);
+	number.push_back(static_cast<unsigned int>(std::stoi(substr)));
 }
 
 BigInt BigInt::operator-() const {

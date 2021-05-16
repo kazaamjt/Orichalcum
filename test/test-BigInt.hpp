@@ -29,5 +29,11 @@ TEST_CASE("BigInt Tests") {
 
 		LibOrichalcum::BigInt e("122465224732547235473256475372457325472354234753");
 		REQUIRE(LibOrichalcum::to_string(e) == "122465224732547235473256475372457325472354234753");
+
+		LibOrichalcum::BigInt f(123456789);
+		REQUIRE(LibOrichalcum::to_string(f) == value);
+
+		LibOrichalcum::BigInt g(-123456789);
+		REQUIRE(LibOrichalcum::to_string(g) == "-" + value);
 	}
 }
