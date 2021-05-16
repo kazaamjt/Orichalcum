@@ -14,6 +14,8 @@ public:
 	BigInt(int value);
 	BigInt(std::string value);
 
+	BigInt &operator=(const BigInt &b);
+
 	// binary math operators
 	BigInt operator+(BigInt const &b) const;
 	BigInt &operator+=(BigInt const &b);
@@ -46,6 +48,7 @@ private:
 	bool negative;
 
 	const size_t segment_length = 9;
+	const unsigned int base = 1000000000;
 };
 
 std::string to_string(const BigInt &big_int);

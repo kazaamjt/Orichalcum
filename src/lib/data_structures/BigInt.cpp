@@ -36,11 +36,104 @@ BigInt::BigInt(std::string value) {
 	number.push_back(static_cast<unsigned int>(std::stoi(substr)));
 }
 
-BigInt BigInt::operator-() const {
-	BigInt b = *this;
-	b.negative = !negative;
+BigInt &BigInt::operator=(const BigInt &b) {
+	number = b.number;
+	negative = b.negative;
+	return *this;
+}
 
-	return b;
+BigInt BigInt::operator+(BigInt const &b) const {
+	BigInt c = *this;
+	c += b;
+
+	return c;
+}
+
+BigInt &BigInt::operator+=(BigInt const &b) {
+	if (negative != b.negative) {
+		*this -= -b;
+		return *this;
+	}
+
+	size_t max_index = number.size() >= b.number.size() ? number.size() : b.number.size();
+	std::vector<unsigned int> new_number;
+
+	unsigned int overflow = 0;
+	for (size_t i = 0; i < max_index; i++) {
+		unsigned int int_a = i < number.size() ? number[i] : 0;
+		unsigned int int_b = i < b.number.size() ? b.number[i] : 0;
+		unsigned int int_c = int_a + int_b + overflow;
+		overflow = 0;
+		if (int_c > base) {
+			overflow = int_c / base;
+			int_c %= base;
+		}
+
+		new_number.push_back(int_c);
+	}
+	if (overflow > 0) new_number.push_back(overflow);
+	number = new_number;
+
+	return *this;
+}
+
+BigInt BigInt::operator-(BigInt const &b) const {
+	BigInt c = *this;
+	c -= b;
+
+	return c;
+}
+
+BigInt &BigInt::operator-=(BigInt const &b) {
+	if (negative != b.negative) {
+		*this += -b;
+		return *this;
+	}
+
+	if (b < *this) {
+		*this = -(b - *this);
+		return *this;
+	}
+
+	std::vector<unsigned int> new_number;
+	unsigned int underflow = 0;
+	for (size_t i = 0; i < number.size(); i++) {
+		unsigned int int_a = number[i];
+		unsigned int int_b = i < b.number.size() ? b.number[i] : 0;
+		int_b += underflow;
+		underflow = 0;
+		if (int_a < int_b) {
+			int_a += base;
+			underflow = 1;
+		}
+		unsigned int int_c = int_a - int_b;
+		new_number.push_back(int_c);
+	}
+	number = new_number;
+
+	return *this;
+}
+
+bool BigInt::operator<(const BigInt &b) const {
+	BigInt a = *this;
+
+	if (a.negative && !b.negative) return false;
+	if (!a.negative && b.negative) return true;
+	if (a.number.size() > b.number.size()) return true;
+	if (a.number.size() < b.number.size()) return false;
+
+	for (size_t i = 0; i >= a.number.size(); i++) {
+		if (a.number[i] > b.number[i]) return true;
+		if (b.number[i] > a.number[i]) return false;
+	}
+	return false;
+}
+
+BigInt BigInt::operator-() const {
+	BigInt a = *this;
+	a.negative = !negative;
+
+	return a;
 }
 
 std::string BigInt::str() const {
