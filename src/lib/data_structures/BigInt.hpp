@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <iostream>
 #include <map>
 #include <sstream>
@@ -12,6 +13,8 @@ public:
 	BigInt();
 	BigInt(const BigInt &b);
 	BigInt(int value);
+	BigInt(int64_t value);
+	BigInt(uint64_t value);
 	BigInt(std::string value);
 
 	BigInt &operator=(const BigInt &b);
@@ -49,6 +52,8 @@ private:
 
 	const size_t segment_length = 9;
 	const unsigned int base = 1000000000;
+
+	void rebase(size_t zeros);
 };
 
 std::string to_string(const BigInt &big_int);

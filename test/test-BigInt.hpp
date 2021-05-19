@@ -41,6 +41,10 @@ TEST_CASE("BigInt Tests") {
 
 		LibOrichalcum::BigInt i = big_int;
 		REQUIRE(LibOrichalcum::to_string(i) == value);
+
+		int64_t int64_value = 123456789123456789;
+		LibOrichalcum::BigInt j(int64_value);
+		REQUIRE(LibOrichalcum::to_string(j) == "123456789123456789");
 	}
 
 	SECTION("BigInt addition, subtraction and unary negative") {
@@ -66,5 +70,12 @@ TEST_CASE("BigInt Tests") {
 		REQUIRE(LibOrichalcum::to_string(no_reuse) == value);
 		no_reuse -= a;
 		REQUIRE(LibOrichalcum::to_string(no_reuse) == "0");
+	}
+
+	SECTION("BigInt multiplication and devision") {
+		LibOrichalcum::BigInt a(value);
+		REQUIRE(LibOrichalcum::to_string(a * a) == "15241578750190521");
+		LibOrichalcum::BigInt b(1024);
+		REQUIRE(LibOrichalcum::to_string(b * b * b * b * b * b) == "1180591620717411303424");
 	}
 }

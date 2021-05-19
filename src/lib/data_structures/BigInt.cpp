@@ -18,6 +18,26 @@ BigInt::BigInt(int value) {
 	number.push_back(static_cast<unsigned int>(value));
 }
 
+BigInt::BigInt(int64_t value) {
+	if (value < 0) {
+		negative = true;
+		value = -value;
+	}
+	while (value >= base) {
+		number.push_back(static_cast<unsigned>(value % base));
+		value /= base;
+	}
+	number.push_back(static_cast<unsigned int>(value));
+}
+
+BigInt::BigInt(uint64_t value) {
+	while (value >= base) {
+		number.push_back(static_cast<unsigned>(value % base));
+		value /= base;
+	}
+	number.push_back(static_cast<unsigned int>(value));
+}
+
 BigInt::BigInt(std::string value) {
 	size_t start_pos = 0;
 	if (value[0] == '-') {
@@ -114,6 +134,24 @@ BigInt &BigInt::operator-=(BigInt const &b) {
 	return *this;
 }
 
+BigInt BigInt::operator*(BigInt const &b) {
+	BigInt c;
+	c.negative = !(negative == b.negative);
+	for (size_t i = 0; i < number.size(); i++) {
+		unsigned int segment_a = number[i];
+		for (size_t j = 0; j < b.number.size(); j++) {
+			unsigned int segment_b = b.number[j];
+			uint64_t result = (segment_a * segment_b);
+			BigInt temp(result);
+			temp.rebase(i + j);
+			temp.negative = negative;
+			c += temp;
+		}
+	}
+
+	return c;
+}
+
 bool BigInt::operator<(const BigInt &b) const {
 	BigInt a = *this;
 
@@ -151,6 +189,16 @@ std::string BigInt::str() const {
 	}
 	if (_string == "-0") return "0";
 	return _string;
+}
+
+void BigInt::rebase(size_t zeros) {
+	std::vector<unsigned int> new_number;
+	for (size_t i =0; i <= zeros; i++) {
+		new_number.push_back(0);
+	}
+	for (unsigned int segment: number) {
+		new_number.push_back(segment);
+	}
 }
 
 std::string to_string(const BigInt &big_int) {
