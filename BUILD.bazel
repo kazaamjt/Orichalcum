@@ -33,9 +33,9 @@ cc_library(
 	],
 )
 
-cc_test(
+cc_binary(
 	name = "tests",
-	srcs = ["test/main.cpp"],
+	srcs = ["tests/tests.cpp"],
 	deps = [
 		":test-lib",
 	],
@@ -43,8 +43,7 @@ cc_test(
 
 cc_library(
 	name = "test-lib",
-	hdrs = glob(["test/*.hpp"]),
-	srcs = glob(["test/*.cpp"]),
+	hdrs = glob(["tests/*.hpp"]),
 	deps = [
 		":lib",
 	],

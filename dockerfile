@@ -27,4 +27,4 @@ ENV PATH="/opt/bin:$PATH"
 ENV CC="clang"
 WORKDIR /build
 
-CMD ["bazel", "build", "main", "--config=clang", "--keep_going"]
+CMD ["bazel", "run", "tests", "--config=clang", "--keep_going"]
