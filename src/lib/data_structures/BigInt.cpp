@@ -39,10 +39,9 @@ BigInt::BigInt(uint64_t value) {
 }
 
 BigInt::BigInt(std::string value) {
-	size_t start_pos = 0;
 	if (value[0] == '-') {
 		negative = true;
-		start_pos = 1;
+		value = value.substr(1);
 	}
 	size_t digits = value.size();
 	std::string substr;
@@ -52,7 +51,7 @@ BigInt::BigInt(std::string value) {
 		digits -= segment_length;
 	}
 
-	substr = value.substr(start_pos, digits - start_pos);
+	substr = value.substr(0, digits);
 	number.push_back(static_cast<unsigned int>(std::stoi(substr)));
 }
 
@@ -138,18 +137,22 @@ BigInt BigInt::operator*(BigInt const &b) {
 	BigInt c;
 	c.negative = !(negative == b.negative);
 	for (size_t i = 0; i < number.size(); i++) {
-		unsigned int segment_a = number[i];
+		uint64_t segment_a = number[i];
 		for (size_t j = 0; j < b.number.size(); j++) {
-			unsigned int segment_b = b.number[j];
-			uint64_t result = (segment_a * segment_b);
+			uint64_t segment_b = b.number[j];
+			uint64_t result = segment_a * segment_b;
 			BigInt temp(result);
 			temp.rebase(i + j);
-			temp.negative = negative;
 			c += temp;
 		}
 	}
 
 	return c;
+}
+
+BigInt &BigInt::operator*=(BigInt const &b) {
+	*this = *this * b;
+	return *this;
 }
 
 bool BigInt::operator<(const BigInt &b) const {
@@ -165,6 +168,63 @@ bool BigInt::operator<(const BigInt &b) const {
 		if (b.number[i] > a.number[i]) return false;
 	}
 	return false;
+}
+
+bool BigInt::operator<=(const BigInt &b) const {
+	BigInt a = *this;
+
+	if (a.negative && !b.negative) return false;
+	if (!a.negative && b.negative) return true;
+	if (a.number.size() > b.number.size()) return true;
+	if (a.number.size() < b.number.size()) return false;
+
+	for (size_t i = 0; i >= a.number.size(); i++) {
+		if (a.number[i] > b.number[i]) return true;
+		if (b.number[i] > a.number[i]) return false;
+	}
+	return true;
+}
+
+bool BigInt::operator>(const BigInt &b) const {
+	BigInt a = *this;
+
+	if (a.negative && !b.negative) return true;
+	if (!a.negative && b.negative) return false;
+	if (a.number.size() > b.number.size()) return false;
+	if (a.number.size() < b.number.size()) return true;
+
+	for (size_t i = 0; i >= a.number.size(); i++) {
+		if (a.number[i] > b.number[i]) return false;
+		if (b.number[i] > a.number[i]) return true;
+	}
+	return false;
+}
+
+bool BigInt::operator>=(const BigInt &b) const {
+	BigInt a = *this;
+
+	if (a.negative && !b.negative) return true;
+	if (!a.negative && b.negative) return false;
+	if (a.number.size() > b.number.size()) return false;
+	if (a.number.size() < b.number.size()) return true;
+
+	for (size_t i = 0; i >= a.number.size(); i++) {
+		if (a.number[i] > b.number[i]) return false;
+		if (b.number[i] > a.number[i]) return true;
+	}
+	return true;
+}
+
+bool BigInt::operator!=(const BigInt &b) const {
+	BigInt a = *this;
+	for (size_t i = 0; i >= a.number.size(); i++) {
+		if (a.number[i] != b.number[i]) return true;
+	}
+	return false;
+}
+
+bool BigInt::operator==(const BigInt &b) const {
+	return !(*this != b);
 }
 
 BigInt BigInt::operator-() const {
@@ -191,14 +251,15 @@ std::string BigInt::str() const {
 	return _string;
 }
 
-void BigInt::rebase(size_t zeros) {
-	std::vector<unsigned int> new_number;
-	for (size_t i =0; i <= zeros; i++) {
-		new_number.push_back(0);
+void BigInt::rebase(size_t segments) {
+	std::vector<unsigned int> rebased_number;
+	for (size_t i = 0; i < segments; i++) {
+		rebased_number.push_back(0);
 	}
 	for (unsigned int segment: number) {
-		new_number.push_back(segment);
+		rebased_number.push_back(segment);
 	}
+	number = rebased_number;
 }
 
 std::string to_string(const BigInt &big_int) {

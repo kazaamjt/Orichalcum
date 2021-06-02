@@ -70,12 +70,31 @@ TEST_CASE("BigInt Tests") {
 		REQUIRE(LibOrichalcum::to_string(no_reuse) == value);
 		no_reuse -= a;
 		REQUIRE(LibOrichalcum::to_string(no_reuse) == "0");
+
+		LibOrichalcum::BigInt d("-123456789");
+		REQUIRE(LibOrichalcum::to_string(d + d) == "-246913578");
 	}
 
-	SECTION("BigInt multiplication and devision") {
+	SECTION("BigInt multiplication") {
+		LibOrichalcum::BigInt test_rebase(value);
+		test_rebase.rebase(1);
+		REQUIRE(LibOrichalcum::to_string(test_rebase) == (value + "000000000"));
+
 		LibOrichalcum::BigInt a(value);
 		REQUIRE(LibOrichalcum::to_string(a * a) == "15241578750190521");
+
 		LibOrichalcum::BigInt b(1024);
-		REQUIRE(LibOrichalcum::to_string(b * b * b * b * b * b) == "1180591620717411303424");
+		REQUIRE(LibOrichalcum::to_string(b * b * b * b * b * b) == "1152921504606846976");
+
+		LibOrichalcum::BigInt c(1);
+		REQUIRE(LibOrichalcum::to_string(a * c) == value);
+
+		LibOrichalcum::BigInt d(100);
+		REQUIRE(LibOrichalcum::to_string(a * d) == (value + "00"));
+
+		LibOrichalcum::BigInt no_reuse(1);
+		REQUIRE(LibOrichalcum::to_string(no_reuse *= a) == LibOrichalcum::to_string(a));
+		REQUIRE(LibOrichalcum::to_string(no_reuse *= a) == LibOrichalcum::to_string(a * a));
+		REQUIRE(LibOrichalcum::to_string(no_reuse *= a) == LibOrichalcum::to_string(a * a * a));
 	}
 }

@@ -45,15 +45,14 @@ public:
 
 	// Helpers
 	std::string str() const;
+	void rebase(size_t segments);
 
 private:
 	std::vector<unsigned int> number;
-	bool negative;
+	bool negative = false;
 
 	const size_t segment_length = 9;
 	const unsigned int base = 1000000000;
-
-	void rebase(size_t zeros);
 };
 
 std::string to_string(const BigInt &big_int);
