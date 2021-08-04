@@ -33,12 +33,12 @@ void Chunk::write(OP_CODE op_code, std::shared_ptr<Token> token) {
 void Chunk::write(int64_t _constant, std::shared_ptr<Token> token) {
 	write(token);
 	Instruction instruction;
-	instruction.op_code = OP_CODE::CONST_;
+	instruction.op_code = OP_CODE::CONST;
 	instructions.push_back(instruction);
 
-	Constant constant;
-	constant.type = CONSTANT_TYPE::INT;
-	constant.value.int_ = _constant;
+	OrValue constant;
+	constant.type = OrValueType::INT;
+	constant.value.INT = _constant;
 	constants.push_back(constant);
 	size_t index = constants.size() - 1;
 
@@ -51,12 +51,12 @@ void Chunk::write(int64_t _constant, std::shared_ptr<Token> token) {
 void Chunk::write(double _constant, std::shared_ptr<Token> token) {
 	write(token);
 	Instruction instruction;
-	instruction.op_code = OP_CODE::CONST_;
+	instruction.op_code = OP_CODE::CONST;
 	instructions.push_back(instruction);
 
-	Constant constant;
-	constant.type = CONSTANT_TYPE::FLOAT;
-	constant.value.float_ = _constant;
+	OrValue constant;
+	constant.type = OrValueType::FLOAT;
+	constant.value.FLOAT = _constant;
 	constants.push_back(constant);
 	size_t index = constants.size() - 1;
 
@@ -82,7 +82,7 @@ Instruction Chunk::get(size_t index) {
 	return instructions.at(index);
 }
 
-Constant Chunk::get_const(size_t index) {
+OrValue Chunk::get_const(size_t index) {
 	return constants.at(index);
 }
 

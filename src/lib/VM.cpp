@@ -41,8 +41,8 @@ INTERPRET_RESULT VM::run() {
 				return INTERPRET_RESULT::OK;
 			}
 
-			case OP_CODE::CONST_: {
-				Constant constant = get_const();
+			case OP_CODE::CONST: {
+				OrValue constant = get_const();
 				stack.push(constant);
 			} break;
 
@@ -58,14 +58,14 @@ INTERPRET_RESULT VM::run() {
 }
 
 void VM::subtract() {
-	Constant constant = stack.pop();
+	OrValue constant = stack.pop();
 	switch (constant.type) {
-		case CONSTANT_TYPE::INT: {
-			constant.value.int_ = -constant.value.int_;
+		case OrValueType::INT: {
+			constant.value.INT = -constant.value.INT;
 		} break;
 
-		case CONSTANT_TYPE::FLOAT: {
-			constant.value.float_ = -constant.value.float_;
+		case OrValueType::FLOAT: {
+			constant.value.FLOAT = -constant.value.FLOAT;
 		} break;
 	}
 	stack.push(constant);
@@ -73,33 +73,33 @@ void VM::subtract() {
 
 void VM::binary_op(BINARY_OP op) {
 	// b first, this is important
-	Constant const_b = stack.pop();
-	Constant const_a = stack.pop();
-	Constant const_c;
+	OrValue const_b = stack.pop();
+	OrValue const_a = stack.pop();
+	OrValue const_c;
 	switch (const_a.type) {
-		case CONSTANT_TYPE::INT: {
+		case OrValueType::INT: {
 			switch (const_b.type) {
-				case CONSTANT_TYPE::INT: {
-					const_c.type = CONSTANT_TYPE::INT;
-					const_c.value.int_ = calc(op, const_a.value.int_, const_b.value.int_);
+				case OrValueType::INT: {
+					const_c.type = OrValueType::INT;
+					const_c.value.INT = calc(op, const_a.value.INT, const_b.value.INT);
 				} break;
-				case CONSTANT_TYPE::FLOAT: {
+				case OrValueType::FLOAT: {
 					// warning
-					const_c.type = CONSTANT_TYPE::FLOAT;
-					const_c.value.float_ = calc(op, static_cast<double>(const_a.value.int_), const_b.value.float_);
+					const_c.type = OrValueType::FLOAT;
+					const_c.value.FLOAT = calc(op, static_cast<double>(const_a.value.FLOAT), const_b.value.FLOAT);
 				} break;
 			}
 		} break;
-		case CONSTANT_TYPE::FLOAT: {
+		case OrValueType::FLOAT: {
 			switch (const_b.type) {
-				case CONSTANT_TYPE::INT: {
+				case OrValueType::INT: {
 					// warning
-					const_c.type = CONSTANT_TYPE::FLOAT;
-					const_c.value.float_ = calc(op, const_a.value.float_, static_cast<double>(const_b.value.int_));
+					const_c.type = OrValueType::FLOAT;
+					const_c.value.FLOAT = calc(op, const_a.value.FLOAT, static_cast<double>(const_b.value.FLOAT));
 				} break;
-				case CONSTANT_TYPE::FLOAT: {
-					const_c.type = CONSTANT_TYPE::FLOAT;
-					const_c.value.float_ = calc(op, const_a.value.float_, const_b.value.float_);
+				case OrValueType::FLOAT: {
+					const_c.type = OrValueType::FLOAT;
+					const_c.value.FLOAT = calc(op, const_a.value.FLOAT, const_b.value.FLOAT);
 				} break;
 			}
 		} break;
@@ -126,7 +126,7 @@ double VM::calc(BINARY_OP op, double a, double b) {
 }
 
 
-Constant VM::get_const() {
+OrValue VM::get_const() {
 	increment();
 	return chunk->get_const(instruction.index);
 }

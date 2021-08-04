@@ -55,7 +55,7 @@ size_t disassemble_instruction(size_t index, std::shared_ptr<Chunk> chunk) {
 			std::cout<< Misc::to_hex(index) << " RETURN" << std::endl;
 		} break;
 
-		case OP_CODE::CONST_: {
+		case OP_CODE::CONST: {
 			std::cout<< Misc::to_hex(index) << " CONST" << std::endl;
 			size_t const_index = chunk->get(++index).index;
 			print_line(chunk->get_token(index)->index.line);
@@ -78,23 +78,28 @@ size_t disassemble_instruction(size_t index, std::shared_ptr<Chunk> chunk) {
 	return ++index;
 }
 
-std::string to_string(const Constant &constant) {
+std::string to_string(const OrValue &constant) {
 	switch (constant.type) {
-		case CONSTANT_TYPE::INT:
-			return std::to_string(constant.value.int_);
-		case CONSTANT_TYPE::FLOAT:
-			return std::to_string(constant.value.float_);
+		case OrValueType::INT:
+			return std::to_string(constant.value.INT);
+		case OrValueType::FLOAT:
+			return std::to_string(constant.value.FLOAT);
+		case OrValueType::BOOL:
+			if (constant.value.BOOL) return "True";
+			return "False";
+		case OrValueType::NONE:
+			return "None";
 	}
 }
 
-void print_const(const Constant &constant) {
+void print_const(const OrValue &constant) {
 	std::cout << to_string(constant);
 }
 
 void print_stack(ConstStack &stack) {
 	Log::debug("Current stack:");
 	std::cout << "[";
-	for (Constant constant: stack.internal) {
+	for (OrValue constant: stack.internal) {
 		print_const(constant);
 		std::cout << " ";
 	}
@@ -108,7 +113,7 @@ void print_stack(ConstStack &stack) {
 std::string to_string(OP_CODE op_code) {
 	switch (op_code) {
 		case OP_CODE::RETURN: return "RETURN";
-		case OP_CODE::CONST_: return "CONST";
+		case OP_CODE::CONST: return "CONST";
 		case OP_CODE::NEGATE: return "NEGATE";
 		case OP_CODE::ADD: return "ADD";
 		case OP_CODE::SUBTRACT: return "SUBTRACT";

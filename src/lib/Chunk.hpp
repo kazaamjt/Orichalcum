@@ -2,13 +2,14 @@
 #include <string>
 #include <vector>
 
+#include "OrObject.hpp"
 #include "Token.hpp"
 
 namespace LibOrichalcum {
 
 enum class OP_CODE {
 	RETURN,
-	CONST_,
+	CONST,
 
 	NEGATE,
 	ADD,
@@ -20,21 +21,6 @@ enum class OP_CODE {
 union Instruction {
 	OP_CODE op_code;
 	size_t index;
-};
-
-enum class CONSTANT_TYPE {
-	INT,
-	FLOAT,
-};
-
-union ConstantValue {
-	int64_t int_;
-	double float_;
-};
-
-struct Constant {
-	CONSTANT_TYPE type;
-	ConstantValue value;
 };
 
 struct Line {
@@ -59,7 +45,7 @@ public:
 	ChunkIterator next(ChunkIterator iterator);
 	Instruction get(size_t index);
 	std::shared_ptr<Token> get_token(size_t index);
-	Constant get_const(size_t index);
+	OrValue get_const(size_t index);
 
 	size_t size();
 	std::string name;
@@ -67,7 +53,7 @@ public:
 private:
 	friend void disassemble_chunk(Chunk &chunk);
 	std::vector<Instruction> instructions;
-	std::vector<Constant> constants;
+	std::vector<OrValue> constants;
 	std::vector<std::shared_ptr<Token>> tokens;
 
 	void init();

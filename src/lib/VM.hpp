@@ -22,17 +22,17 @@ enum class BINARY_OP {
 };
 
 struct ConstStack {
-	void push(const Constant &value) {
+	void push(const OrValue &value) {
 		internal.push_back(value);
 	}
 
-	Constant pop() {
-		Constant value = internal.back();
+	OrValue pop() {
+		OrValue value = internal.back();
 		internal.pop_back();
 		return value;
 	}
 
-	std::vector<Constant> internal;
+	std::vector<OrValue> internal;
 };
 
 class VM {
@@ -53,7 +53,7 @@ private:
 	void init_chunk(std::shared_ptr<Chunk> chunk);
 	void increment();
 	INTERPRET_RESULT run();
-	Constant get_const();
+	OrValue get_const();
 
 	void subtract();
 	void binary_op(BINARY_OP op);
