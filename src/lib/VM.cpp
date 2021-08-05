@@ -79,8 +79,13 @@ void VM::negate() {
 			constant.value.FLOAT = -constant.value.FLOAT;
 		} break;
 		case OrValueType::BOOL:
-		case OrValueType::NONE:
-			break;
+		case OrValueType::NONE: {
+			throw Error(
+				COMPILE_RESULT::RUNTIME_ERROR,
+				"Unable to perform unary negate operation on type " + to_string(constant.type),
+				constant.token
+			);
+		}
 	}
 	stack.push(constant);
 }
