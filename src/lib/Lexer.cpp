@@ -25,7 +25,7 @@ line(-1), col(-1), debug(_debug), file_path(std::filesystem::absolute(file).stri
 		Log::error(err);
 		throw std::runtime_error("Failed to open file " + file_path);
 	}
-
+	bytes.push_back('\n');
 	char byte = 0;
 	while (input.get(byte)) {
 		bytes.push_back(byte);
