@@ -18,9 +18,16 @@ enum class OP_CODE {
 	DIVIDE,
 };
 
-union Instruction {
+class Instruction {
+public:
+	Instruction(OP_CODE op_code, std::shared_ptr<Token> token);
+	Instruction(OP_CODE op_code, size_t index);
+	Instruction(OP_CODE op_code);
+
 	OP_CODE op_code;
 	size_t index;
+	std::shared_ptr<Token> token;
+	bool has_token;
 };
 
 struct Line {
@@ -37,9 +44,12 @@ public:
 	Chunk(const std::string &name);
 	Chunk(size_t index);
 
+	void write(OP_CODE op_code);
 	void write(OP_CODE op_code, std::shared_ptr<Token> token);
-	void write(int64_t constant, std::shared_ptr<Token> token);
-	void write(double constant, std::shared_ptr<Token> token);
+	void write(int64_t value, std::shared_ptr<Token> token);
+	void write(double value, std::shared_ptr<Token> token);
+	void write(bool value, std::shared_ptr<Token> token);
+	void write(OrNone value, std::shared_ptr<Token> token);
 
 	ChunkIterator get_iterator();
 	ChunkIterator next(ChunkIterator iterator);
@@ -54,10 +64,8 @@ private:
 	friend void disassemble_chunk(Chunk &chunk);
 	std::vector<Instruction> instructions;
 	std::vector<OrValue> constants;
-	std::vector<std::shared_ptr<Token>> tokens;
 
 	void init();
-	void write(std::shared_ptr<Token> token);
 };
 
 } // LibOrichalcum

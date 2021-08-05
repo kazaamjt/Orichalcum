@@ -29,6 +29,7 @@ CompilerReport Compiler::run() {
 		parser.parse(main_file);
 		main_loop();
 		Log::debug("Finished compiling");
+		vm.interpret(current_chunk());
 	}
 	catch(const Error &error) {
 		Log::error(error);
@@ -38,7 +39,6 @@ CompilerReport Compiler::run() {
 			Log::get_logs()
 		);
 	}
-	vm.interpret(current_chunk());
 	return CompilerReport(COMPILE_RESULT::SUCCESS, Log::get_logs());
 }
 

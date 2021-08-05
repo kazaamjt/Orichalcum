@@ -5,6 +5,15 @@
 
 namespace LibOrichalcum {
 
+Instruction::Instruction(OP_CODE _op_code, std::shared_ptr<Token> _token):
+op_code(_op_code), token(_token), has_token(true) { }
+
+Instruction::Instruction(OP_CODE _op_code, size_t _index):
+op_code(_op_code), index(_index), has_token(false) { }
+
+Instruction::Instruction(OP_CODE _op_code):
+op_code(_op_code), has_token(false) { }
+
 Line::Line(int _repeat, int _line): repeat(_repeat), line(_line) { }
 
 Chunk::Chunk(const std::string &_name): name(_name) {
@@ -19,59 +28,48 @@ void Chunk::init() {
 	Log::debug("Initializing chunk " + name);
 }
 
-void Chunk::write(std::shared_ptr<Token> token) {
-	tokens.push_back(token);
+void Chunk::write(OP_CODE op_code) {
+	instructions.push_back(Instruction(op_code));
 }
 
 void Chunk::write(OP_CODE op_code, std::shared_ptr<Token> token) {
-	write(token);
-	Instruction instruction;
-	instruction.op_code = op_code;
-	instructions.push_back(instruction);
+	instructions.push_back(Instruction(op_code, token));
 }
 
-void Chunk::write(int64_t _constant, std::shared_ptr<Token> token) {
-	write(token);
-	Instruction instruction;
-	instruction.op_code = OP_CODE::CONST;
-	instructions.push_back(instruction);
-
-	OrValue constant;
-	constant.type = OrValueType::INT;
-	constant.value.INT = _constant;
+void Chunk::write(int64_t value, std::shared_ptr<Token> token) {
+	OrValue constant(value, token);
 	constants.push_back(constant);
 	size_t index = constants.size() - 1;
 
-	write(token);
-	Instruction const_addr;
-	const_addr.index = index;
-	instructions.push_back(const_addr);
+	instructions.push_back(Instruction(OP_CODE::CONST, index));
 }
 
-void Chunk::write(double _constant, std::shared_ptr<Token> token) {
-	write(token);
-	Instruction instruction;
-	instruction.op_code = OP_CODE::CONST;
-	instructions.push_back(instruction);
-
-	OrValue constant;
-	constant.type = OrValueType::FLOAT;
-	constant.value.FLOAT = _constant;
+void Chunk::write(double value, std::shared_ptr<Token> token) {
+	OrValue constant(value, token);
 	constants.push_back(constant);
 	size_t index = constants.size() - 1;
 
-	write(token);
-	Instruction const_addr;
-	const_addr.index = index;
-	instructions.push_back(const_addr);
+	instructions.push_back(Instruction(OP_CODE::CONST, index));
+}
+
+void Chunk::write(bool value, std::shared_ptr<Token> token) {
+	OrValue constant(value, token);
+	constants.push_back(constant);
+	size_t index = constants.size() - 1;
+
+	instructions.push_back(Instruction(OP_CODE::CONST, index));
+}
+
+void Chunk::write(OrNone value, std::shared_ptr<Token> token) {
+	OrValue constant(value, token);
+	constants.push_back(constant);
+	size_t index = constants.size() - 1;
+
+	instructions.push_back(Instruction(OP_CODE::CONST, index));
 }
 
 ChunkIterator Chunk::get_iterator() {
 	return instructions.begin();
-}
-
-std::shared_ptr<Token> Chunk::get_token(size_t index) {
-	return tokens.at(index);
 }
 
 ChunkIterator Chunk::next(ChunkIterator iterator) {

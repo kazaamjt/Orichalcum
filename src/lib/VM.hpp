@@ -21,6 +21,8 @@ enum class BINARY_OP {
 	DIVIDE,
 };
 
+std::string to_string(BINARY_OP op);
+
 struct ConstStack {
 	void push(const OrValue &value) {
 		internal.push_back(value);
@@ -46,16 +48,13 @@ private:
 	bool debug = false;
 
 	std::shared_ptr<Chunk> chunk;
-	ChunkIterator chunk_iter;
-	Instruction instruction;
 	ConstStack stack;
 
 	void init_chunk(std::shared_ptr<Chunk> chunk);
-	void increment();
 	INTERPRET_RESULT run();
 	OrValue get_const();
 
-	void subtract();
+	void negate();
 	void binary_op(BINARY_OP op);
 	int64_t calc(BINARY_OP op, int64_t a, int64_t b);
 	double calc(BINARY_OP op, double a, double b);

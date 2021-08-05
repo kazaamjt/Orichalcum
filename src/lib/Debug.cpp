@@ -13,13 +13,15 @@
 namespace LibOrichalcum::Debug {
 
 void print_token(const Token &token) {
-	Log::debug(
-		"Token " + to_string(token.type)
-		+ " \"" + token.content
-		+ "\" " + token.file_path
-		+ "(" + std::to_string(token.index.line + 1) + ","
-		+ std::to_string(token.index.col + 1) + ")"
-	);
+	std::string log_str = "Token " + to_string(token.type);
+	log_str += " \"" + token.content;
+	log_str += "\" " + token.file_path;
+
+	if (token.type != TOKEN_TYPE::EOF_TOKEN) {
+		log_str += "(" + std::to_string(token.index.line + 1) + ",";
+		log_str += std::to_string(token.index.col + 1) + ")";
+	}
+	Log::debug(log_str);
 }
 
 void print_expr(ExprAST &expr_ast) {
@@ -42,40 +44,39 @@ void disassemble_chunk(std::shared_ptr<Chunk> chunk) {
 
 	size_t i = 0;
 	while (i < chunk->size()) {
-		size_t next_i = disassemble_instruction(i, chunk);
-		i = next_i;
+		disassemble_instruction(chunk, i);
+		i++;
 	}
 }
 
-size_t disassemble_instruction(size_t index, std::shared_ptr<Chunk> chunk) {
-	print_line(chunk->get_token(index)->index.line);
-	OP_CODE op_code = chunk->get(index).op_code;
-	switch (op_code) {
-		case OP_CODE::RETURN: {
-			std::cout<< Misc::to_hex(index) << " RETURN" << std::endl;
-		} break;
+void disassemble_instruction(std::shared_ptr<Chunk> chunk, size_t index) {
+	static int line = 0;
+	Instruction instruction = chunk->get(index);
 
+	if (instruction.op_code == OP_CODE::CONST)
+		line = chunk->get_const(instruction.index).token->index.line;
+	else if (instruction.has_token)
+		line = instruction.token->index.line;
+
+	print_line(line);
+
+	switch (instruction.op_code) {
 		case OP_CODE::CONST: {
-			std::cout<< Misc::to_hex(index) << " CONST" << std::endl;
-			size_t const_index = chunk->get(++index).index;
-			print_line(chunk->get_token(index)->index.line);
-			std::cout << Misc::to_hex(index) << " CONST_INDEX => ";
-			std::cout << Misc::to_hex(const_index) << " = ";
-			print_const(chunk->get_const(const_index));
+			std::cout<< Misc::to_hex(index) << " CONST ";
+			std::cout << Misc::to_hex(instruction.index) << " = ";
+			print_const(chunk->get_const(instruction.index));
 			std::cout << std::endl;
 		} break;
 
+		case OP_CODE::RETURN:
 		case OP_CODE::NEGATE:
 		case OP_CODE::ADD:
 		case OP_CODE::SUBTRACT:
 		case OP_CODE::MULTIPLY:
-		case OP_CODE::DIVIDE:
-		{
-			std::cout<< Misc::to_hex(index) << " " << to_string(op_code) << std::endl;
+		case OP_CODE::DIVIDE: {
+			std::cout<< Misc::to_hex(index) << " " << to_string(instruction.op_code) << std::endl;
 		} break;
 	}
-
-	return ++index;
 }
 
 std::string to_string(const OrValue &constant) {

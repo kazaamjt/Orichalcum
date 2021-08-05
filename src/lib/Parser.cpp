@@ -85,8 +85,8 @@ std::shared_ptr<ExprAST> Parser::parse_primary() {
 	else if (current->type == TOKEN_TYPE::LEFT_PAREN) return parse_parens();
 	else if (current->type == TOKEN_TYPE::PASS) return parse_pass();
 	else if (current->type == TOKEN_TYPE::NONE) return parse_none();
-	else if (current->type == TOKEN_TYPE::FALSE_ ||
-		current->type == TOKEN_TYPE::TRUE_) return parse_bool();
+	else if (current->type == TOKEN_TYPE::FALSE ||
+		current->type == TOKEN_TYPE::TRUE) return parse_bool();
 	else if (current->content == "-") return parse_unary_neg();
 	else if (current->content == "+") {
 		advance();

@@ -4,6 +4,7 @@
 
 #include "Log.hpp"
 #include "Debug.hpp"
+#include "OrObject.hpp"
 
 namespace LibOrichalcum {
 
@@ -260,13 +261,7 @@ void PassExprAST::print_dbg(const std::string &pre) {
 	Log::debug(pre + "PassExprAST");
 }
 
-void PassExprAST::compile(std::shared_ptr<Chunk> chunk) {
-	throw Error(
-		COMPILE_RESULT::COMPILER_ERROR,
-		"PassExprAST isn't currently implemented :(",
-		token
-	);
-}
+void PassExprAST::compile(std::shared_ptr<Chunk> _) { }
 
 PassExprAST::~PassExprAST() { }
 
@@ -300,11 +295,7 @@ ExprAST(_token) {
 }
 
 void NoneExprAST::compile(std::shared_ptr<Chunk> chunk) {
-	throw Error(
-		COMPILE_RESULT::COMPILER_ERROR,
-		"NoneExprAST isn't currently implemented :(",
-		token
-	);
+	chunk->write(OrNone(), token);
 }
 
 void NoneExprAST::print_dbg(const std::string &pre) {
@@ -317,17 +308,13 @@ BoolExprAST::BoolExprAST(
 	std::shared_ptr<Token> _token,
 	bool print_debug):
 ExprAST(_token) {
-	if (token->type == TOKEN_TYPE::TRUE_) value = true;
-	else if (token->type == TOKEN_TYPE::FALSE_) value = false;
+	if (token->type == TOKEN_TYPE::TRUE) value = true;
+	else if (token->type == TOKEN_TYPE::FALSE) value = false;
 	if (print_debug) print_dbg("Created ");
 }
 
 void BoolExprAST::compile(std::shared_ptr<Chunk> chunk) {
-	throw Error(
-		COMPILE_RESULT::COMPILER_ERROR,
-		"BoolExprAST isn't currently implemented :(",
-		token
-	);
+	chunk->write(value, token);
 }
 
 void BoolExprAST::print_dbg(const std::string &pre) {

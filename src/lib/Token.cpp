@@ -68,15 +68,15 @@ std::string to_string(const TOKEN_TYPE token_type) {
 		case TOKEN_TYPE::ELIF: return "ELIF";
 		case TOKEN_TYPE::ELSE: return "ELSE";
 		case TOKEN_TYPE::EXCEPT: return "EXCEPT";
-		case TOKEN_TYPE::FALSE_: return "FALSE_";
+		case TOKEN_TYPE::FALSE: return "FALSE";
 		case TOKEN_TYPE::FINALLY: return "FINALLY";
 		case TOKEN_TYPE::FOR: return "FOR";
 		case TOKEN_TYPE::FROM: return "FROM";
 		case TOKEN_TYPE::GLOBAL: return "GLOBAL";
 		case TOKEN_TYPE::IF: return "IF";
 		case TOKEN_TYPE::IMPORT: return "IMPORT";
-		case TOKEN_TYPE::IN_: return "IN";
-		case TOKEN_TYPE::IS_: return "IS";
+		case TOKEN_TYPE::IN: return "IN";
+		case TOKEN_TYPE::IS: return "IS";
 		case TOKEN_TYPE::LAMBDA: return "LAMBDA";
 		case TOKEN_TYPE::NONE: return "NONE";
 		case TOKEN_TYPE::NONLOCAL: return "NONLOCAL";
@@ -86,7 +86,7 @@ std::string to_string(const TOKEN_TYPE token_type) {
 		case TOKEN_TYPE::RAISE: return "RAISE";
 		case TOKEN_TYPE::RETURN: return "RETURN";
 		case TOKEN_TYPE::STRUCT: return "STRUCT";
-		case TOKEN_TYPE::TRUE_: return "TRUE";
+		case TOKEN_TYPE::TRUE: return "TRUE";
 		case TOKEN_TYPE::TRY: return "TRY";
 		case TOKEN_TYPE::WHILE: return "WHILE";
 		case TOKEN_TYPE::WITH: return "WITH";

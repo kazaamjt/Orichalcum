@@ -7,6 +7,15 @@
 
 namespace LibOrichalcum {
 
+std::string to_string(BINARY_OP op) {
+	switch (op) {
+		case BINARY_OP::ADD: return "ADD";
+		case BINARY_OP::SUBTRACT: return "SUBTRACT";
+		case BINARY_OP::MULTIPLY: return "MULTIPLY";
+		case BINARY_OP::DIVIDE: return "DIVIDE";
+	}
+}
+
 VM::VM() { }
 VM::VM(bool _debug):debug(_debug) { }
 
@@ -21,7 +30,7 @@ InterpretReport VM::interpret(std::shared_ptr<Chunk> _chunk) {
 
 void VM::init_chunk(std::shared_ptr<Chunk> _chunk) {
 	chunk = _chunk;
-	chunk_iter = chunk->get_iterator();
+	chunk->write(OP_CODE::RETURN);
 }
 
 INTERPRET_RESULT VM::run() {
@@ -31,8 +40,10 @@ INTERPRET_RESULT VM::run() {
 		Debug::disassemble_chunk(chunk);
 	}
 
+	size_t i = 0;
 	while(true) {
-		increment();
+		Instruction instruction = chunk->get(i);
+		i++;
 		switch(instruction.op_code) {
 			case OP_CODE::RETURN: {
 				std::cout << "CHUNK RETURNED ";
@@ -42,12 +53,12 @@ INTERPRET_RESULT VM::run() {
 			}
 
 			case OP_CODE::CONST: {
-				OrValue constant = get_const();
+				OrValue constant = chunk->get_const(instruction.index);
 				stack.push(constant);
 			} break;
 
 			case OP_CODE::NEGATE: {
-				subtract();
+				negate();
 			} break;
 			case OP_CODE::ADD: binary_op(BINARY_OP::ADD); break;
 			case OP_CODE::SUBTRACT: binary_op(BINARY_OP::SUBTRACT); break;
@@ -57,7 +68,7 @@ INTERPRET_RESULT VM::run() {
 	}
 }
 
-void VM::subtract() {
+void VM::negate() {
 	OrValue constant = stack.pop();
 	switch (constant.type) {
 		case OrValueType::INT: {
@@ -67,6 +78,9 @@ void VM::subtract() {
 		case OrValueType::FLOAT: {
 			constant.value.FLOAT = -constant.value.FLOAT;
 		} break;
+		case OrValueType::BOOL:
+		case OrValueType::NONE:
+			break;
 	}
 	stack.push(constant);
 }
@@ -80,29 +94,48 @@ void VM::binary_op(BINARY_OP op) {
 		case OrValueType::INT: {
 			switch (const_b.type) {
 				case OrValueType::INT: {
-					const_c.type = OrValueType::INT;
-					const_c.value.INT = calc(op, const_a.value.INT, const_b.value.INT);
+					const_c = OrValue(calc(op, const_a.value.INT, const_b.value.INT));
 				} break;
 				case OrValueType::FLOAT: {
-					// warning
-					const_c.type = OrValueType::FLOAT;
-					const_c.value.FLOAT = calc(op, static_cast<double>(const_a.value.FLOAT), const_b.value.FLOAT);
+					const_c = OrValue(calc(op, static_cast<double>(const_a.value.INT), const_b.value.FLOAT));
 				} break;
+				case OrValueType::BOOL:
+				case OrValueType::NONE: {
+					throw Error(
+						COMPILE_RESULT::RUNTIME_ERROR,
+						"Unable to perform operation " + to_string(op) + " on types int and " + to_string(const_b.type),
+						const_b.token
+					);
+				}
 			}
 		} break;
 		case OrValueType::FLOAT: {
 			switch (const_b.type) {
 				case OrValueType::INT: {
-					// warning
-					const_c.type = OrValueType::FLOAT;
-					const_c.value.FLOAT = calc(op, const_a.value.FLOAT, static_cast<double>(const_b.value.FLOAT));
+					const_c = OrValue(calc(op, const_a.value.FLOAT, static_cast<double>(const_b.value.INT)));
 				} break;
 				case OrValueType::FLOAT: {
-					const_c.type = OrValueType::FLOAT;
-					const_c.value.FLOAT = calc(op, const_a.value.FLOAT, const_b.value.FLOAT);
+					const_c = OrValue(calc(op, const_a.value.FLOAT, const_b.value.FLOAT));
 				} break;
+				case OrValueType::BOOL:
+				case OrValueType::NONE: {
+					throw Error(
+						COMPILE_RESULT::RUNTIME_ERROR,
+						"Unable to perform operation " + to_string(op) + " on types float and " + to_string(const_b.type),
+						const_b.token
+					);
+				}
 			}
 		} break;
+		case OrValueType::BOOL:
+		case OrValueType::NONE: {
+			throw Error(
+				COMPILE_RESULT::RUNTIME_ERROR,
+				"Unable to perform operation " + to_string(op) + " on types " +
+				to_string(const_a.type) + " and " + to_string(const_b.type),
+				const_a.token
+			);
+		}
 	}
 	stack.push(const_c);
 }
@@ -123,18 +156,6 @@ double VM::calc(BINARY_OP op, double a, double b) {
 		case BINARY_OP::MULTIPLY: return a * b;
 		case BINARY_OP::DIVIDE: return a / b;
 	}
-}
-
-
-OrValue VM::get_const() {
-	increment();
-	return chunk->get_const(instruction.index);
-}
-
-// Gets the currents instruction, then increments the iterator
-void VM::increment() {
-	instruction = *chunk_iter;
-	chunk_iter = chunk->next(chunk_iter);
 }
 
 } // LibOrichalcum

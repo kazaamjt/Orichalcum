@@ -13,7 +13,6 @@ docker create -t --name orichalcum-build $Name | Out-Null
 
 docker cp .\include orichalcum-build:/build/include
 docker cp .\src orichalcum-build:/build/src
-docker cp .\tests orichalcum-build:/build/tests
 docker cp .\.bazelrc orichalcum-build:/build/.bazelrc
 docker cp .\BUILD.bazel orichalcum-build:/build/BUILD.bazel
 docker cp .\WORKSPACE orichalcum-build:/build/WORKSPACE
