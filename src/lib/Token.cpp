@@ -51,7 +51,6 @@ std::string to_string(const TOKEN_TYPE token_type) {
 		case TOKEN_TYPE::ASIGNMENT_OP: return "ASIGNMENT_OP";
 		case TOKEN_TYPE::ARITHMATIC_OP: return "ARITHMATIC_OP";
 		case TOKEN_TYPE::COMPARISON_OP: return "COMPARISON_OP";
-		case TOKEN_TYPE::NOT_OP: return "NOT_OP";
 		case TOKEN_TYPE::FLOAT: return "FLOAT";
 		case TOKEN_TYPE::INTEGER: return "INTEGER";
 		case TOKEN_TYPE::AND: return "AND";
@@ -93,8 +92,9 @@ std::string to_string(const TOKEN_TYPE token_type) {
 		case TOKEN_TYPE::YIELD: return "YIELD";
 		case TOKEN_TYPE::RETURN_TYPE_SIGN: return "RETURN_TYPE_SIGN";
 		case TOKEN_TYPE::IDENTIFIER: return "IDENTIFIER";
-		case TOKEN_TYPE::UNKNOWN: return "UNKNOWN";
+		case TOKEN_TYPE::CHAR: return "CHAR";
 		case TOKEN_TYPE::STRING: return "STRING";
+		case TOKEN_TYPE::UNKNOWN: return "UNKNOWN";
 	}
 }
 

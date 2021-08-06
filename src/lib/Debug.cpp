@@ -30,13 +30,12 @@ void print_expr(ExprAST &expr_ast) {
 
 static void print_line(int line) {
 	static int last_line = 0;
-	line += 1;
-	std::cout << "line ";
 	if (line != last_line) {
+		std::cout << "line ";
 		std::cout << std::left << std::setfill(' ') << std::setw(5) << line;
 		last_line = line;
 	}
-	else std::cout << "|    ";
+	else std::cout << "     |    ";
 }
 
 void disassemble_chunk(std::shared_ptr<Chunk> chunk) {
@@ -70,6 +69,7 @@ void disassemble_instruction(std::shared_ptr<Chunk> chunk, size_t index) {
 
 		case OP_CODE::RETURN:
 		case OP_CODE::NEGATE:
+		case OP_CODE::NOT:
 		case OP_CODE::ADD:
 		case OP_CODE::SUBTRACT:
 		case OP_CODE::MULTIPLY:
@@ -120,6 +120,7 @@ std::string to_string(OP_CODE op_code) {
 		case OP_CODE::SUBTRACT: return "SUBTRACT";
 		case OP_CODE::MULTIPLY: return "MULTIPLY";
 		case OP_CODE::DIVIDE: return "DIVIDE";
+		case OP_CODE::NOT: return "NOT";
 	}
 }
 

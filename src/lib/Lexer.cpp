@@ -195,6 +195,7 @@ Token Lexer::get_token() {
 			current = next_char();
 			return mk_token(file_path, index, TOKEN_TYPE::COMPARISON_OP, "!=");
 		}
+		return mk_token(file_path, index, TOKEN_TYPE::NOT, "!");
 	}
 
 	if (current == '<') {

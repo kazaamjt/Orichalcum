@@ -23,12 +23,13 @@ enum class TOKEN_TYPE {
 	ASIGNMENT_OP,
 	ARITHMATIC_OP,
 	COMPARISON_OP,
-	NOT_OP,
+	NOT,
 
 	//Base types
 	FLOAT,
 	INTEGER,
 	STRING,
+	CHAR,
 
 	// Reserved words
 	AND,
@@ -57,7 +58,6 @@ enum class TOKEN_TYPE {
 	LAMBDA,
 	NONE,
 	NONLOCAL,
-	NOT,
 	OR,
 	PASS,
 	RAISE,

@@ -20,6 +20,7 @@ struct ExprAST {
 	virtual void print_dbg(const std::string &pre = "");
 };
 
+
 struct IntExprAST: public ExprAST {
 	int64_t value;
 
@@ -30,6 +31,7 @@ struct IntExprAST: public ExprAST {
 	void print_dbg(const std::string &pre = "") override;
 };
 
+
 struct FloatExprAST: public ExprAST {
 	double value;
 
@@ -39,6 +41,7 @@ struct FloatExprAST: public ExprAST {
 	void compile(std::shared_ptr<Chunk> chunk) override;
 	void print_dbg(const std::string &pre = "") override;
 };
+
 
 struct VariableExprAST: public ExprAST {
 	std::string name;
@@ -57,6 +60,7 @@ struct VariableExprAST: public ExprAST {
 	void print_dbg(const std::string &pre = "") override;
 };
 
+
 struct BinaryExprAST: public ExprAST {
 	OP_CODE op;
 	std::shared_ptr<ExprAST> lefthand, righthand;
@@ -74,6 +78,7 @@ struct BinaryExprAST: public ExprAST {
 	void print_dbg(const std::string &pre = "") override;
 };
 
+
 struct CallExprAST: public ExprAST {
 	std::string callee;
 	std::vector<std::shared_ptr<ExprAST>> args;
@@ -89,6 +94,7 @@ struct CallExprAST: public ExprAST {
 	void print_dbg(const std::string &pre = "") override;
 };
 
+
 struct FunctionArg {
 	std::shared_ptr<Token> token;
 	std::shared_ptr<Token> type_token;
@@ -103,6 +109,7 @@ struct FunctionArg {
 
 	void print_dbg(const std::string &pre = "");
 };
+
 
 // Function prototype
 struct PrototypeAST {
@@ -122,6 +129,7 @@ struct PrototypeAST {
 	void print_dbg(const std::string &pre = "");
 };
 
+
 struct TopLevelExprAST: public ExprAST {
 	std::shared_ptr<ExprAST> body;
 
@@ -135,6 +143,7 @@ struct TopLevelExprAST: public ExprAST {
 	void compile(std::shared_ptr<Chunk> chunk) override;
 	void print_dbg(const std::string &pre = "") override;
 };
+
 
 // Represents a whole function
 struct FunctionAST: public ExprAST {
@@ -153,6 +162,7 @@ struct FunctionAST: public ExprAST {
 	void print_dbg(const std::string &pre = "") override;
 };
 
+
 struct PassExprAST: public ExprAST {
 	PassExprAST(
 		std::shared_ptr<Token> token,
@@ -163,6 +173,7 @@ struct PassExprAST: public ExprAST {
 	void compile(std::shared_ptr<Chunk> chunk) override;
 	void print_dbg(const std::string &pre = "") override;
 };
+
 
 struct UnaryNegExprAST: public ExprAST {
 	std::shared_ptr<ExprAST> rhs;
@@ -178,6 +189,22 @@ struct UnaryNegExprAST: public ExprAST {
 	void print_dbg(const std::string &pre = "") override;
 };
 
+
+struct UnaryNotExprAST: public ExprAST {
+	std::shared_ptr<ExprAST> rhs;
+
+	UnaryNotExprAST(
+		std::shared_ptr<Token> token,
+		std::shared_ptr<ExprAST> rhs,
+		bool print_debug
+	);
+	~UnaryNotExprAST() override;
+
+	void compile(std::shared_ptr<Chunk> chunk) override;
+	void print_dbg(const std::string &pre = "") override;
+};
+
+
 struct NoneExprAST: public ExprAST {
 	NoneExprAST(
 		std::shared_ptr<Token> token,
@@ -188,6 +215,7 @@ struct NoneExprAST: public ExprAST {
 	void compile(std::shared_ptr<Chunk> chunk) override;
 	void print_dbg(const std::string &pre = "") override;
 };
+
 
 struct BoolExprAST: public ExprAST {
 	bool value;
@@ -201,6 +229,7 @@ struct BoolExprAST: public ExprAST {
 	void compile(std::shared_ptr<Chunk> chunk) override;
 	void print_dbg(const std::string &pre = "") override;
 };
+
 
 struct EOFExprAST: public ExprAST {
 	EOFExprAST(

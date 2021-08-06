@@ -19,6 +19,8 @@ enum class BINARY_OP {
 	SUBTRACT,
 	MULTIPLY,
 	DIVIDE,
+	INT_DIVIDE,
+	EXPONENTIATION,
 };
 
 std::string to_string(BINARY_OP op);
@@ -56,7 +58,9 @@ private:
 
 	void negate();
 	void binary_op(BINARY_OP op);
-	int64_t calc(BINARY_OP op, int64_t a, int64_t b);
-	double calc(BINARY_OP op, double a, double b);
+	OrValue calc_1(BINARY_OP op, OrValue a, OrValue b);
+	int64_t sub_calc_1(BINARY_OP op, int64_t a, int64_t b);
+	OrValue calc_2(BINARY_OP op, OrValue a, OrValue b);
+	double sub_calc_2(BINARY_OP op, double a, double b);
 };
 } // LibOrichalcum

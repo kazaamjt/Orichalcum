@@ -10,34 +10,35 @@ namespace LibOrichalcum {
 
 Parser::Parser():
 debug(false) {
-	init_bin_op_precedence();
+	init_op_precedence();
 }
 
 Parser::Parser(bool _debug):
 debug(_debug) {
-	init_bin_op_precedence();
+	init_op_precedence();
 }
 
-void Parser::init_bin_op_precedence() {
-	binary_op_precedence["="] = 10;
-	binary_op_precedence["or"] = 20;
-	binary_op_precedence["and"] = 20;
-	binary_op_precedence["=="] = 30;
-	binary_op_precedence["!="] = 30;
-	binary_op_precedence["<"] = 40;
-	binary_op_precedence[">"] = 40;
-	binary_op_precedence["<="] = 40;
-	binary_op_precedence[">="] = 40;
-	binary_op_precedence["+"] = 50;
-	binary_op_precedence["-"] = 50;
-	binary_op_precedence["*"] = 60;
-	binary_op_precedence["/"] = 60;
-	binary_op_precedence["//"] = 60;
-	binary_op_precedence["**"] = 70;
-	binary_op_precedence["."] = 80; // call operator
+void Parser::init_op_precedence() {
+	op_precedence["="] = 10;
+	op_precedence["or"] = 20;
+	op_precedence["and"] = 20;
+	op_precedence["=="] = 30;
+	op_precedence["!="] = 30;
+	op_precedence["<"] = 40;
+	op_precedence[">"] = 40;
+	op_precedence["<="] = 40;
+	op_precedence[">="] = 40;
+	op_precedence["not"] = 50;
+	op_precedence["+"] = 60;
+	op_precedence["-"] = 60;
+	op_precedence["*"] = 70;
+	op_precedence["/"] = 70;
+	op_precedence["//"] = 70;
+	op_precedence["**"] = 80;
+	op_precedence["."] = 90; // call operator
 
 	Log::verbose("Initializing binary operation precedence.");
-	print_bin_op_precedence();
+	print_op_precedence();
 }
 
 void Parser::parse(const std::filesystem::path &file) {
@@ -47,18 +48,18 @@ void Parser::parse(const std::filesystem::path &file) {
 	advance();
 }
 
-int Parser::get_bin_op_precendence(const std::string &binary_op) {
-	auto iterator = binary_op_precedence.find(binary_op);
-	if (iterator == binary_op_precedence.end()) return -1;
+int Parser::get_op_precendence(const std::string &binary_op) {
+	auto iterator = op_precedence.find(binary_op);
+	if (iterator == op_precedence.end()) return -1;
 	return iterator->second;
 }
 
-void Parser::set_bin_op_precendence(const std::string &binary_op, int precedence) {
+void Parser::set_op_precendence(const std::string &binary_op, int precedence) {
 	Log::debug(
 		"Setting operator precedence value for \""
 		+ binary_op + "\" to " + std::to_string(precedence)
 	);
-	binary_op_precedence[binary_op] = precedence;
+	op_precedence[binary_op] = precedence;
 }
 
 void Parser::advance(int steps, bool skip_indent) {
@@ -96,7 +97,7 @@ std::shared_ptr<ExprAST> Parser::parse_primary() {
 		syntax_error("Unexpected indentation");
 	}
 	else {
-		syntax_error(start_token, "Unexpected token: " + current->content);
+		syntax_error(start_token, "Unexpected token: " + start_token->content);
 	}
 }
 
@@ -110,7 +111,7 @@ std::shared_ptr<ExprAST> Parser::parse_expression(bool parens) {
 std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shared_ptr<ExprAST> lhs, bool parens) {
 	log_debug("Parsing to see if binary expression.");
 	while (true) {
-		int current_precedence = get_bin_op_precendence(current->content);
+		int current_precedence = get_op_precendence(current->content);
 		if (current_precedence < expr_precedence) {
 			return lhs;
 		}
@@ -124,7 +125,7 @@ std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shar
 
 		// if bin_op binds less tightly with rhs than the operator after rhs,
 		// let the pending operator take rhs as it's lhs
-		int next_op_precedence = get_bin_op_precendence(current->content);
+		int next_op_precedence = get_op_precendence(current->content);
 		if (expr_precedence < next_op_precedence) {
 			rhs = parse_bin_op_rhs(current_precedence + 1, rhs);
 		}
@@ -134,10 +135,11 @@ std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shar
 		else if (bin_op->content == "-") op_code = OP_CODE::SUBTRACT;
 		else if (bin_op->content == "*") op_code = OP_CODE::MULTIPLY;
 		else if (bin_op->content == "/") op_code = OP_CODE::DIVIDE;
+		else if (bin_op->content == "**") op_code = OP_CODE::EXPONENTIATION;
 		else {
 			throw Error(
 				COMPILE_RESULT::PARSER_ERROR,
-				"Parser got confused",
+				"Unsupported operation: " + bin_op->content,
 				bin_op
 			);
 		}
@@ -356,10 +358,10 @@ std::shared_ptr<ExprAST> Parser::next_expr() {
 	else return parse_top_level_expr();
 }
 
-void Parser::print_bin_op_precedence() {
+void Parser::print_op_precedence() {
 	if (debug) {
 		Log::debug("Currently set operator precedence levels:");
-		for (auto const& [key, val]: binary_op_precedence) {
+		for (auto const& [key, val]: op_precedence) {
 			Log::debug(std::to_string(val) + ": " + key);
 		}
 	}

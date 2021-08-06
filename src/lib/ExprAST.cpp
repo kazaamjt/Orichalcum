@@ -33,6 +33,7 @@ void ExprAST::compile(std::shared_ptr<Chunk> chunk) {
 
 ExprAST::~ExprAST() { }
 
+
 IntExprAST::IntExprAST(std::shared_ptr<Token> _token, bool print_debug):
 ExprAST(_token) {
 	std::stringstream stream(token->content);
@@ -50,6 +51,7 @@ void IntExprAST::compile(std::shared_ptr<Chunk> chunk) {
 
 IntExprAST::~IntExprAST() { }
 
+
 FloatExprAST::FloatExprAST(std::shared_ptr<Token> _token, bool print_debug):
 ExprAST(_token) {
 	std::stringstream stream(token->content);
@@ -66,6 +68,7 @@ void FloatExprAST::compile(std::shared_ptr<Chunk> chunk) {
 }
 
 FloatExprAST::~FloatExprAST() { }
+
 
 VariableExprAST::VariableExprAST(std::shared_ptr<Token> _token, bool print_debug):
 ExprAST(_token),
@@ -103,6 +106,7 @@ void VariableExprAST::compile(std::shared_ptr<Chunk> chunk) {
 
 VariableExprAST::~VariableExprAST() { }
 
+
 BinaryExprAST::BinaryExprAST(
 	OP_CODE _op,
 	std::shared_ptr<Token> _token,
@@ -131,6 +135,7 @@ void BinaryExprAST::compile(std::shared_ptr<Chunk> chunk) {
 }
 
 BinaryExprAST::~BinaryExprAST() { }
+
 
 CallExprAST::CallExprAST(
 	std::shared_ptr<Token> _token,
@@ -161,6 +166,7 @@ void CallExprAST::compile(std::shared_ptr<Chunk> chunk) {
 
 CallExprAST::~CallExprAST() { }
 
+
 FunctionArg::FunctionArg(
 	std::shared_ptr<Token> _token,
 	std::shared_ptr<Token> _type_token,
@@ -178,6 +184,7 @@ void FunctionArg::print_dbg(const std::string &pre) {
 		+ "\", type: \"" + type + "\"}"
 	);
 }
+
 
 PrototypeAST::PrototypeAST(
 	const std::string &_name,
@@ -200,6 +207,7 @@ void PrototypeAST::print_dbg(const std::string &pre) {
 
 PrototypeAST::~PrototypeAST() { }
 
+
 FunctionAST::FunctionAST(
 	std::shared_ptr<Token> _token,
 	std::shared_ptr<PrototypeAST> _proto,
@@ -219,8 +227,6 @@ void FunctionAST::compile(std::shared_ptr<Chunk> chunk) {
 	);
 }
 
-FunctionAST::~FunctionAST() { }
-
 void FunctionAST::print_dbg(const std::string &pre) {
 	Log::debug(pre + "FunctionAST: ");
 	proto->print_dbg();
@@ -229,6 +235,9 @@ void FunctionAST::print_dbg(const std::string &pre) {
 		expr->print_dbg();
 	}
 }
+
+FunctionAST::~FunctionAST() { }
+
 
 TopLevelExprAST::TopLevelExprAST(
 	std::shared_ptr<Token> _token,
@@ -250,6 +259,7 @@ void TopLevelExprAST::print_dbg(const std::string &pre) {
 
 TopLevelExprAST::~TopLevelExprAST() { }
 
+
 PassExprAST::PassExprAST(
 	std::shared_ptr<Token> _token,
 	bool print_debug):
@@ -264,6 +274,7 @@ void PassExprAST::print_dbg(const std::string &pre) {
 void PassExprAST::compile(std::shared_ptr<Chunk> _) { }
 
 PassExprAST::~PassExprAST() { }
+
 
 UnaryNegExprAST::UnaryNegExprAST(
 	std::shared_ptr<Token> _token,
@@ -287,6 +298,30 @@ void UnaryNegExprAST::compile(std::shared_ptr<Chunk> chunk) {
 
 UnaryNegExprAST::~UnaryNegExprAST() { }
 
+
+UnaryNotExprAST::UnaryNotExprAST(
+	std::shared_ptr<Token> _token,
+	std::shared_ptr<ExprAST> _rhs,
+	bool print_debug
+):
+ExprAST(_token),
+rhs(_rhs) {
+	if (print_debug) print_dbg("Created ");
+}
+
+void UnaryNotExprAST::print_dbg(const std::string &pre) {
+	Log::debug(pre + "UnaryNotExprAST:");
+	rhs->print_dbg();
+}
+
+void UnaryNotExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	rhs->compile(chunk);
+	chunk->write(OP_CODE::NOT, token);
+}
+
+UnaryNotExprAST::~UnaryNotExprAST() { }
+
+
 NoneExprAST::NoneExprAST(
 	std::shared_ptr<Token> _token,
 	bool print_debug):
@@ -303,6 +338,7 @@ void NoneExprAST::print_dbg(const std::string &pre) {
 }
 
 NoneExprAST::~NoneExprAST() { }
+
 
 BoolExprAST::BoolExprAST(
 	std::shared_ptr<Token> _token,
@@ -325,6 +361,7 @@ void BoolExprAST::print_dbg(const std::string &pre) {
 }
 
 BoolExprAST::~BoolExprAST() { }
+
 
 EOFExprAST::EOFExprAST(
 	std::shared_ptr<Token> _token,

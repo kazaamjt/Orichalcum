@@ -1,5 +1,6 @@
 #include "VM.hpp"
 
+#include <cmath>
 #include <iostream>
 
 #include "Debug.hpp"
@@ -13,6 +14,7 @@ std::string to_string(BINARY_OP op) {
 		case BINARY_OP::SUBTRACT: return "SUBTRACT";
 		case BINARY_OP::MULTIPLY: return "MULTIPLY";
 		case BINARY_OP::DIVIDE: return "DIVIDE";
+		case BINARY_OP::EXPONENTIATION: return "EXPONENTIATION";
 	}
 }
 
@@ -57,13 +59,12 @@ INTERPRET_RESULT VM::run() {
 				stack.push(constant);
 			} break;
 
-			case OP_CODE::NEGATE: {
-				negate();
-			} break;
+			case OP_CODE::NEGATE: negate(); break;
 			case OP_CODE::ADD: binary_op(BINARY_OP::ADD); break;
 			case OP_CODE::SUBTRACT: binary_op(BINARY_OP::SUBTRACT); break;
 			case OP_CODE::MULTIPLY: binary_op(BINARY_OP::MULTIPLY); break;
 			case OP_CODE::DIVIDE: binary_op(BINARY_OP::DIVIDE); break;
+			case OP_CODE::EXPONENTIATION: binary_op(BINARY_OP::EXPONENTIATION); break;
 		}
 	}
 }
@@ -95,72 +96,69 @@ void VM::binary_op(BINARY_OP op) {
 	OrValue const_b = stack.pop();
 	OrValue const_a = stack.pop();
 	OrValue const_c;
-	switch (const_a.type) {
-		case OrValueType::INT: {
-			switch (const_b.type) {
-				case OrValueType::INT: {
-					const_c = OrValue(calc(op, const_a.value.INT, const_b.value.INT));
-				} break;
-				case OrValueType::FLOAT: {
-					const_c = OrValue(calc(op, static_cast<double>(const_a.value.INT), const_b.value.FLOAT));
-				} break;
-				case OrValueType::BOOL:
-				case OrValueType::NONE: {
-					throw Error(
-						COMPILE_RESULT::RUNTIME_ERROR,
-						"Unable to perform operation " + to_string(op) + " on types int and " + to_string(const_b.type),
-						const_b.token
-					);
-				}
-			}
-		} break;
-		case OrValueType::FLOAT: {
-			switch (const_b.type) {
-				case OrValueType::INT: {
-					const_c = OrValue(calc(op, const_a.value.FLOAT, static_cast<double>(const_b.value.INT)));
-				} break;
-				case OrValueType::FLOAT: {
-					const_c = OrValue(calc(op, const_a.value.FLOAT, const_b.value.FLOAT));
-				} break;
-				case OrValueType::BOOL:
-				case OrValueType::NONE: {
-					throw Error(
-						COMPILE_RESULT::RUNTIME_ERROR,
-						"Unable to perform operation " + to_string(op) + " on types float and " + to_string(const_b.type),
-						const_b.token
-					);
-				}
-			}
-		} break;
-		case OrValueType::BOOL:
-		case OrValueType::NONE: {
-			throw Error(
-				COMPILE_RESULT::RUNTIME_ERROR,
-				"Unable to perform operation " + to_string(op) + " on types " +
-				to_string(const_a.type) + " and " + to_string(const_b.type),
-				const_a.token
-			);
-		}
+	switch (op) {
+		case BINARY_OP::ADD:
+		case BINARY_OP::SUBTRACT:
+		case BINARY_OP::MULTIPLY:
+			const_c = calc_1(op, const_a, const_b); break;
+
+		case BINARY_OP::DIVIDE:
+		case BINARY_OP::EXPONENTIATION:
+			const_c = calc_2(op, const_a, const_b); break;
 	}
 	stack.push(const_c);
 }
 
-int64_t VM::calc(BINARY_OP op, int64_t a, int64_t b) {
-	switch (op) {
-		case BINARY_OP::ADD: return a + b;
-		case BINARY_OP::SUBTRACT: return a - b;
-		case BINARY_OP::MULTIPLY: return a * b;
-		case BINARY_OP::DIVIDE: return a / b;
-	}
+void bin_op_type_error(BINARY_OP op, OrValue a, OrValue b) {
+	throw Error(
+		COMPILE_RESULT::RUNTIME_ERROR,
+		"Unable to perform operation " + to_string(op) + " on types " +
+		to_string(a.type) + " and " + to_string(b.type),
+		a.token
+	);
 }
 
-double VM::calc(BINARY_OP op, double a, double b) {
-	switch (op) {
-		case BINARY_OP::ADD: return a + b;
-		case BINARY_OP::SUBTRACT: return a - b;
-		case BINARY_OP::MULTIPLY: return a * b;
-		case BINARY_OP::DIVIDE: return a / b;
+OrValue VM::calc_1(BINARY_OP op, OrValue a, OrValue b) {
+	if (a.type == OrValueType::INT) {
+		if (b.type == OrValueType::INT) {
+			return OrValue(sub_calc_1(op, a.value.INT, b.value.INT));
+		}
 	}
+	if (a.type == OrValueType::FLOAT) {
+		double val_b;
+		switch (b.type) {
+			case OrValueType::INT:
+				val_b = static_cast<double>(b.value.INT);
+				break;
+			case OrValueType::FLOAT:
+				val_b = b.value.FLOAT;
+				break;
+			case OrValueType::BOOL:
+			case OrValueType::NONE:
+				bin_op_type_error(op, a, b);
+		}
+		return OrValue(sub_calc_1(op, a.value.FLOAT, val_b));
+	}
+
+	bin_op_type_error(op, a, b);
 }
+
+int64_t sub_calc_1(BINARY_OP op, int64_t a, int64_t b) {
+		if (op == BINARY_OP::ADD) return a + b;
+		if (op == BINARY_OP::SUBTRACT) return a - b;
+		if (op == BINARY_OP::MULTIPLY) return a * b;
+		else { } // throw an error?
+}
+
+OrValue VM::calc_2(BINARY_OP op, OrValue a, OrValue b) {
+
+}
+
+double sub_calc_2(BINARY_OP op, double a, double b) {
+
+}
+
+
+
 
 } // LibOrichalcum

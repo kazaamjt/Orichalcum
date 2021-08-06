@@ -12,10 +12,12 @@ enum class OP_CODE {
 	CONST,
 
 	NEGATE,
+	NOT,
 	ADD,
 	SUBTRACT,
 	MULTIPLY,
 	DIVIDE,
+	EXPONENTIATION,
 };
 
 class Instruction {
