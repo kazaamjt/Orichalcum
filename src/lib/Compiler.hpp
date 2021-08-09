@@ -11,7 +11,7 @@
 
 namespace LibOrichalcum {
 
-static const std::string VERSION = "0.0.0";
+static const std::string VERSION = "0.0.2";
 
 struct CompilerReport {
 	const COMPILE_RESULT result;

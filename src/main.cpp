@@ -7,7 +7,7 @@
 
 inline LibOrichalcum::CompilerOptions init_options(int argc, char *argv[]) {
 	LibOrichalcum::CompilerOptions compiler_options;
-	cxxopts::Options options("Orichalcum", "Orichalcum Standard Compiler v0.0.1");
+	cxxopts::Options options("Orichalcum", "Orichalcum Standard Compiler " + LibOrichalcum::VERSION);
 	options
 		.positional_help("[Positional args]")
 		.show_positional_help();
