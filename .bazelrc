@@ -19,7 +19,6 @@ build:clang-cl --copt /clang:-Wno-exit-time-destructors
 build:clang-cl --copt /clang:-Wno-global-constructors
 build:clang-cl --copt /clang:--system-header-prefix=cxxopts
 build:clang-cl --copt /clang:--system-header-prefix=rang
-build:clang-cl --copt /clang:--system-header-prefix=catch
 
 build:clang --copt -m64
 build:clang --copt -std=c++17
@@ -32,7 +31,6 @@ build:clang --copt -Wno-exit-time-destructors
 build:clang --copt -Wno-global-constructors
 build:clang --copt --system-header-prefix=cxxopts
 build:clang --copt --system-header-prefix=rang
-build:clang --copt --system-header-prefix=catch
 build:clang --linkopt -static
 build:clang --linkopt -static-libgcc
 

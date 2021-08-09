@@ -33,22 +33,6 @@ cc_library(
 	],
 )
 
-cc_binary(
-	name = "tests",
-	srcs = ["tests/tests.cpp"],
-	deps = [
-		":test-lib",
-	],
-)
-
-cc_library(
-	name = "test-lib",
-	hdrs = glob(["tests/*.hpp"]),
-	deps = [
-		":lib",
-	],
-)
-
 ######################
 # External Libraries #
 ######################
