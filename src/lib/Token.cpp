@@ -11,7 +11,7 @@ void Index::set(int _line, int _col) {
 }
 
 Token::Token():
-	index(Index(0,0)), type(TOKEN_TYPE::EMPTY), content("") { }
+	index(Index(0,0)), type(TOKEN_TYPE::EMPTY), content(""), line_content("") { }
 
 Token::Token(
 const std::string &_file_path,

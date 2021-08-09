@@ -271,7 +271,9 @@ void PassExprAST::print_dbg(const std::string &pre) {
 	Log::debug(pre + "PassExprAST");
 }
 
-void PassExprAST::compile(std::shared_ptr<Chunk> _) { }
+void PassExprAST::compile(std::shared_ptr<Chunk> chunk) {
+	chunk->write(OP_CODE::RETURN);
+}
 
 PassExprAST::~PassExprAST() { }
 

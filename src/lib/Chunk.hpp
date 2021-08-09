@@ -19,6 +19,12 @@ enum class OP_CODE {
 	DIVIDE,
 	INT_DIVIDE,
 	EXPONENTIATION,
+
+	EQUALS,
+	GREATER,
+	LESSER,
+	GREATER_THAN,
+	LESSER_THAN,
 };
 
 class Instruction {

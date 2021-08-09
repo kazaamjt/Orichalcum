@@ -59,7 +59,7 @@ void VM::init_chunk(std::shared_ptr<Chunk> _chunk) {
 }
 
 INTERPRET_RESULT VM::run() {
-	Log::debug("Vm is executing chunk " + chunk->name);
+	Log::debug("VM is executing chunk " + chunk->name);
 	if (debug) {
 		Debug::print_stack(stack);
 		Debug::disassemble_chunk(chunk);
@@ -124,7 +124,9 @@ void VM::unary_not() {
 	else
 		value = truthiness(constant);
 
-	stack.push(OrValue(!value));
+	constant.type = OrValueType::BOOL;
+	constant.value.BOOL = !value;
+	stack.push(constant);
 }
 
 void VM::binary_op(BINARY_OP op) {

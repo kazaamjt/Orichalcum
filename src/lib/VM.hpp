@@ -56,7 +56,6 @@ private:
 
 	void init_chunk(std::shared_ptr<Chunk> chunk);
 	INTERPRET_RESULT run();
-	OrValue get_const();
 
 	void negate();
 	void unary_not();
