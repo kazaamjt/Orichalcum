@@ -24,6 +24,7 @@ enum class BINARY_OP {
 };
 
 std::string to_string(BINARY_OP op);
+BINARY_OP to_opcode(Instruction instruction);
 
 struct ConstStack {
 	void push(const OrValue &value) {
@@ -53,6 +54,7 @@ private:
 
 	std::shared_ptr<Chunk> chunk;
 	ConstStack stack;
+	Instruction current;
 
 	void init_chunk(std::shared_ptr<Chunk> chunk);
 	INTERPRET_RESULT run();
@@ -60,7 +62,7 @@ private:
 	void negate();
 	void unary_not();
 
-	void binary_op(BINARY_OP op);
+	void binary_op();
 	OrValue calc_1(BINARY_OP op, OrValue a, OrValue b);
 	int64_t sub_calc_1(BINARY_OP op, int64_t a, int64_t b);
 	OrValue calc_2(BINARY_OP op, OrValue a, OrValue b);

@@ -104,7 +104,7 @@ void print_stack(ConstStack &stack) {
 	std::cout << "[";
 	for (OrValue constant: stack.internal) {
 		print_const(constant);
-		std::cout << " ";
+		std::cout << ", ";
 	}
 	if (stack.internal.size() > 0) {
 		std::cout << "\b]" << std::endl;

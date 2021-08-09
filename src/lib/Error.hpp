@@ -12,6 +12,7 @@ enum class COMPILE_RESULT {
 	PARSER_ERROR,
 	COMPILER_ERROR,
 	RUNTIME_ERROR,
+	INTERNAL_ERROR,
 };
 
 class Error: public std::runtime_error {

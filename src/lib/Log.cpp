@@ -91,15 +91,24 @@ void Log::error(const std::string &msg) {
 	}
 }
 
-void Log::error(const Error &error) {
-	std::string line = Misc::remove_white_space(error.line_content);
-	int count = Misc::count_whitespace(error.line_content);
-	std::string output = error.msg + "\n"
-			"    File " + error.file + "(" + std::to_string(error.index.line + 1)
-			+ "," + std::to_string(error.index.col + 1) + "):\n"
+void Log::error(const Error &_error) {
+	std::string line = Misc::remove_white_space(_error.line_content);
+	int count = Misc::count_whitespace(_error.line_content);
+	std::string output = _error.msg + "\n"
+			"    File " + _error.file + "(" + std::to_string(_error.index.line + 1)
+			+ "," + std::to_string(_error.index.col + 1) + "):\n"
 			+ std::string(8, ' ') + line + "\n"
-			+ std::string(static_cast<size_t>(error.index.col + 8 - count), ' ') + "^";
+			+ std::string(static_cast<size_t>(_error.index.col + 8 - count), ' ') + "^";
 	Log::error(output);
+
+	if (_error.section == COMPILE_RESULT::INTERNAL_ERROR) {
+		std::cout << std::endl;
+		error("This is an internal error.");
+		error("The compiler got confused somehow.");
+		error("You most likely found a bug in the compiler.");
+		error("Please open an issue on github: https://github.com/kazaamjt/Orichalcum");
+		error("For sensitive matters, please contact kazaamjt@gmail.com.");
+	}
 }
 
 bool Log::print_logs_enabled() {

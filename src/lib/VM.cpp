@@ -19,6 +19,21 @@ std::string to_string(BINARY_OP op) {
 	}
 }
 
+BINARY_OP to_opcode(Instruction instruction) {
+	if (instruction.op_code == OP_CODE::ADD) return BINARY_OP::ADD;
+	if (instruction.op_code == OP_CODE::SUBTRACT) return BINARY_OP::SUBTRACT;
+	if (instruction.op_code == OP_CODE::MULTIPLY) return BINARY_OP::MULTIPLY;
+	if (instruction.op_code == OP_CODE::DIVIDE) return BINARY_OP::DIVIDE;
+	if (instruction.op_code == OP_CODE::INT_DIVIDE) return BINARY_OP::INT_DIVIDE;
+	if (instruction.op_code == OP_CODE::EXPONENTIATION) return BINARY_OP::EXPONENTIATION;
+
+	throw Error(
+		COMPILE_RESULT::INTERNAL_ERROR,
+		"Error occured in CPP::VM::to_opcode.",
+		instruction.token
+	);
+}
+
 bool truthiness(OrValue or_value) {
 	if (or_value.type == OrValueType::BOOL)
 		return or_value.value.BOOL;
@@ -41,8 +56,12 @@ bool truthiness(OrValue or_value) {
 	return false;
 }
 
-VM::VM() { }
-VM::VM(bool _debug):debug(_debug) { }
+VM::VM():
+current(OP_CODE::RETURN) { }
+
+VM::VM(bool _debug):
+debug(_debug),
+current(OP_CODE::RETURN) { }
 
 InterpretReport VM::interpret(std::shared_ptr<Chunk> _chunk) {
 	InterpretReport interpret_report;
@@ -67,9 +86,8 @@ INTERPRET_RESULT VM::run() {
 
 	size_t i = 0;
 	while(true) {
-		Instruction instruction = chunk->get(i);
-		i++;
-		switch(instruction.op_code) {
+		current = chunk->get(i++);
+		switch(current.op_code) {
 			case OP_CODE::RETURN: {
 				std::cout << "CHUNK RETURNED ";
 				Debug::print_const(stack.pop());
@@ -78,18 +96,19 @@ INTERPRET_RESULT VM::run() {
 			}
 
 			case OP_CODE::CONST: {
-				OrValue constant = chunk->get_const(instruction.index);
+				OrValue constant = chunk->get_const(current.index);
 				stack.push(constant);
 			} break;
 
 			case OP_CODE::NEGATE: negate(); break;
 			case OP_CODE::NOT: unary_not(); break;
-			case OP_CODE::ADD: binary_op(BINARY_OP::ADD); break;
-			case OP_CODE::SUBTRACT: binary_op(BINARY_OP::SUBTRACT); break;
-			case OP_CODE::MULTIPLY: binary_op(BINARY_OP::MULTIPLY); break;
-			case OP_CODE::DIVIDE: binary_op(BINARY_OP::DIVIDE); break;
-			case OP_CODE::INT_DIVIDE: binary_op(BINARY_OP::INT_DIVIDE); break;
-			case OP_CODE::EXPONENTIATION: binary_op(BINARY_OP::EXPONENTIATION); break;
+			case OP_CODE::ADD:
+			case OP_CODE::SUBTRACT:
+			case OP_CODE::MULTIPLY:
+			case OP_CODE::DIVIDE:
+			case OP_CODE::INT_DIVIDE:
+			case OP_CODE::EXPONENTIATION:
+				binary_op(); break;
 		}
 	}
 }
@@ -124,16 +143,16 @@ void VM::unary_not() {
 	else
 		value = truthiness(constant);
 
-	constant.type = OrValueType::BOOL;
-	constant.value.BOOL = !value;
-	stack.push(constant);
+	OrValue new_constant(!value, current.token);
+	stack.push(new_constant);
 }
 
-void VM::binary_op(BINARY_OP op) {
+void VM::binary_op() {
 	// b first, this is important
 	OrValue const_b = stack.pop();
 	OrValue const_a = stack.pop();
 	OrValue const_c;
+	BINARY_OP op = to_opcode(current.op_code);
 	switch (op) {
 		case BINARY_OP::ADD:
 		case BINARY_OP::SUBTRACT:
@@ -186,7 +205,12 @@ int64_t VM::sub_calc_1(BINARY_OP op, int64_t a, int64_t b) {
 	if (op == BINARY_OP::ADD) return a + b;
 	if (op == BINARY_OP::SUBTRACT) return a - b;
 	if (op == BINARY_OP::MULTIPLY) return a * b;
-	else return 0; // throw an error?
+
+	throw Error(
+		COMPILE_RESULT::INTERNAL_ERROR,
+		"Error occured in CPP::VM::sub_calc_1.",
+		current.token
+	);
 }
 
 OrValue VM::calc_2(BINARY_OP op, OrValue a, OrValue b) {
@@ -220,7 +244,11 @@ double VM::sub_calc_2(BINARY_OP op, double a, double b) {
 	if (op == BINARY_OP::EXPONENTIATION)
 		return std::pow(a, b);
 
-	return 0; // throw error??
+	throw Error(
+		COMPILE_RESULT::INTERNAL_ERROR,
+		"Error occured in CPP::VM::sub_calc_2.",
+		current.token
+	);
 }
 
 } // LibOrichalcum
