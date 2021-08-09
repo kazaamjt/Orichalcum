@@ -39,6 +39,8 @@ struct ConstStack {
 	std::vector<OrValue> internal;
 };
 
+bool truthiness(OrValue or_value);
+
 class VM {
 public:
 	VM();
@@ -57,6 +59,8 @@ private:
 	OrValue get_const();
 
 	void negate();
+	void unary_not();
+
 	void binary_op(BINARY_OP op);
 	OrValue calc_1(BINARY_OP op, OrValue a, OrValue b);
 	int64_t sub_calc_1(BINARY_OP op, int64_t a, int64_t b);

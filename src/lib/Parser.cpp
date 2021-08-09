@@ -80,19 +80,28 @@ void Parser::advance(int steps, bool skip_indent) {
 
 std::shared_ptr<ExprAST> Parser::parse_primary() {
 	std::shared_ptr<Token> start_token = current;
-	if (current->type == TOKEN_TYPE::INTEGER) return parse_int();
-	else if (current->type ==  TOKEN_TYPE::FLOAT) return parse_float();
-	else if (current->type == TOKEN_TYPE::IDENTIFIER) return parse_identifier();
-	else if (current->type == TOKEN_TYPE::LEFT_PAREN) return parse_parens();
-	else if (current->type == TOKEN_TYPE::PASS) return parse_pass();
-	else if (current->type == TOKEN_TYPE::NONE) return parse_none();
-	else if (current->type == TOKEN_TYPE::FALSE ||
-		current->type == TOKEN_TYPE::TRUE) return parse_bool();
-	else if (current->content == "-") return parse_unary_neg();
+	if (current->type == TOKEN_TYPE::INTEGER)
+		return parse_int();
+	else if (current->type ==  TOKEN_TYPE::FLOAT)
+		return parse_float();
+	else if (current->type == TOKEN_TYPE::LEFT_PAREN)
+		return parse_parens();
+	else if (current->type == TOKEN_TYPE::PASS)
+		return parse_pass();
+	else if (current->type == TOKEN_TYPE::NONE)
+		return parse_none();
+	else if (current->type == TOKEN_TYPE::FALSE || current->type == TOKEN_TYPE::TRUE)
+		return parse_bool();
+	else if (current->type == TOKEN_TYPE::NOT)
+		return parse_unary_not();
+	else if (current->content == "-")
+		return parse_unary_neg();
 	else if (current->content == "+") {
 		advance();
 		return parse_expression();
 	}
+	else if (current->type == TOKEN_TYPE::IDENTIFIER)
+		return parse_identifier();
 	else if (current->type == TOKEN_TYPE::INDENT) {
 		syntax_error("Unexpected indentation");
 	}
@@ -135,6 +144,7 @@ std::shared_ptr<ExprAST> Parser::parse_bin_op_rhs(int expr_precedence, std::shar
 		else if (bin_op->content == "-") op_code = OP_CODE::SUBTRACT;
 		else if (bin_op->content == "*") op_code = OP_CODE::MULTIPLY;
 		else if (bin_op->content == "/") op_code = OP_CODE::DIVIDE;
+		else if (bin_op->content == "//") op_code = OP_CODE::INT_DIVIDE;
 		else if (bin_op->content == "**") op_code = OP_CODE::EXPONENTIATION;
 		else {
 			throw Error(
@@ -156,6 +166,16 @@ std::shared_ptr<UnaryNegExprAST> Parser::parse_unary_neg() {
 		syntax_error(neg_token, "Expected expression:");
 	}
 	return std::make_shared<UnaryNegExprAST>(neg_token, rhs, debug);
+}
+
+std::shared_ptr<UnaryNotExprAST> Parser::parse_unary_not() {
+	std::shared_ptr<Token> not_token = current;
+	advance();
+	std::shared_ptr<ExprAST> rhs = parse_primary();
+		if (not_token->index.line != rhs->token->index.line) {
+		syntax_error(not_token, "Expected expression:");
+	}
+	return std::make_shared<UnaryNotExprAST>(not_token, rhs, debug);
 }
 
 std::shared_ptr<IntExprAST> Parser::parse_int() {

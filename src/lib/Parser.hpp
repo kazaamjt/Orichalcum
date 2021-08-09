@@ -50,6 +50,7 @@ private:
 	std::shared_ptr<PassExprAST> parse_pass();
 	std::shared_ptr<NoneExprAST> parse_none();
 	std::shared_ptr<BoolExprAST> parse_bool();
+	std::shared_ptr<UnaryNotExprAST> parse_unary_not();
 	std::shared_ptr<ExprAST> parse_parens();
 	std::shared_ptr<ExprAST> parse_identifier();
 	std::shared_ptr<PrototypeAST> parse_prototype();

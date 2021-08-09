@@ -73,7 +73,9 @@ void disassemble_instruction(std::shared_ptr<Chunk> chunk, size_t index) {
 		case OP_CODE::ADD:
 		case OP_CODE::SUBTRACT:
 		case OP_CODE::MULTIPLY:
-		case OP_CODE::DIVIDE: {
+		case OP_CODE::DIVIDE:
+		case OP_CODE::INT_DIVIDE:
+		case OP_CODE::EXPONENTIATION: {
 			std::cout<< Misc::to_hex(index) << " " << to_string(instruction.op_code) << std::endl;
 		} break;
 	}
@@ -86,8 +88,8 @@ std::string to_string(const OrValue &constant) {
 		case OrValueType::FLOAT:
 			return std::to_string(constant.value.FLOAT);
 		case OrValueType::BOOL:
-			if (constant.value.BOOL) return "True";
-			return "False";
+			if (constant.value.BOOL) return "TRUE";
+			return "FALSE";
 		case OrValueType::NONE:
 			return "None";
 	}
@@ -121,6 +123,8 @@ std::string to_string(OP_CODE op_code) {
 		case OP_CODE::MULTIPLY: return "MULTIPLY";
 		case OP_CODE::DIVIDE: return "DIVIDE";
 		case OP_CODE::NOT: return "NOT";
+		case OP_CODE::INT_DIVIDE: return "INT_DIVIDE";
+		case OP_CODE::EXPONENTIATION: return "EXPONENTIATION";
 	}
 }
 
